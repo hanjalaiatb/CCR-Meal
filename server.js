@@ -8,13 +8,11 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ccr-meal-tracker';
 mongoose.connect(MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('DB error:', err));
 
-// Meal Schema
 const mealSchema = new mongoose.Schema({
     dateStr: { type: String, required: true },
     id: { type: String, required: true },
@@ -26,7 +24,6 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Submit or Update Entry
 app.post('/api/submit', async (req, res) => {
     try {
         const { dateStr, id, shift, meal, menuOption } = req.body;
@@ -49,7 +46,6 @@ app.post('/api/submit', async (req, res) => {
     }
 });
 
-// Fetch Summary Data
 app.get('/api/summary', async (req, res) => {
     try {
         const { dateStr } = req.query;
@@ -61,7 +57,6 @@ app.get('/api/summary', async (req, res) => {
     }
 });
 
-// Delete Record
 app.post('/api/delete', async (req, res) => {
     try {
         const { id, dateStr, meal } = req.body;
