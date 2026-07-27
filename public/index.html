@@ -6,10 +6,10 @@
     <title>CCR Meal System</title>
     <style>
         :root {
-            /* Customizing active selection to dark slate instead of blue */
-            --primary: #334155;
-            --primary-light: #f1f5f9;
-            --primary-border: #cbd5e1;
+            /* Vibrant Emerald Green Active Selection Theme */
+            --primary: #059669;
+            --primary-light: #ecfdf5;
+            --primary-border: #a7f3d0;
             
             --action-btn: #2563eb;
             --danger: #ef4444;
@@ -130,7 +130,7 @@
         input:focus {
             background-color: #fff;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
         }
 
         /* FAST SELECTION OPTION GRIDS */
@@ -169,13 +169,13 @@
             display: none;
         }
 
-        /* Active Selected State using Slate Color */
+        /* Active Selected State using Vibrant Emerald Green */
         .radio-card:has(input:checked) {
             background: var(--primary-light);
-            border-color: var(--primary-border);
+            border-color: var(--primary);
             color: var(--primary);
             font-weight: 700;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 3px rgba(5, 150, 105, 0.15);
         }
 
         button {
@@ -478,49 +478,63 @@
 <script>
     const rawDataStore = {};
 
-    function syncAllDates(dateVal) {
-        if (!dateVal) return;
+    function updateAllDates(newDate) {
+        if (!newDate) return;
         const d1 = document.getElementById('dateStr');
         const d2 = document.getElementById('summaryDate');
         const d3 = document.getElementById('deleteDateStr');
-        
-        if (d1) d1.value = dateVal;
-        if (d2) d2.value = dateVal;
-        if (d3) d3.value = dateVal;
+
+        if (d1 && d1.value !== newDate) d1.value = newDate;
+        if (d2 && d2.value !== newDate) d2.value = newDate;
+        if (d3 && d3.value !== newDate) d3.value = newDate;
     }
 
-    // Force date initialization instantly and safely
-    function initDates() {
+    // Immediately populate today's date on script load across all inputs
+    function initToday() {
         const d = new Date();
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         const todayStr = `${year}-${month}-${day}`;
         
-        syncAllDates(todayStr);
+        updateAllDates(todayStr);
+        return todayStr;
     }
 
-    // Run immediately to populate fields before rendering finishes
-    initDates();
+    const initialDate = initToday();
 
     window.addEventListener('DOMContentLoaded', () => {
-        initDates();
+        updateAllDates(initialDate);
 
+        // Synchronize changes dynamically when user modifies any date picker
+        document.getElementById('dateStr').addEventListener('input', (e) => {
+            updateAllDates(e.target.value);
+            loadSummary();
+        });
         document.getElementById('dateStr').addEventListener('change', (e) => {
-            syncAllDates(e.target.value);
+            updateAllDates(e.target.value);
             loadSummary();
         });
 
+        document.getElementById('summaryDate').addEventListener('input', (e) => {
+            updateAllDates(e.target.value);
+            loadSummary();
+        });
         document.getElementById('summaryDate').addEventListener('change', (e) => {
-            syncAllDates(e.target.value);
+            updateAllDates(e.target.value);
             loadSummary();
         });
 
+        document.getElementById('deleteDateStr').addEventListener('input', (e) => {
+            updateAllDates(e.target.value);
+            loadSummary();
+        });
         document.getElementById('deleteDateStr').addEventListener('change', (e) => {
-            syncAllDates(e.target.value);
+            updateAllDates(e.target.value);
             loadSummary();
         });
 
+        // Automatically load summary on startup without needing to press anything
         loadSummary();
     });
 
@@ -569,7 +583,7 @@
                 showStatus('submit-status', 'Entry saved successfully!', true);
                 document.getElementById('employeeId').value = '';
                 
-                syncAllDates(entryDate);
+                updateAllDates(entryDate);
                 loadSummary(selectedMeal);
             } else {
                 showStatus('submit-status', 'Error: ' + (data.error || 'Failed to save'), false);
@@ -589,25 +603,4 @@
         deleteBtn.disabled = true;
         deleteBtn.innerText = 'Deleting...';
 
-        const deleteMeal = document.querySelector('input[name="deleteMeal"]:checked').value;
-        const deleteDate = document.getElementById('deleteDateStr').value;
-
-        const payload = {
-            dateStr: deleteDate,
-            id: document.getElementById('deleteId').value.trim(),
-            meal: deleteMeal
-        };
-
-        try {
-            const res = await fetch('/api/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showStatus('delete-status', 'Record deleted successfully!', true);
-                document.getElementById('deleteId').value = '';
-
-           
+        const deleteMeal = document.querySelector('input[na
