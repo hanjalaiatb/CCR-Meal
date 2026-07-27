@@ -222,7 +222,7 @@
         el.innerText = text;
         el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 2000);
+        setTimeout(() => el.style.display = 'none', 3000);
     }
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
@@ -241,10 +241,22 @@
             body: JSON.stringify(payload)
         });
         const data = await res.json();
-        if (res.ok) {
-            const action = data.isNew ? 'Added' : 'Updated';
-            showMsg('s-msg', 'Saved successfully!', true);
-            addLog(`${action}: ID ${payload.id} (${payload.meal})`);
+        if (res.ok && data.success) {
+            let msgText = '';
+            let logText = '';
+            if (data.status === 'added') {
+                msgText = 'Added successfully!';
+                logText = `Added: ID ${payload.id} (${payload.meal})`;
+            } else if (data.status === 'modified') {
+                msgText = 'Modified successfully!';
+                logText = `Modified: ID ${payload.id} (${payload.meal})`;
+            } else {
+                msgText = 'Already recorded!';
+                logText = `Checked (No change): ID ${payload.id} (${payload.meal})`;
+            }
+
+            showMsg('s-msg', msgText, true);
+            addLog(logText);
             document.getElementById('e-id').value = '';
             document.getElementById('s-date').value = payload.dateStr;
             document.getElementById('d-date').value = payload.dateStr;
@@ -365,7 +377,7 @@
                     <div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">
                         <div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>
                         <div class="txt-pre" id="wa-${meal}">${wa}</div>
-                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText).then(()=>alert('Copied!'))">Copy WhatsApp Format</button>
+                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText).then(()=>{showMsg('s-msg','Copied to clipboard!',true);})">Copy WhatsApp Format</button>
                     </div>
                 `;
             }
