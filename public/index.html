@@ -12,8 +12,8 @@
             --danger-hover: #b91c1c;
             --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
+            --text: #0f172a;
+            --border: #cbd5e1;
         }
 
         * {
@@ -26,14 +26,14 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            padding: 20px 10px;
+            padding: 15px 10px;
             display: flex;
             justify-content: center;
         }
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -43,12 +43,12 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border);
         }
 
         h2 {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             margin-bottom: 15px;
             color: var(--text);
             border-bottom: 2px solid var(--border);
@@ -63,9 +63,9 @@
 
         label {
             display: block;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 6px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         input[type="text"],
@@ -75,14 +75,9 @@
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 1.05rem;
             outline: none;
             background-color: #fff;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
         }
 
         .radio-group {
@@ -99,13 +94,14 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: normal;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
         }
 
         .radio-label input {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
         }
 
         button {
@@ -113,64 +109,103 @@
             padding: 14px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s;
             color: white;
+            transition: opacity 0.2s;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
+        button:active {
+            opacity: 0.8;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background-color: var(--danger-hover);
-        }
-
-        .btn-secondary {
-            background-color: #64748b;
-            margin-top: 10px;
-        }
-
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background: #0f172a;
-            color: #38bdf8;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-family: monospace;
-            max-height: 300px;
-            overflow-y: auto;
-        }
+        .btn-primary { background-color: var(--primary); }
+        .btn-danger { background-color: var(--danger); }
+        .btn-success { background-color: #059669; margin-top: 10px; }
 
         .status-msg {
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 12px;
             display: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             text-align: center;
         }
 
-        .status-success {
-            background-color: #dcfce7;
-            color: #166534;
+        .status-success { background-color: #dcfce7; color: #166534; }
+        .status-error { background-color: #fee2e2; color: #991b1b; }
+
+        /* ENHANCED SUMMARY STYLING */
+        .summary-card-view {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .status-error {
-            background-color: #fee2e2;
-            color: #991b1b;
+        .summary-header {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            background: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .shift-block {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+
+        .shift-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        .id-list {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0284c7;
+            background: #f0f9ff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            word-break: break-all;
+            margin: 4px 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-right: 5px;
+            margin-top: 4px;
+        }
+
+        .tag-fried { background-color: #dcfce7; color: #15803d; }
+        .tag-poached { background-color: #dbeafe; color: #1e40af; }
+        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
+        .tag-total { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+
+        .raw-text-box {
+            white-space: pre-wrap;
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: monospace;
+            margin-top: 10px;
+            display: none;
         }
     </style>
 </head>
@@ -263,7 +298,7 @@
         </form>
     </div>
 
-    <!-- SUMMARY & OUTPUT CARD -->
+    <!-- SUMMARY CARD -->
     <div class="card">
         <h2>Summary Output</h2>
         <div class="form-group">
@@ -272,15 +307,12 @@
         </div>
         <button type="button" class="btn-primary" id="getSummaryBtn">Generate Summary</button>
 
-        <div style="margin-top: 15px;">
-            <pre id="summaryOutput">Select a date and click 'Generate Summary'...</pre>
-        </div>
+        <div id="summaryContainer"></div>
     </div>
 
 </div>
 
 <script>
-    // Set default date to today for all date pickers
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dateStr').value = today;
     document.getElementById('deleteDateStr').value = today;
@@ -294,7 +326,7 @@
         setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    // Submit Entry Handler
+    // Submit Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
@@ -331,7 +363,7 @@
         }
     });
 
-    // Delete Record Handler
+    // Delete Handler
     document.getElementById('deleteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const deleteBtn = document.getElementById('deleteBtn');
@@ -366,26 +398,55 @@
         }
     });
 
-    // Generate Summary Handler
+    // High-Contrast Formatted Summary Renderer
     document.getElementById('getSummaryBtn').addEventListener('click', async () => {
         const date = document.getElementById('summaryDate').value;
-        const outputEl = document.getElementById('summaryOutput');
-        outputEl.innerText = 'Loading summary...';
+        const container = document.getElementById('summaryContainer');
+        container.innerHTML = '<p style="margin-top:15px; font-weight:bold;">Loading summary...</p>';
 
         try {
             const res = await fetch(`/api/summary?date=${date}`);
             const data = await res.json();
+            container.innerHTML = '';
 
-            let textOutput = '';
-            for (const mealType in data) {
-                textOutput += data[mealType].text + '\n\n' + '='.repeat(30) + '\n\n';
+            if (Object.keys(data).length === 0) {
+                container.innerHTML = '<p style="margin-top:15px; color:#64748b; font-weight:bold;">No meal records found for this date.</p>';
+                return;
             }
 
-            outputEl.innerText = textOutput.trim() || 'No meal records found for this date.';
+            for (const mealType in data) {
+                const rawText = data[mealType].text;
+                
+                // Colorize key tokens for instant visual reading
+                let htmlFormatted = rawText
+                    .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '<div class="summary-header">$1</div>')
+                    .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
+                    .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
+                    .replace(/F-(\d+)/g, '<span class="count-badge tag-fried">Fried Egg: $1</span>')
+                    .replace(/P-(\d+)/g, '<span class="count-badge tag-poached">Poached Egg: $1</span>')
+                    .replace(/M-(\d+)/g, '<span class="count-badge tag-mutton">Mutton: $1</span>')
+                    .replace(/Total- (\d+)/g, '<span class="count-badge tag-total">Total: $1</span>');
+
+                const cardHtml = `
+                    <div class="summary-card-view">
+                        <div>${htmlFormatted}</div>
+                        <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            }
         } catch (err) {
-            outputEl.innerText = 'Error fetching summary data.';
+            container.innerHTML = '<p style="margin-top:15px; color:#dc2626; font-weight:bold;">Error fetching summary data.</p>';
         }
     });
+
+    function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const origText = btn.innerText;
+            btn.innerText = 'Copied to Clipboard! ✓';
+            setTimeout(() => { btn.innerText = origText; }, 2000);
+        });
+    }
 </script>
 
 </body>
