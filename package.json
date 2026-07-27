@@ -1,7 +1,7 @@
 {
   "name": "ccr-meal-system",
   "version": "1.0.0",
-  "description": "Streamlined CCR Meal Tracker",
+  "description": "Lightweight CCR Meal Tracker",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
