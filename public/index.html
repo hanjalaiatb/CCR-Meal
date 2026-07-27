@@ -6,8 +6,12 @@
     <title>CCR Meal System</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
+            /* Customizing active selection to dark slate instead of blue */
+            --primary: #334155;
+            --primary-light: #f1f5f9;
+            --primary-border: #cbd5e1;
+            
+            --action-btn: #2563eb;
             --danger: #ef4444;
             --danger-light: #fef2f2;
             --success: #059669;
@@ -111,23 +115,22 @@
         }
 
         input[type="text"],
-        input[type="date"],
-        select {
+        input[type="date"] {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-main);
             outline: none;
             background-color: #f8fafc;
             transition: all 0.2s ease;
         }
 
-        input:focus, select:focus {
+        input:focus {
             background-color: #fff;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
         }
 
         /* FAST SELECTION OPTION GRIDS */
@@ -159,16 +162,20 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.15s ease;
+            color: var(--text-muted);
         }
 
         .radio-card input[type="radio"] {
-            display: none; /* Hide default radio circle for clean card look */
+            display: none;
         }
 
+        /* Active Selected State using Slate Color */
         .radio-card:has(input:checked) {
             background: var(--primary-light);
-            border-color: #93c5fd;
+            border-color: var(--primary-border);
             color: var(--primary);
+            font-weight: 700;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         button {
@@ -185,7 +192,7 @@
 
         button:active { opacity: 0.85; }
 
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary { background: var(--action-btn); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-success { background: var(--success); color: white; margin-top: 10px; }
         .btn-subtle {
@@ -482,18 +489,22 @@
         if (d3) d3.value = dateVal;
     }
 
-    // Direct foolproof assignment for today's date
-    function getDefaultDate() {
+    // Force date initialization instantly and safely
+    function initDates() {
         const d = new Date();
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const todayStr = `${year}-${month}-${day}`;
+        
+        syncAllDates(todayStr);
     }
 
+    // Run immediately to populate fields before rendering finishes
+    initDates();
+
     window.addEventListener('DOMContentLoaded', () => {
-        const todayStr = getDefaultDate();
-        syncAllDates(todayStr);
+        initDates();
 
         document.getElementById('dateStr').addEventListener('change', (e) => {
             syncAllDates(e.target.value);
@@ -599,12 +610,4 @@
                 showStatus('delete-status', 'Record deleted successfully!', true);
                 document.getElementById('deleteId').value = '';
 
-                syncAllDates(deleteDate);
-                loadSummary(deleteMeal);
-            } else {
-                showStatus('delete-status', data.message || 'Record not found.', false);
-            }
-        } catch (err) {
-            showStatus('delete-status', 'Network connection error.', false);
-        } finally {
-            deleteBtn.disabled = false;
+           
