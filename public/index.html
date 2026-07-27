@@ -203,32 +203,14 @@
             transition: all 0.2s ease;
         }
 
-        /* Breakfast Theme */
-        .theme-Breakfast {
-            border-color: var(--breakfast-border);
-        }
-        .theme-Breakfast .accordion-btn {
-            background: var(--breakfast-bg);
-            color: var(--breakfast-accent);
-        }
+        .theme-Breakfast { border-color: var(--breakfast-border); }
+        .theme-Breakfast .accordion-btn { background: var(--breakfast-bg); color: var(--breakfast-accent); }
 
-        /* Lunch Theme */
-        .theme-Lunch {
-            border-color: var(--lunch-border);
-        }
-        .theme-Lunch .accordion-btn {
-            background: var(--lunch-bg);
-            color: var(--lunch-accent);
-        }
+        .theme-Lunch { border-color: var(--lunch-border); }
+        .theme-Lunch .accordion-btn { background: var(--lunch-bg); color: var(--lunch-accent); }
 
-        /* Dinner Theme */
-        .theme-Dinner {
-            border-color: var(--dinner-border);
-        }
-        .theme-Dinner .accordion-btn {
-            background: var(--dinner-bg);
-            color: var(--dinner-accent);
-        }
+        .theme-Dinner { border-color: var(--dinner-border); }
+        .theme-Dinner .accordion-btn { background: var(--dinner-bg); color: var(--dinner-accent); }
 
         .accordion-btn {
             width: 100%;
@@ -296,7 +278,6 @@
         .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
         .tag-total { background-color: #e2e8f0; color: #334155; }
 
-        /* NESTED HIDDEN COPY SECTION */
         .copy-section-wrapper {
             margin-top: 10px;
             padding-top: 10px;
@@ -437,6 +418,8 @@
 </div>
 
 <script>
+    const rawDataStore = {};
+
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dateStr').value = today;
     document.getElementById('deleteDateStr').value = today;
@@ -457,12 +440,10 @@
         setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    // Auto-fetch summary when date changes
     document.getElementById('summaryDate').addEventListener('change', () => {
         loadSummary();
     });
 
-    // Submit Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
@@ -505,7 +486,6 @@
         }
     });
 
-    // Delete Handler
     document.getElementById('deleteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const deleteBtn = document.getElementById('deleteBtn');
@@ -546,7 +526,6 @@
         }
     });
 
-    // Load and Render Accordion Summary
     async function loadSummary(expandMeal = null) {
         const date = document.getElementById('summaryDate').value;
         const container = document.getElementById('summaryContainer');
@@ -567,6 +546,8 @@
 
                 if (mealData) {
                     const rawText = mealData.text;
+                    rawDataStore[mealType] = rawText;
+
                     const parts = rawText.split("Copy section:");
                     const shiftSection = parts[0] || "";
                     const copySection = parts[1] ? "Copy section:" + parts[1] : "";
@@ -586,8 +567,12 @@
                     contentInnerHtml = `
                         <div>${shiftHtml}</div>
 
-                        <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
+                        <button type="button" class="btn-success" onclick="copyMealText('${mealType}', this)">Copy Format</button>
 
                         ${copySection ? `
                             <div class="copy-section-wrapper">
-                     
+                                <button type="button" class="btn-subtle" onclick="toggleCardSection('copy-box-${mealType}', 'copy-icon-${mealType}')">
+                                    <span>Show Plain Copy Format</span>
+                                    <span class="toggle-icon" id="copy-icon-${mealType}">▼</span>
+                                </button>
+       
