@@ -3,191 +3,122 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 const app = express();
+const PORT = process.env.PORT || 10000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://hanjalaiatb:yourpassword@cluster0.xxxx.mongodb.net/ccr_meals?retryWrites=true&w=majority';
+
+// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 1. MongoDB Connection (Your exact MongoDB Atlas Connection String)
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:L3tsst%40rt@cluster0.0sw1cqb.mongodb.net/mealsApp?appName=Cluster0";
-
+// MongoDB Connection
 mongoose.connect(MONGO_URI)
     .then(() => console.log('Connected to MongoDB Cloud'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// 2. Database Schemas & Models
-const MealSchema = new mongoose.Schema({
-    dateStr: { type: String, required: true }, // Format: "YYYY-MM-DD"
+// Meal Schema & Model
+const mealSchema = new mongoose.Schema({
+    dateStr: { type: String, required: true },
     id: { type: String, required: true },
     shift: { type: String, required: true },
     meal: { type: String, required: true },
-    menuOption: { type: String, default: 'None' }
-});
-
-const HistorySchema = new mongoose.Schema({
-    type: String,
-    id: String,
-    meal: String,
-    date: String,
-    details: String,
-    time: String,
+    menuOption: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 
-const Meal = mongoose.model('Meal', MealSchema);
-const History = mongoose.model('History', HistorySchema);
+const Meal = mongoose.model('Meal', mealSchema);
 
-// Helper function to log actions into history
-async function logHistory(type, id, meal, date, details) {
-    try {
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        await History.create({ type, id, meal, date, details, time });
-    } catch (err) {
-        console.error('History log error:', err);
-    }
-}
-
-// 3. API Routes
-
-// Get entries for a specific date
-app.get('/api/meals', async (req, res) => {
-    try {
-        const { date } = req.query;
-        const query = date ? { dateStr: date } : {};
-        const meals = await Meal.find(query);
-        res.json(meals);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Submit or update a meal entry
+// API: Submit or update a meal entry
 app.post('/api/submit', async (req, res) => {
     try {
         const { dateStr, id, shift, meal, menuOption } = req.body;
-        
-        let existing = await Meal.findOne({ dateStr, id, meal });
-
-        if (existing) {
-            const oldShift = existing.shift;
-            const oldOption = existing.menuOption;
-            existing.shift = shift;
-            existing.menuOption = menuOption;
-            await existing.save();
-
-            await logHistory('MODIFY', id, meal, dateStr, `Shift: ${oldShift}➔${shift} | Option: ${oldOption}➔${menuOption}`);
-        } else {
-            await Meal.create({ dateStr, id, shift, meal, menuOption });
+        if (!dateStr || !id || !shift || !meal || !menuOption) {
+            return res.status(400).json({ success: false, error: 'All fields are required.' });
         }
 
-        res.json({ success: true });
+        // Remove any existing entry for this employee, date, and meal type to prevent duplicates
+        await Meal.deleteOne({ dateStr, id, meal });
+
+        const newMeal = new Meal({ dateStr, id, shift, meal, menuOption });
+        await newMeal.save();
+
+        res.json({ success: true, message: 'Meal entry saved successfully.' });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
 });
 
-// Delete a meal entry
+// API: Delete a meal record
 app.post('/api/delete', async (req, res) => {
     try {
         const { dateStr, id, meal } = req.body;
         const result = await Meal.deleteOne({ dateStr, id, meal });
 
         if (result.deletedCount > 0) {
-            await logHistory('DELETE', id, meal, dateStr, 'Entry deleted from system.');
-            res.json({ success: true });
+            res.json({ success: true, message: 'Record deleted successfully.' });
         } else {
-            res.json({ success: false, message: 'Record not found.' });
+            res.status(404).json({ success: false, message: 'Record not found.' });
         }
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
 });
 
-// Generate formatted summary output
+// API: Get formatted summary for a specific date
 app.get('/api/summary', async (req, res) => {
     try {
         const { date } = req.query;
+        if (!date) return res.status(400).json({ error: 'Date query parameter is required.' });
+
         const entries = await Meal.find({ dateStr: date });
-        const result = {};
+        const shifts = ['Morning', 'Afternoon', 'Night'];
+        const meals = ['Breakfast', 'Lunch', 'Dinner'];
+        const summaryResult = {};
 
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(mealType => {
+        meals.forEach(mealType => {
             const mealEntries = entries.filter(e => e.meal === mealType);
-            if (mealEntries.length === 0) return;
+            if (mealEntries.length === 0) {
+                summaryResult[mealType] = null;
+                return;
+            }
 
-            let output = `${mealType} Summary\n\n`;
-            let allShiftIds = [];
-            let globalCounts = { F: 0, P: 0, M: 0, Total: 0 };
-            let friedIds = [], poachedIds = [], muttonIds = [];
+            let textOutput = `${mealType.toUpperCase()} SUMMARY\n`;
+            let copyList = [];
 
-            ['Morning', 'Afternoon', 'Night'].forEach(shiftType => {
-                const shiftEntries = mealEntries.filter(e => e.shift === shiftType);
-                if (shiftEntries.length === 0) return;
-
-                output += `${shiftType} Shift\n`;
-                let shiftCounts = { F: 0, P: 0, M: 0, Total: shiftEntries.length };
-                let formattedIds = [];
-
-                shiftEntries.forEach(e => {
-                    allShiftIds.push(e.id);
-                    globalCounts.Total++;
-                    let code = '';
-                    if (e.menuOption === 'Fried Egg') { code = '(F)'; shiftCounts.F++; globalCounts.F++; friedIds.push(e.id); }
-                    else if (e.menuOption === 'Poached Egg') { code = '(P)'; shiftCounts.P++; globalCounts.P++; poachedIds.push(e.id); }
-                    else if (e.menuOption === 'Mutton') { code = '(M)'; shiftCounts.M++; globalCounts.M++; muttonIds.push(e.id); }
-                    formattedIds.push(`${e.id}${code}`);
-                });
-
-                output += `ID : ${formattedIds.join(', ')}\n`;
-                let shiftCountParts = [];
-                if (shiftCounts.F > 0) shiftCountParts.push(`F-${shiftCounts.F}`);
-                if (shiftCounts.P > 0) shiftCountParts.push(`P-${shiftCounts.P}`);
-                if (shiftCounts.M > 0) shiftCountParts.push(`M-${shiftCounts.M}`);
-                shiftCountParts.push(`Total- ${shiftCounts.Total}`);
-                output += `Count: ${shiftCountParts.join(', ')}\n\n`;
+            shifts.forEach(shiftName => {
+                const shiftEntries = mealEntries.filter(e => e.shift === shiftName);
+                if (shiftEntries.length > 0) {
+                    textOutput += `${shiftName} Shift\n`;
+                    shiftEntries.forEach(entry => {
+                        const icon = entry.menuOption === 'Fried Egg' ? 'F' : entry.menuOption === 'Poached Egg' ? 'P' : entry.menuOption === 'Mutton' ? 'M' : 'Regular';
+                        textOutput += `ID : ${entry.id} (${icon})\n`;
+                        copyList.push(entry.id);
+                    });
+                }
             });
 
-            let allShiftParts = [];
-            if (globalCounts.F > 0) allShiftParts.push(`F- ${globalCounts.F}`);
-            if (globalCounts.P > 0) allShiftParts.push(`P- ${globalCounts.P}`);
-            if (globalCounts.M > 0) allShiftParts.push(`M- ${globalCounts.M}`);
-            allShiftParts.push(`Total- ${globalCounts.Total}`);
+            // Count calculations
+            const fCount = mealEntries.filter(e => e.menuOption === 'Fried Egg').length;
+            const pCount = mealEntries.filter(e => e.menuOption === 'Poached Egg').length;
+            const mCount = mealEntries.filter(e => e.menuOption === 'Mutton').length;
+            const totalCount = mealEntries.length;
 
-            output += `All Shift\nCount : ${allShiftParts.join(', ')}\n\n`;
+            textOutput += `Count :\n`;
+            if (fCount > 0) textOutput += `F- ${fCount} `;
+            if (pCount > 0) textOutput += `P- ${pCount} `;
+            if (mCount > 0) textOutput += `M- ${mCount} `;
+            textOutput += `Total- ${totalCount}\n\n`;
 
-            const dateParts = date.split('-');
-            const formattedDate = `${parseInt(dateParts[2])}/${parseInt(dateParts[1])}/${dateParts[0]}`;
+            textOutput += `Copy section:\n${copyList.join(', ')}`;
 
-            output += `Copy section:\n`;
-            output += `Date : ${formattedDate}\n`;
-            output += `${mealType} Meal ID from CCR: ${allShiftIds.join(', ')}\n`;
-            output += `Total ID count: ${globalCounts.Total}.\n`;
-
-            if (friedIds.length > 0) output += `Fried Egg count: ${friedIds.length}(${friedIds.join(', ')})\n`;
-            if (poachedIds.length > 0) output += `Poached Egg count: ${poachedIds.length}(${poachedIds.join(', ')})\n`;
-            if (muttonIds.length > 0) output += `Mutton count: ${muttonIds.length}(${muttonIds.join(', ')})\n`;
-
-            result[mealType] = { text: output.trim() };
+            summaryResult[mealType] = { text: textOutput };
         });
 
-        res.json(result);
+        res.json(summaryResult);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Fetch recent audit logs
-app.get('/api/history', async (req, res) => {
-    try {
-        const logs = await History.find().sort({ createdAt: -1 }).limit(10);
-        res.json(logs);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
-
-// Catch-all route to serve the frontend single-page application
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// 4. Start Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
