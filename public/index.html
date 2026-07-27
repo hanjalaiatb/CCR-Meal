@@ -5,100 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR-Meal Tracker</title>
     <style>
+        :root {
+            --breakfast-color: #d97706;
+            --lunch-color: #2563eb;
+            --dinner-color: #7c3aed;
+            --morning-color: #059669;
+            --afternoon-color: #d97706;
+            --night-color: #4f46e5;
+        }
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
             margin: 0;
-            padding: 15px;
+            padding: 10px;
             display: flex;
             justify-content: center;
         }
         .main-container {
             width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            max-width: 450px;
         }
         .card {
             background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 12px;
         }
-        h2 {
-            margin-top: 0;
-            margin-bottom: 5px;
-            color: #1a1a1a;
-            font-size: 22px;
+        h2 { margin: 0 0 4px 0; font-size: 18px; color: #1e293b; }
+        .subtitle { color: #64748b; font-size: 12px; margin-bottom: 10px; }
+        
+        .row-group {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 8px;
+            margin-bottom: 10px;
         }
-        .subtitle {
-            color: #6c757d;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 10px; }
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: #495057;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        input[type="text"], input[type="date"], select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            background: #fff;
-        }
-        .pill-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .pill {
-            flex: 1;
-            min-width: 30%;
-            padding: 10px 8px;
-            text-align: center;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #495057;
-            transition: all 0.2s ease;
-        }
-        .pill.active {
-            background: #e6f4ea;
-            border-color: #137333;
-            color: #137333;
-        }
-        .btn-primary {
-            width: 100%;
-            background-color: #1a73e8;
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            margin-bottom: 4px;
             font-weight: bold;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .btn-row {
+            display: grid;
+            gap: 4px;
+        }
+        .shift-row { grid-template-columns: repeat(3, 1fr); }
+        .meal-row { grid-template-columns: repeat(3, 1fr); }
+        .menu-row { grid-template-columns: repeat(4, 1fr); }
+
+        .option-btn {
+            padding: 8px 2px;
+            border: 1px solid #cbd5e1;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #334155;
             cursor: pointer;
-            margin-top: 10px;
+            text-align: center;
         }
-        .btn-primary:hover {
-            background-color: #1557b0;
-        }
-        .btn-copy {
-            background-color: #137333;
+
+        /* Color coding active selections */
+        .option-btn.selected[data-group="shift"][data-value="Morning"] { background: var(--morning-color); color: white; border-color: var(--morning-color); }
+        .option-btn.selected[data-group="shift"][data-value="Afternoon"] { background: var(--afternoon-color); color: white; border-color: var(--afternoon-color); }
+        .option-btn.selected[data-group="shift"][data-value="Night"] { background: var(--night-color); color: white; border-color: var(--night-color); }
+
+        .option-btn.selected[data-group="meal"][data-value="Breakfast"] { background: var(--breakfast-color); color: white; border-color: var(--breakfast-color); }
+        .option-btn.selected[data-group="meal"][data-value="Lunch"] { background: var(--lunch-color); color: white; border-color: var(--lunch-color); }
+        .option-btn.selected[data-group="meal"][data-value="Dinner"] { background: var(--dinner-color); color: white; border-color: var(--dinner-color); }
+
+        .option-btn.selected[data-group="menu"] { background: #0f172a; color: white; border-color: #0f172a; }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #0284c7;
             color: white;
             padding: 10px;
             border: none;
@@ -106,233 +99,309 @@
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
+            margin-top: 5px;
         }
-        .copy-box {
-            background: #f1f3f4;
-            padding: 12px;
+        .submit-btn:hover { background-color: #0369a1; }
+
+        /* Accordion summaries */
+        .accordion {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 6px;
-            font-family: monospace;
-            font-size: 13px;
-            white-space: pre-line; /* Ensures proper line breaks */
-            color: #202124;
-            margin-top: 10px;
-            border: 1px solid #dadce0;
+            margin-top: 8px;
+            overflow: hidden;
         }
-        #response-message {
-            margin-top: 12px;
-            text-align: center;
+        .accordion-header {
+            padding: 10px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .summary-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
+        .accordion-content {
+            padding: 10px;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            display: none;
+        }
+        .accordion.active .accordion-content { display: block; }
+
+        .copy-box {
+            background: #f1f5f9;
+            border: 1px dashed #94a3b8;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-line;
+            margin: 6px 0;
+            line-height: 1.4;
+        }
+        .action-row { display: flex; gap: 5px; margin-top: 5px; }
+        .mini-btn { flex: 1; padding: 6px; border: none; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; }
+        .btn-copy { background: #10b981; color: white; }
+        .btn-del { background: #ef4444; color: white; max-width: 60px; }
+
+        /* Popup Notification */
+        #popup-modal {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 10px 20px; border-radius: 8px;
+            font-size: 13px; z-index: 1000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
+    <div id="popup-modal">Notification message</div>
+
     <div class="main-container">
-        <!-- Meal Entry Form -->
+        <!-- ENTRY CARD -->
         <div class="card">
             <h2>Meal Entry</h2>
-            <div class="subtitle">Log daily meal counts by employee shift</div>
+            <div class="subtitle">Compact Shift Logger</div>
             
             <form id="meal-form">
-                <div class="form-group">
-                    <label for="employeeId">Employee ID</label>
-                    <input type="text" id="employeeId" placeholder="e.g. 437" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" id="date" required>
+                <div class="row-group">
+                    <div>
+                        <label for="empId">Employee ID</label>
+                        <input type="text" id="empId" placeholder="e.g. 437" required>
+                    </div>
+                    <div>
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>Shift</label>
-                    <div class="pill-group" id="shift-group">
-                        <div class="pill active" data-value="Morning">Morning</div>
-                        <div class="pill" data-value="Afternoon">Afternoon</div>
-                        <div class="pill" data-value="Night">Night</div>
+                    <div class="btn-row shift-row" id="shift-group">
+                        <button type="button" class="option-btn selected" data-group="shift" data-value="Morning">Morning</button>
+                        <button type="button" class="option-btn" data-group="shift" data-value="Afternoon">Afternoon</button>
+                        <button type="button" class="option-btn" data-group="shift" data-value="Night">Night</button>
                     </div>
-                    <input type="hidden" id="shift" value="Morning">
                 </div>
 
                 <div class="form-group">
                     <label>Meal Type</label>
-                    <div class="pill-group" id="mealType-group">
-                        <div class="pill active" data-value="Breakfast">Breakfast</div>
-                        <div class="pill" data-value="Lunch">Lunch</div>
-                        <div class="pill" data-value="Dinner">Dinner</div>
+                    <div class="btn-row meal-row" id="meal-type-group">
+                        <button type="button" class="option-btn selected" data-group="meal" data-value="Breakfast">Breakfast</button>
+                        <button type="button" class="option-btn" data-group="meal" data-value="Lunch">Lunch</button>
+                        <button type="button" class="option-btn" data-group="meal" data-value="Dinner">Dinner</button>
                     </div>
-                    <input type="hidden" id="mealType" value="Breakfast">
                 </div>
 
-                <div class="form-group">
-                    <label>Menu Option</label>
-                    <div class="pill-group" id="menuOption-group">
-                        <div class="pill active" data-value="Regular">Regular</div>
-                        <div class="pill" data-value="Fried (F)">Fried (F)</div>
-                        <div class="pill" data-value="Poached (P)">Poached (P)</div>
-                        <div class="pill" data-value="Mutton (M)">Mutton (M)</div>
+                <!-- Hidden by default since Breakfast is default selected -->
+                <div class="form-group" id="menu-container" style="display:none;">
+                    <label>Menu Option (Lunch/Dinner Only)</label>
+                    <div class="btn-row menu-row" id="menu-option-group">
+                        <button type="button" class="option-btn selected" data-group="menu" data-value="Regular">Regular</button>
+                        <button type="button" class="option-btn" data-group="menu" data-value="Fried">Fried (F)</button>
+                        <button type="button" class="option-btn" data-group="menu" data-value="Poached">Poached (P)</button>
+                        <button type="button" class="option-btn" data-group="menu" data-value="Mutton">Mutton (M)</button>
                     </div>
-                    <input type="hidden" id="menuOption" value="Regular">
                 </div>
 
-                <button type="submit" class="btn-primary" id="save-btn">Save Entry</button>
+                <button type="submit" class="submit-btn" id="save-btn">Save Entry</button>
             </form>
-            <div id="response-message"></div>
         </div>
 
-        <!-- Summary Output -->
+        <!-- SUMMARY CARD -->
         <div class="card">
             <h2>Summary Output</h2>
-            <div class="subtitle">Overview of shift meal totals</div>
-
-            <div class="form-group">
-                <label for="summaryDate">Select Date</label>
+            <div class="row-group" style="margin-top:8px;">
                 <input type="date" id="summaryDate">
+                <button type="button" class="submit-btn" id="load-summary-btn" style="margin-top:0;">Load Summary</button>
             </div>
 
-            <button type="button" class="btn-primary" id="generate-btn" style="background-color: #34a853;">Generate Summary</button>
+            <div id="summaries-container">
+                <!-- Breakfast Accordion -->
+                <div class="accordion" id="acc-Breakfast" style="border-left: 4px solid var(--breakfast-color);">
+                    <div class="accordion-header" onclick="toggleAccordion('acc-Breakfast')">
+                        <span style="color: var(--breakfast-color);">Breakfast Summary</span>
+                        <span id="badge-Breakfast">0 entries</span>
+                    </div>
+                    <div class="accordion-content" id="content-Breakfast"></div>
+                </div>
 
-            <div id="summary-results"></div>
+                <!-- Lunch Accordion -->
+                <div class="accordion" id="acc-Lunch" style="border-left: 4px solid var(--lunch-color); margin-top:6px;">
+                    <div class="accordion-header" onclick="toggleAccordion('acc-Lunch')">
+                        <span style="color: var(--lunch-color);">Lunch Summary</span>
+                        <span id="badge-Lunch">0 entries</span>
+                    </div>
+                    <div class="accordion-content" id="content-Lunch"></div>
+                </div>
+
+                <!-- Dinner Accordion -->
+                <div class="accordion" id="acc-Dinner" style="border-left: 4px solid var(--dinner-color); margin-top:6px;">
+                    <div class="accordion-header" onclick="toggleAccordion('acc-Dinner')">
+                        <span style="color: var(--dinner-color);">Dinner Summary</span>
+                        <span id="badge-Dinner">0 entries</span>
+                    </div>
+                    <div class="accordion-content" id="content-Dinner"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Set today's date on load
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('date').value = today;
         document.getElementById('summaryDate').value = today;
 
-        // Handle interactive option pills
-        function setupPills(groupId, inputId) {
-            const group = document.getElementById(groupId);
-            const input = document.getElementById(inputId);
-            group.querySelectorAll('.pill').forEach(pill => {
-                pill.addEventListener('click', () => {
-                    group.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    input.value = pill.getAttribute('data-value');
+        function showPopup(msg) {
+            const p = document.getElementById('popup-modal');
+            p.textContent = msg;
+            p.style.display = 'block';
+            setTimeout(() => p.style.display = 'none', 4000);
+        }
+
+        function setupButtonGroup(containerId, callback) {
+            const container = document.getElementById(containerId);
+            container.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    if (callback) callback(btn.getAttribute('data-value'));
                 });
             });
         }
 
-        setupPills('shift-group', 'shift');
-        setupPills('mealType-group', 'mealType');
-        setupPills('menuOption-group', 'menuOption');
+        setupButtonGroup('shift-group');
+        setupButtonGroup('meal-type-group', (mealVal) => {
+            const menuContainer = document.getElementById('menu-container');
+            if (mealVal === 'Breakfast') {
+                menuContainer.style.display = 'none';
+            } else {
+                menuContainer.style.display = 'block';
+            }
+        });
+        setupButtonGroup('menu-option-group');
 
-        // Submit Form Handler
+        function getSelected(containerId) {
+            const sel = document.querySelector(`#${containerId} .option-btn.selected`);
+            return sel ? sel.getAttribute('data-value') : '';
+        }
+
+        function toggleAccordion(accId) {
+            document.getElementById(accId).classList.toggle('active');
+        }
+
+        // Form Submission
         document.getElementById('meal-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const saveBtn = document.getElementById('save-btn');
-            const responseMsg = document.getElementById('response-message');
-
-            const payload = {
-                employeeId: document.getElementById('employeeId').value.trim(),
+            const mealType = getSelected('meal-type-group');
+            const data = {
+                empId: document.getElementById('empId').value.trim(),
                 date: document.getElementById('date').value,
-                shift: document.getElementById('shift').value,
-                mealType: document.getElementById('mealType').value,
-                menuOption: document.getElementById('menuOption').value
+                shift: getSelected('shift-group'),
+                mealType: mealType,
+                menuOption: mealType === 'Breakfast' ? 'Regular' : getSelected('menu-option-group')
             };
-
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-            responseMsg.textContent = '';
 
             try {
                 const res = await fetch('/api/meals', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(data)
                 });
                 const result = await res.json();
-
-                if (res.ok && result.success) {
-                    responseMsg.style.color = '#137333';
-                    responseMsg.textContent = 'Meal saved successfully!';
-                    document.getElementById('employeeId').value = '';
-                    loadSummary(); // Refresh summary automatically
+                if (res.ok) {
+                    if (result.modified) {
+                        showPopup(`Updated Entry! Shift or Menu option modified for ID: ${data.empId}`);
+                    } else {
+                        showPopup(`Meal Saved Successfully for ID: ${data.empId}`);
+                    }
+                    document.getElementById('empId').value = '';
+                    loadSummary(data.date, mealType); // Auto load and expand the submitted meal type
                 } else {
-                    responseMsg.style.color = '#c5221f';
-                    responseMsg.textContent = result.message || 'Failed to save.';
+                    showPopup(result.message || 'Error saving entry');
                 }
             } catch (err) {
-                console.error(err);
-                responseMsg.style.color = '#c5221f';
-                responseMsg.textContent = 'Network error occurred.';
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save Entry';
+                showPopup('Network error');
             }
         });
 
-        // Generate Summary Function
-        document.getElementById('generate-btn').addEventListener('click', loadSummary);
+        document.getElementById('load-summary-btn').addEventListener('click', () => {
+            loadSummary(document.getElementById('summaryDate').value);
+        });
 
-        async function loadSummary() {
-            const date = document.getElementById('summaryDate').value;
-            const container = document.getElementById('summary-results');
-            container.innerHTML = '<p style="text-align:center; color:#666; margin-top:15px;">Loading summary...</p>';
-
+        async function loadSummary(targetDate, autoExpandMeal = null) {
             try {
-                const res = await fetch(`/api/meals/summary?date=${date}`);
+                const res = await fetch(`/api/meals?date=${targetDate}`);
                 const data = await res.json();
+                const meals = data.meals || [];
 
-                if (!data.success || data.meals.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#666; margin-top:15px;">No meal entries found for this date.</p>';
-                    return;
-                }
+                ['Breakfast', 'Lunch', 'Dinner'].forEach(type => {
+                    const typeMeals = meals.filter(m => m.mealType === type);
+                    document.getElementById(`badge-${type}`).textContent = `${typeMeals.length} entries`;
 
-                // Group meals by MealType and Shift
-                const grouped = {};
-                data.meals.forEach(meal => {
-                    if (!grouped[meal.mealType]) grouped[meal.mealType] = {};
-                    if (!grouped[meal.mealType][meal.shift]) grouped[meal.mealType][meal.shift] = [];
-                    grouped[meal.mealType][meal.shift].push(meal);
-                });
+                    const contentDiv = document.getElementById(`content-${type}`);
+                    if (typeMeals.length === 0) {
+                        contentDiv.innerHTML = '<div style="color:#888; font-size:12px;">No entries found.</div>';
+                        return;
+                    }
 
-                let html = '';
-                for (const [mealType, shifts] of Object.entries(grouped)) {
-                    html += `<div style="margin-top:20px; border-top:2px solid #e9ecef; padding-top:10px;">`;
-                    html += `<h3 style="color:#1a73e8; margin-bottom:10px;">${mealType} Summary</h3>`;
+                    // Group by shift for cleaner layout or display all formatted IDs
+                    const idsFormatted = typeMeals.map(m => m.menuOption !== 'Regular' ? `${m.empId}(${m.menuOption[0]})` : m.empId).join(', ');
+                    const copyText = `Date : ${targetDate} ${type}\nMeal ID from CCR: ${idsFormatted}\nTotal ID count: ${typeMeals.length}.`;
 
-                    for (const [shift, meals] of Object.entries(shifts)) {
-                        const ids = meals.map(m => m.employeeId).join(', ');
-                        const totalCount = meals.length;
-                        
-                        // Format with line breaks (\n) for clean copying
-                        const copyText = `Date: ${date}\nMeal: ${mealType}\nShift: ${shift}\nEmployee IDs: ${ids}\nTotal Count: ${totalCount}`;
+                    let html = `
+                        <div class="copy-box" id="copy-${type}">${copyText}</div>
+                        <button class="submit-btn" style="padding:6px; font-size:12px; background:#10b981; margin-bottom:8px;" onclick="copyFormat('copy-${type}', this)">Copy Format</button>
+                        <hr style="border:0; border-top:1px solid #e2e8f0; margin:8px 0;">
+                    `;
 
+                    typeMeals.forEach(m => {
                         html += `
-                            <div class="summary-card">
-                                <strong style="color:#202124;">📍 ${shift} Shift</strong><br>
-                                <span style="font-size:13px; color:#5f6368;">IDs: ${ids}</span><br>
-                                <span style="font-size:13px; font-weight:bold; color:#137333;">Total Count: ${totalCount}</span>
-                                
-                                <div class="copy-box">${copyText}</div>
-                                <button type="button" class="btn-copy" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); alert('Copied to clipboard!');">Copy Format</button>
+                            <div style="padding:4px 0; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                                <div><b>ID: ${m.empId}</b> [${m.shift}] ${m.menuOption}</div>
+                                <button class="mini-btn btn-del" onclick="deleteMeal('${m._id}', '${targetDate}')">Delete</button>
                             </div>
                         `;
-                    }
-                    html += `</div>`;
+                    });
+
+                    contentDiv.innerHTML = html;
+                });
+
+                // Auto expand only the meal category that was just inputted/submitted
+                if (autoExpandMeal) {
+                    document.querySelectorAll('.accordion').forEach(acc => acc.classList.remove('active'));
+                    document.getElementById(`acc-${autoExpandMeal}`).classList.add('active');
                 }
-                container.innerHTML = html;
             } catch (err) {
                 console.error(err);
-                container.innerHTML = '<p style="text-align:center; color:#c5221f; margin-top:15px;">Error loading summary.</p>';
             }
         }
 
-        // Load summary on initial page load
-        loadSummary();
+        async function deleteMeal(id, date) {
+            if (!confirm('Are you sure you want to delete this specific ID entry?')) return;
+            try {
+                const res = await fetch(`/api/meals/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showPopup('ID entry deleted successfully.');
+                    loadSummary(date);
+                }
+            } catch (err) {
+                showPopup('Failed to delete entry.');
+            }
+        }
+
+        function copyFormat(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.backgroundColor = '#1e293b';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '#10b981';
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>
