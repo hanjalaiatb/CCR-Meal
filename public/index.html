@@ -10,14 +10,27 @@
             --primary-light: #eff6ff;
             --danger: #ef4444;
             --danger-light: #fef2f2;
-            --success: #10b981;
-            --bg: #f1f5f9;
+            --success: #059669;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
             --radius-lg: 16px;
             --radius-md: 10px;
+
+            /* Meal Themes */
+            --breakfast-accent: #d97706;
+            --breakfast-bg: #fffbeb;
+            --breakfast-border: #fde68a;
+
+            --lunch-accent: #059669;
+            --lunch-bg: #ecfdf5;
+            --lunch-border: #a7f3d0;
+
+            --dinner-accent: #4f46e5;
+            --dinner-bg: #eef2ff;
+            --dinner-border: #c7d2fe;
         }
 
         * {
@@ -149,7 +162,16 @@
 
         .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: #059669; color: white; margin-top: 12px; }
+        .btn-success { background: var(--success); color: white; margin-top: 10px; }
+        .btn-subtle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            text-align: center;
+        }
 
         .collapsible-body {
             display: none;
@@ -172,21 +194,46 @@
         .status-success { background: #dcfce7; color: #15803d; }
         .status-error { background: var(--danger-light); color: #991b1b; }
 
-        /* MODERN ACCORDION SUMMARY */
+        /* THEMED ACCORDIONS */
         .summary-accordion {
-            border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            margin-top: 10px;
+            margin-top: 12px;
             overflow: hidden;
-            background: #fff;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        /* Breakfast Theme */
+        .theme-Breakfast {
+            border-color: var(--breakfast-border);
+        }
+        .theme-Breakfast .accordion-btn {
+            background: var(--breakfast-bg);
+            color: var(--breakfast-accent);
+        }
+
+        /* Lunch Theme */
+        .theme-Lunch {
+            border-color: var(--lunch-border);
+        }
+        .theme-Lunch .accordion-btn {
+            background: var(--lunch-bg);
+            color: var(--lunch-accent);
+        }
+
+        /* Dinner Theme */
+        .theme-Dinner {
+            border-color: var(--dinner-border);
+        }
+        .theme-Dinner .accordion-btn {
+            background: var(--dinner-bg);
+            color: var(--dinner-accent);
         }
 
         .accordion-btn {
             width: 100%;
-            background: #ffffff;
-            color: var(--text-main);
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             padding: 14px 16px;
             text-align: left;
             border: none;
@@ -197,13 +244,11 @@
             cursor: pointer;
         }
 
-        .accordion-btn:hover { background: #f8fafc; }
-
         .accordion-content {
             display: none;
             padding: 16px;
+            background: #ffffff;
             border-top: 1px solid var(--border);
-            background: #fafafa;
         }
 
         .accordion-content.active { display: block; }
@@ -218,10 +263,10 @@
         }
 
         .id-list {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-main);
-            background: #ffffff;
+            background: #f8fafc;
             padding: 8px 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
@@ -251,36 +296,28 @@
         .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
         .tag-total { background-color: #e2e8f0; color: #334155; }
 
+        /* NESTED HIDDEN COPY SECTION */
         .copy-section-wrapper {
-            margin-top: 14px;
-            padding-top: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px dashed var(--border);
-        }
-
-        .copy-section-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 6px;
         }
 
         .copy-text-box {
             white-space: pre-wrap;
-            background: #ffffff;
+            background: #f8fafc;
             color: #334155;
             padding: 12px;
             border-radius: var(--radius-md);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             border: 1px solid var(--border);
             line-height: 1.5;
+            margin-top: 8px;
         }
 
         .toggle-icon {
             font-size: 0.8rem;
-            color: var(--text-muted);
             transition: transform 0.2s ease;
         }
     </style>
@@ -346,12 +383,12 @@
         </form>
     </div>
 
-    <!-- EXPANDABLE MODIFY & DELETE RECORD SECTION -->
+    <!-- EXPANDABLE MODIFY & DELETE RECORD CARD -->
     <div class="card">
         <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
             <div>
-                <h2>Modify / Delete Record</h2>
-                <div class="subtitle">Remove or correct an existing meal log</div>
+                <h2>Modify & Delete Record</h2>
+                <div class="subtitle">Remove or adjust existing entries</div>
             </div>
             <span class="toggle-icon" id="modifyIcon">▼</span>
         </div>
@@ -548,25 +585,9 @@
 
                     contentInnerHtml = `
                         <div>${shiftHtml}</div>
+
+                        <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
+
                         ${copySection ? `
                             <div class="copy-section-wrapper">
-                                <div class="copy-section-title">Copy Section</div>
-                                <div class="copy-text-box">${copySection.trim()}</div>
-                            </div>
-                        ` : ''}
-                        <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
-                    `;
-                } else {
-                    contentInnerHtml = `<p style="color:var(--text-muted); font-size:0.88rem;">No ${mealType} entries recorded for this date.</p>`;
-                }
-
-                const accordionItem = `
-                    <div class="summary-accordion">
-                        <button class="accordion-btn" onclick="toggleAccordion('${mealType}')">
-                            <span>${mealType} Summary</span>
-                            <span class="toggle-icon" id="icon-${mealType}">${isTargetToExpand ? '▲' : '▼'}</span>
-                        </button>
-                        <div id="content-${mealType}" class="accordion-content ${isTargetToExpand ? 'active' : ''}">
-                            ${contentInnerHtml}
-                        </div>
-                    </di
+                     
