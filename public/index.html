@@ -440,7 +440,7 @@
 <script>
     const rawDataStore = {};
 
-    // Helper: Synchronize all date pickers across the app
+    // Helper: Synchronize all date pickers across the app safely
     function syncAllDates(dateVal) {
         if (!dateVal) return;
         document.getElementById('dateStr').value = dateVal;
@@ -448,9 +448,12 @@
         document.getElementById('deleteDateStr').value = dateVal;
     }
 
-    // 1. Initialize default date to TODAY for all pickers
-    const today = new Date().toISOString().split('T')[0];
-    syncAllDates(today);
+    // 1. Initialize default date strictly to Dhaka, Bangladesh (UTC+6) local time
+    const options = { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' };
+    const formatter = new Intl.DateTimeFormat('en-CA', options); 
+    const dhakaToday = formatter.format(new Date());
+    
+    syncAllDates(dhakaToday);
 
     // 2. Automatic date sync listeners across all fields
     document.getElementById('dateStr').addEventListener('change', (e) => {
@@ -596,6 +599,4 @@
 
                     let shiftHtml = shiftSection
                         .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '')
-                        .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
-                        .replace(/(All Shift)/g, '<div class="shift-title" style="color:var(--text-main); margin-top:14px;">🌐 $1</div>')
-                      
+                        .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g,
