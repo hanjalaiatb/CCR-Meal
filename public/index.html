@@ -5,48 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 10px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; }
-        h2 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
-        .sub { font-size: 0.75rem; color: #64748b; margin-bottom: 8px; }
-        
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-        .group { margin-bottom: 8px; }
-        label { display: block; font-size: 0.7rem; font-weight: 600; color: #64748b; margin-bottom: 3px; text-transform: uppercase; }
-        
-        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; background: #f8fafc; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 10px; }
+        h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+        .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .group { margin-bottom: 6px; }
+        label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748b; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.8rem; background: #f8fafc; }
         input:focus, select:focus { border-color: #2563eb; background: #fff; outline: none; }
-
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
         .radio-lbl {
-            display: flex; align-items: center; justify-content: center; padding: 6px 2px;
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;
-            font-size: 0.75rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center;
+            display: flex; align-items: center; justify-content: center; padding: 5px 2px;
+            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 3px;
+            font-size: 0.7rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center;
         }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
-
-        button { width: 100%; padding: 8px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        .radio-lbl.disabled { opacity: 0.3; cursor: not-allowed; background: #f1f5f9; }
+        button { width: 100%; padding: 7px; border: none; border-radius: 3px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; padding: 4px 8px; font-size: 0.75rem; width: auto; margin-top: 6px; }
-
-        .msg { padding: 6px; border-radius: 4px; margin-bottom: 8px; display: none; font-size: 0.8rem; }
+        .btn-green { background: #059669; color: #fff; padding: 3px 6px; font-size: 0.7rem; width: auto; margin-top: 4px; }
+        .msg { padding: 5px; border-radius: 3px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
         .msg-ok { background: #dcfce7; color: #15803d; }
         .msg-err { background: #fee2e2; color: #991b1b; }
-
-        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 6px; overflow: hidden; background: #fff; }
-        .acc-btn { width: 100%; padding: 8px 10px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.85rem; cursor: pointer; text-align: left; }
-        .acc-body { display: none; padding: 8px; border-top: 1px solid #cbd5e1; font-size: 0.8rem; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 3px; margin-top: 5px; overflow: hidden; background: #fff; }
+        .acc-btn { width: 100%; padding: 7px 8px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.8rem; cursor: pointer; text-align: left; }
+        .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.75rem; }
         .acc-body.show { display: block; }
-
-        .shift- blk { margin-top: 6px; padding-top: 4px; border-top: 1px dashed #cbd5e1; }
-        .shift-title { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; margin-bottom: 2px; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; white-space: pre-wrap; line-height: 1.4; margin-top: 4px; }
-        .log-row { font-size: 0.72rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
+        .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dashed #cbd5e1; }
+        .shift-title { font-weight: 700; font-size: 0.73rem; text-transform: uppercase; margin-bottom: 1px; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
+        .log-row { font-size: 0.68rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
@@ -57,20 +50,18 @@
         <h2>Meal Entry</h2>
         <div class="sub">Log daily meal counts</div>
         <div id="s-msg" class="msg"></div>
-
         <form id="f-meal">
             <div class="row">
                 <div class="group" style="margin-bottom:0;">
                     <label>Employee ID</label>
-                    <input type="text" id="e-id" placeholder="e.g. 437" required>
+                    <input type="text" id="e-id" required>
                 </div>
                 <div class="group" style="margin-bottom:0;">
                     <label>Date</label>
                     <input type="date" id="e-date" required>
                 </div>
             </div>
-
-            <div class="group" style="margin-top:8px;">
+            <div class="group" style="margin-top:6px;">
                 <label>Shift</label>
                 <div class="grid-3" id="g-shift">
                     <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
@@ -78,7 +69,6 @@
                     <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
             </div>
-
             <div class="group">
                 <label>Meal Type</label>
                 <div class="grid-3" id="g-meal">
@@ -87,17 +77,15 @@
                     <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
                 </div>
             </div>
-
             <div class="group">
                 <label>Menu Option</label>
                 <div class="grid-4" id="g-menu">
-                    <label class="radio-lbl active"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Fried Egg">Fried</label>
-                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Poached Egg">Poached</label>
-                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Mutton">Mutton</label>
+                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
+                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
+                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
-
             <button type="submit" class="btn-blue" id="btn-save">Save Entry</button>
         </form>
     </div>
@@ -107,7 +95,6 @@
         <h2>Delete Specific Record</h2>
         <div class="sub">Remove entry by Date, Meal, and ID</div>
         <div id="d-msg" class="msg"></div>
-
         <form id="f-del">
             <div class="row">
                 <div class="group" style="margin-bottom:0;">
@@ -123,14 +110,12 @@
                     </select>
                 </div>
             </div>
-
-            <div class="group" style="margin-top:8px;">
+            <div class="group" style="margin-top:6px;">
                 <label>Select ID</label>
                 <select id="d-id-select" required>
                     <option value="">-- Choose ID --</option>
                 </select>
             </div>
-
             <button type="submit" class="btn-red">Delete Record</button>
         </form>
     </div>
@@ -138,7 +123,7 @@
     <!-- 3. SUMMARY -->
     <div class="card">
         <h2>Summary Output</h2>
-        <div class="group" style="margin-top:6px;">
+        <div class="group" style="margin-top:5px;">
             <label>Select Date</label>
             <input type="date" id="s-date">
         </div>
@@ -149,8 +134,8 @@
     <div class="card">
         <h2>Activity Audit Log</h2>
         <div class="sub">Tracks updates & deletions</div>
-        <div id="log-box" style="max-height:100px; overflow-y:auto;">
-            <div style="font-size:0.75rem; color:#64748b;">No actions recorded yet.</div>
+        <div id="log-box" style="max-height:80px; overflow-y:auto;">
+            <div style="font-size:0.7rem; color:#64748b;">No actions recorded yet.</div>
         </div>
     </div>
 </div>
@@ -163,6 +148,7 @@
         const c = document.getElementById(groupId);
         c.querySelectorAll('input').forEach(inp => {
             inp.addEventListener('change', e => {
+                if (e.target.disabled) return;
                 c.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
                 e.target.closest('.radio-lbl').classList.add('active');
             });
@@ -178,6 +164,33 @@
         bindRadios('g-shift');
         bindRadios('g-meal');
         bindRadios('g-menu');
+
+        document.querySelectorAll('input[name="meal"]').forEach(inp => {
+            inp.addEventListener('change', e => {
+                const isBreakfast = e.target.value === 'Breakfast';
+                const friedInp = document.querySelector('input[value="Fried Egg"]');
+                const poachedInp = document.querySelector('input[value="Poached Egg"]');
+                const muttonInp = document.querySelector('input[value="Mutton"]');
+                const regInp = document.querySelector('input[value="Regular"]');
+
+                [friedInp, poachedInp, muttonInp].forEach(el => {
+                    el.disabled = isBreakfast;
+                    const lbl = el.closest('.radio-lbl');
+                    if (isBreakfast) {
+                        lbl.classList.add('disabled');
+                        lbl.classList.remove('active');
+                    } else {
+                        lbl.classList.remove('disabled');
+                    }
+                });
+
+                if (isBreakfast) {
+                    regInp.checked = true;
+                    document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
+                    document.getElementById('lbl-reg').classList.add('active');
+                }
+            });
+        });
 
         loadData('Breakfast');
 
@@ -196,7 +209,7 @@
         el.innerText = text;
         el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 2500);
+        setTimeout(() => el.style.display = 'none', 2000);
     }
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
@@ -217,7 +230,7 @@
         const data = await res.json();
         if (res.ok) {
             const action = data.isNew ? 'Added' : 'Updated';
-            showMsg('s-msg', `Saved successfully!`, true);
+            showMsg('s-msg', 'Saved successfully!', true);
             addLog(`${action}: ID ${payload.id} (${payload.meal})`);
             document.getElementById('e-id').value = '';
             document.getElementById('s-date').value = payload.dateStr;
@@ -267,7 +280,7 @@
         records.filter(r => r.dateStr === dDate && r.meal === dMeal).forEach(r => {
             const opt = document.createElement('option');
             opt.value = r.id;
-            opt.textContent = `ID: ${r.id} (${r.shift} - ${r.menuOption})`;
+            opt.textContent = r.id;
             sel.appendChild(opt);
         });
     }
@@ -303,25 +316,25 @@
 
                         const counts = {};
                         sRecs.forEach(r => {
-                            let k = 'Regular';
-                            if (r.menuOption === 'Poached Egg') k = 'P';
-                            else if (r.menuOption === 'Fried Egg') k = 'F';
-                            else if (r.menuOption === 'Mutton') k = 'M';
-                            counts[k] = (counts[k] || 0) + 1;
+                            if (r.menuOption === 'Poached Egg') counts['P'] = (counts['P'] || 0) + 1;
+                            else if (r.menuOption === 'Fried Egg') counts['F'] = (counts['F'] || 0) + 1;
+                            else if (r.menuOption === 'Mutton') counts['M'] = (counts['M'] || 0) + 1;
                         });
-                        const countStr = Object.entries(counts).map(([k,v]) => `${k}-${v}`).join(', ');
+                        
+                        let countParts = Object.entries(counts).map(([k,v]) => `${k}-${v}`);
+                        countParts.push(`Total-${sRecs.length}`);
+                        const countStr = countParts.join(', ');
 
                         html += `
                             <div class="shift-blk">
                                 <div class="shift-title">${shift} shift</div>
                                 <div>Meal ID: ${idsShort}</div>
-                                <div>Meal count: ${countStr}, Total-${sRecs.length}</div>
+                                <div>Meal count: ${countStr}</div>
                             </div>
                         `;
                     }
                 });
 
-                // WhatsApp block
                 let waIds = mRecs.map(r => r.id).join(', ');
                 let wa = `${meal} Meal from CCR on ${dateStr}\nID: ${waIds}\nTotal Meal Count: ${mRecs.length}`;
                 
@@ -331,8 +344,8 @@
                 });
 
                 html += `
-                    <div style="margin-top:8px; border-top:1px solid #cbd5e1; padding-top:6px;">
-                        <div style="font-size:0.7rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>
+                    <div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">
+                        <div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>
                         <div class="txt-pre" id="wa-${meal}">${wa}</div>
                         <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText).then(()=>alert('Copied!'))">Copy WhatsApp Format</button>
                     </div>
@@ -353,7 +366,7 @@
     function addLog(text) {
         const time = new Date().toLocaleTimeString();
         logs.unshift(`[${time}] ${text}`);
-        if (logs.length > 10) logs.pop();
+        if (logs.length > 8) logs.pop();
         document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
     }
 </script>
