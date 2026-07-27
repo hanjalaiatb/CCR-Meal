@@ -152,7 +152,6 @@
 </div>
 
 <script>
-    let records = [];
     let logs = [];
 
     function bindRadios(groupId) {
@@ -203,16 +202,19 @@
             });
         });
 
-        loadData('Breakfast');
+        loadSummaryData('Breakfast');
+        updateDelDropdown();
 
         document.getElementById('e-date').addEventListener('input', e => {
             document.getElementById('s-date').value = e.target.value;
             document.getElementById('d-date').value = e.target.value;
-            loadData();
+            loadSummaryData();
+            updateDelDropdown();
         });
-        document.getElementById('s-date').addEventListener('input', () => loadData());
-        document.getElementById('d-date').addEventListener('input', updateDelDropdown);
-        document.getElementById('d-meal').addEventListener('change', updateDelDropdown);
+        
+        document.getElementById('s-date').addEventListener('input', () => loadSummaryData());
+        document.getElementById('d-date').addEventListener('input', () => updateDelDropdown());
+        document.getElementById('d-meal').addEventListener('change', () => updateDelDropdown());
     });
 
     function showMsg(id, text, ok) {
@@ -246,7 +248,8 @@
             document.getElementById('e-id').value = '';
             document.getElementById('s-date').value = payload.dateStr;
             document.getElementById('d-date').value = payload.dateStr;
-            loadData(payload.meal);
+            loadSummaryData(payload.meal);
+            updateDelDropdown();
         } else {
             showMsg('s-msg', data.error || 'Error', false);
         }
@@ -268,27 +271,31 @@
         if (res.ok && data.success) {
             showMsg('d-msg', `Deleted ID ${id}`, true);
             addLog(`Deleted: ID ${id} (${meal})`);
-            loadData(meal);
+            loadSummaryData();
+            updateDelDropdown();
         } else {
             showMsg('d-msg', 'Delete failed', false);
         }
     });
 
-    async function loadData(openMeal = null) {
+    async function loadSummaryData(openMeal = null) {
         const dateStr = document.getElementById('s-date').value;
         const res = await fetch(`/api/summary?dateStr=${dateStr}`);
         const data = await res.json();
-        records = data.records || [];
-        renderSummary(dateStr, openMeal);
-        updateDelDropdown();
+        renderSummary(dateStr, data.records || [], openMeal);
     }
 
-    function updateDelDropdown() {
+    async function updateDelDropdown() {
         const dDate = document.getElementById('d-date').value;
         const dMeal = document.getElementById('d-meal').value;
         const sel = document.getElementById('d-id-select');
+        
+        const res = await fetch(`/api/summary?dateStr=${dDate}`);
+        const data = await res.json();
+        const dayRecords = data.records || [];
+
         sel.innerHTML = '<option value="">None</option>';
-        records.filter(r => r.dateStr === dDate && r.meal === dMeal).forEach(r => {
+        dayRecords.filter(r => r.meal === dMeal).forEach(r => {
             const opt = document.createElement('option');
             opt.value = r.id;
             opt.textContent = r.id;
@@ -296,7 +303,7 @@
         });
     }
 
-    function renderSummary(dateStr, openMeal) {
+    function renderSummary(dateStr, records, openMeal) {
         const box = document.getElementById('summary-box');
         let html = '';
 
