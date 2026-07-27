@@ -85,7 +85,6 @@
             margin-top: 2px;
         }
 
-        /* 2-COLUMN GRID LAYOUT */
         .form-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -131,7 +130,15 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
 
-        .radio-grid {
+        /* FAST SELECTION OPTION GRIDS */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .option-grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
@@ -141,15 +148,21 @@
         .radio-card {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
+            justify-content: center;
+            text-align: center;
+            gap: 6px;
+            padding: 10px 8px;
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            font-size: 0.88rem;
-            font-weight: 500;
+            font-size: 0.82rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.15s ease;
+        }
+
+        .radio-card input[type="radio"] {
+            display: none; /* Hide default radio circle for clean card look */
         }
 
         .radio-card:has(input:checked) {
@@ -339,30 +352,42 @@
                 </div>
             </div>
 
-            <!-- Row 2: Shift & Meal -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="shift">Shift</label>
-                    <select id="shift" required>
-                        <option value="Morning">Morning Shift</option>
-                        <option value="Afternoon">Afternoon Shift</option>
-                        <option value="Night">Night Shift</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="meal">Meal Type</label>
-                    <select id="meal" required>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
+            <!-- Fast Selection: Shift -->
+            <div class="form-group">
+                <label>Shift</label>
+                <div class="option-grid">
+                    <label class="radio-card">
+                        <input type="radio" name="shift" value="Morning" checked> Morning
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="shift" value="Afternoon"> Afternoon
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="shift" value="Night"> Night
+                    </label>
                 </div>
             </div>
 
+            <!-- Fast Selection: Meal Type -->
+            <div class="form-group">
+                <label>Meal Type</label>
+                <div class="option-grid">
+                    <label class="radio-card">
+                        <input type="radio" name="meal" value="Breakfast" checked> Breakfast
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="meal" value="Lunch"> Lunch
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="meal" value="Dinner"> Dinner
+                    </label>
+                </div>
+            </div>
+
+            <!-- Fast Selection: Menu Option -->
             <div class="form-group">
                 <label>Menu Option</label>
-                <div class="radio-grid">
+                <div class="option-grid-2">
                     <label class="radio-card">
                         <input type="radio" name="menuOption" value="None" checked> Regular
                     </label>
@@ -395,7 +420,7 @@
         <div id="summaryContainer"></div>
     </div>
 
-    <!-- 3. EXPANDABLE MODIFY & DELETE RECORD CARD (PLACED AT LAST) -->
+    <!-- 3. EXPANDABLE MODIFY & DELETE RECORD CARD -->
     <div class="card">
         <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
             <div>
@@ -422,12 +447,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="deleteMeal">Meal Type</label>
-                    <select id="deleteMeal" required>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
+                    <label>Meal Type to Delete</label>
+                    <div class="option-grid">
+                        <label class="radio-card">
+                            <input type="radio" name="deleteMeal" value="Breakfast" checked> Breakfast
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="deleteMeal" value="Lunch"> Lunch
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="deleteMeal" value="Dinner"> Dinner
+                        </label>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-danger" id="deleteBtn">Delete Record</button>
@@ -451,35 +482,19 @@
         if (d3) d3.value = dateVal;
     }
 
-    function getDhakaToday() {
-        try {
-            const d = new Date();
-            const formatter = new Intl.DateTimeFormat('en-US', {
-                timeZone: 'Asia/Dhaka',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-            const parts = formatter.formatToParts(d);
-            const year = parts.find(p => p.type === 'year').value;
-            const month = parts.find(p => p.type === 'month').value;
-            const day = parts.find(p => p.type === 'day').value;
-            return `${year}-${month}-${day}`;
-        } catch (e) {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+    // Direct foolproof assignment for today's date
+    function getDefaultDate() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
-    // Run strictly after the DOM has fully parsed the inputs
     window.addEventListener('DOMContentLoaded', () => {
-        const todayStr = getDhakaToday();
+        const todayStr = getDefaultDate();
         syncAllDates(todayStr);
 
-        // Attach listeners once fields are verified
         document.getElementById('dateStr').addEventListener('change', (e) => {
             syncAllDates(e.target.value);
             loadSummary();
@@ -495,7 +510,6 @@
             loadSummary();
         });
 
-        // Initial summary load
         loadSummary();
     });
 
@@ -521,13 +535,13 @@
         submitBtn.disabled = true;
         submitBtn.innerText = 'Saving...';
 
-        const selectedMeal = document.getElementById('meal').value;
+        const selectedMeal = document.querySelector('input[name="meal"]:checked').value;
         const entryDate = document.getElementById('dateStr').value;
 
         const payload = {
             dateStr: entryDate,
             id: document.getElementById('employeeId').value.trim(),
-            shift: document.getElementById('shift').value,
+            shift: document.querySelector('input[name="shift"]:checked').value,
             meal: selectedMeal,
             menuOption: document.querySelector('input[name="menuOption"]:checked').value
         };
@@ -564,7 +578,7 @@
         deleteBtn.disabled = true;
         deleteBtn.innerText = 'Deleting...';
 
-        const deleteMeal = document.getElementById('deleteMeal').value;
+        const deleteMeal = document.querySelector('input[name="deleteMeal"]:checked').value;
         const deleteDate = document.getElementById('deleteDateStr').value;
 
         const payload = {
@@ -594,18 +608,3 @@
             showStatus('delete-status', 'Network connection error.', false);
         } finally {
             deleteBtn.disabled = false;
-            deleteBtn.innerText = 'Delete Record';
-        }
-    });
-
-    // Load and Render Accordion Summary
-    async function loadSummary(expandMeal = null) {
-        const dateInput = document.getElementById('summaryDate');
-        if (!dateInput || !dateInput.value) return;
-        const date = dateInput.value;
-        
-        const container = document.getElementById('summaryContainer');
-        container.innerHTML = '<p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Updating summary...</p>';
-
-        try {
-        
