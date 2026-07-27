@@ -9,6 +9,7 @@ app.use(express.static('public'));
 const DATA_FILE = path.join('/tmp', 'meals.json');
 const HISTORY_FILE = path.join('/tmp', 'history.json');
 
+// Helper Functions
 function getData() {
     try {
         if (!fs.existsSync(DATA_FILE)) return {};
@@ -36,6 +37,12 @@ function logHistory(type, id, meal, date, details) {
     } catch (e) {}
 }
 
+// Serve Frontend Landing Page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// API Routes
 app.get('/api/check-entry', (req, res) => {
     const { date, id, meal } = req.query;
     const fileData = getData();
