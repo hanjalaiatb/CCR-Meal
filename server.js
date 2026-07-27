@@ -11,8 +11,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the public folder (or root if files are there)
-app.use(express.static(__dirname));
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI;
