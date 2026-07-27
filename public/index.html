@@ -448,12 +448,32 @@
         document.getElementById('deleteDateStr').value = dateVal;
     }
 
-    // 1. Initialize default date strictly to Dhaka, Bangladesh (UTC+6) local time
-    const options = { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' };
-    const formatter = new Intl.DateTimeFormat('en-CA', options); 
-    const dhakaToday = formatter.format(new Date());
+    // 1. Bulletproof date initialization for Dhaka, Bangladesh (Asia/Dhaka)
+    function getDhakaToday() {
+        try {
+            const d = new Date();
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            const parts = formatter.formatToParts(d);
+            const year = parts.find(p => p.type === 'year').value;
+            const month = parts.find(p => p.type === 'month').value;
+            const day = parts.find(p => p.type === 'day').value;
+            return `${year}-${month}-${day}`;
+        } catch (e) {
+            // Fallback if timezone string is unsupported
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+    }
     
-    syncAllDates(dhakaToday);
+    syncAllDates(getDhakaToday());
 
     // 2. Automatic date sync listeners across all fields
     document.getElementById('dateStr').addEventListener('change', (e) => {
@@ -584,19 +604,4 @@
             const allMeals = ['Breakfast', 'Lunch', 'Dinner'];
 
             allMeals.forEach(mealType => {
-                const mealData = data[mealType];
-                const isTargetToExpand = expandMeal === mealType;
-                
-                let contentInnerHtml = '';
-
-                if (mealData) {
-                    const rawText = mealData.text;
-                    rawDataStore[mealType] = rawText;
-
-                    const parts = rawText.split("Copy section:");
-                    const shiftSection = parts[0] || "";
-                    const copySection = parts[1] ? "Copy section:" + parts[1] : "";
-
-                    let shiftHtml = shiftSection
-                        .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '')
-                        .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g,
+            
