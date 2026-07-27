@@ -32,15 +32,21 @@ app.post('/api/submit', async (req, res) => {
         }
 
         const existing = await Meal.findOne({ dateStr, id, meal });
-        const isNew = !existing;
 
-        const updatedRecord = await Meal.findOneAndUpdate(
-            { dateStr, id, meal },
-            { shift, menuOption },
-            { new: true, upsert: true, setDefaultsOnInsert: true }
-        );
+        if (!existing) {
+            const newRecord = await Meal.create({ dateStr, id, shift, meal, menuOption });
+            return res.status(200).json({ success: true, status: 'added', data: newRecord });
+        }
 
-        res.status(200).json({ success: true, isNew, data: updatedRecord });
+        if (existing.shift === shift && existing.menuOption === menuOption) {
+            return res.status(200).json({ success: true, status: 'duplicate', data: existing });
+        }
+
+        existing.shift = shift;
+        existing.menuOption = menuOption;
+        const updatedRecord = await existing.save();
+
+        res.status(200).json({ success: true, status: 'modified', data: updatedRecord });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
@@ -50,7 +56,7 @@ app.get('/api/summary', async (req, res) => {
     try {
         const { dateStr } = req.query;
         if (!dateStr) return res.status(400).json({ success: false, error: 'Date required' });
-        const records = await Meal.find({ dateStr });
+        const records = await Meal.find({ dateStr }).lean();
         res.status(200).json({ success: true, records });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
