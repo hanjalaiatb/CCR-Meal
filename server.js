@@ -8,14 +8,11 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Connection (uses environment variable MONGO_URI or local fallback)
+// MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ccr-meal-tracker';
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Database connection error:', err));
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Database connection error:', err));
 
 // Meal Schema Definition
 const mealSchema = new mongoose.Schema({
@@ -26,12 +23,12 @@ const mealSchema = new mongoose.Schema({
     menuOption: { type: String, required: true, default: 'Regular' }
 });
 
-// Composite unique index to prevent duplicate employee entries for the same meal on the same date, enabling seamless updates
+// Ensure a unique entry per employee, date, and meal type to handle updates seamlessly
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 
 const Meal = mongoose.model('Meal', mealSchema);
 
-// 1. Submit or Update Entry Route
+// Submit or Update Entry Route
 app.post('/api/submit', async (req, res) => {
     try {
         const { dateStr, id, shift, meal, menuOption } = req.body;
@@ -40,7 +37,6 @@ app.post('/api/submit', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
 
-        // Use findOneAndUpdate with upsert to safely insert or update modified options (e.g., changing from Regular to Fried)
         const updatedRecord = await Meal.findOneAndUpdate(
             { dateStr, id, meal },
             { shift, menuOption },
@@ -54,7 +50,7 @@ app.post('/api/submit', async (req, res) => {
     }
 });
 
-// 2. Fetch Summary Route for a Specific Date
+// Fetch Summary Route
 app.get('/api/summary', async (req, res) => {
     try {
         const { dateStr } = req.query;
@@ -70,7 +66,7 @@ app.get('/api/summary', async (req, res) => {
     }
 });
 
-// 3. Delete Specific Record Route
+// Delete Record Route
 app.post('/api/delete', async (req, res) => {
     try {
         const { id, dateStr, meal } = req.body;
