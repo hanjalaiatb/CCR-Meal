@@ -85,13 +85,25 @@
             margin-top: 2px;
         }
 
+        /* 2-COLUMN GRID LAYOUT */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
         .form-group {
             margin-top: 14px;
         }
 
+        .form-row .form-group {
+            margin-top: 0;
+        }
+
         label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 6px;
@@ -103,10 +115,10 @@
         input[type="date"],
         select {
             width: 100%;
-            padding: 12px 14px;
+            padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-main);
             outline: none;
             background-color: #f8fafc;
@@ -134,7 +146,7 @@
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -307,39 +319,45 @@
 
 <div class="container">
 
-    <!-- MEAL ENTRY CARD -->
+    <!-- 1. MEAL ENTRY CARD -->
     <div class="card">
         <h2>Meal Entry</h2>
         <div class="subtitle">Log daily meal counts by employee shift</div>
         <div id="submit-status" class="status-msg"></div>
 
         <form id="mealForm">
-            <div class="form-group">
-                <label for="dateStr">Date</label>
-                <input type="date" id="dateStr" required>
+            <!-- Row 1: ID & Date -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+                    <input type="text" id="employeeId" placeholder="e.g. 437" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateStr">Date</label>
+                    <input type="date" id="dateStr" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="employeeId">Employee ID</label>
-                <input type="text" id="employeeId" placeholder="e.g. 437" required>
-            </div>
+            <!-- Row 2: Shift & Meal -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="shift">Shift</label>
+                    <select id="shift" required>
+                        <option value="Morning">Morning Shift</option>
+                        <option value="Afternoon">Afternoon Shift</option>
+                        <option value="Night">Night Shift</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="shift">Shift</label>
-                <select id="shift" required>
-                    <option value="Morning">Morning Shift</option>
-                    <option value="Afternoon">Afternoon Shift</option>
-                    <option value="Night">Night Shift</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="meal">Meal Type</label>
-                <select id="meal" required>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                </select>
+                <div class="form-group">
+                    <label for="meal">Meal Type</label>
+                    <select id="meal" required>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -364,7 +382,20 @@
         </form>
     </div>
 
-    <!-- EXPANDABLE MODIFY & DELETE RECORD CARD -->
+    <!-- 2. SUMMARY OUTPUT SECTION -->
+    <div class="card">
+        <h2>Summary Output</h2>
+        <div class="subtitle">Overview of shift meal totals</div>
+
+        <div class="form-group">
+            <label for="summaryDate">Select Date</label>
+            <input type="date" id="summaryDate">
+        </div>
+
+        <div id="summaryContainer"></div>
+    </div>
+
+    <!-- 3. EXPANDABLE MODIFY & DELETE RECORD CARD (PLACED AT LAST) -->
     <div class="card">
         <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
             <div>
@@ -378,14 +409,16 @@
             <div id="delete-status" class="status-msg"></div>
 
             <form id="deleteForm">
-                <div class="form-group">
-                    <label for="deleteDateStr">Date</label>
-                    <input type="date" id="deleteDateStr" required>
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="deleteId">Employee ID</label>
+                        <input type="text" id="deleteId" placeholder="e.g. 437" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="deleteId">Employee ID to Delete</label>
-                    <input type="text" id="deleteId" placeholder="e.g. 437" required>
+                    <div class="form-group">
+                        <label for="deleteDateStr">Date</label>
+                        <input type="date" id="deleteDateStr" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -402,28 +435,27 @@
         </div>
     </div>
 
-    <!-- SUMMARY SECTION -->
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div class="subtitle">Overview of shift meal totals</div>
-
-        <div class="form-group">
-            <label for="summaryDate">Select Date</label>
-            <input type="date" id="summaryDate">
-        </div>
-
-        <div id="summaryContainer"></div>
-    </div>
-
 </div>
 
 <script>
     const rawDataStore = {};
 
+    // 1. Initialize default dates to TODAY
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dateStr').value = today;
     document.getElementById('deleteDateStr').value = today;
     document.getElementById('summaryDate').value = today;
+
+    // 2. Sync meal entry date change -> summary date automatically
+    document.getElementById('dateStr').addEventListener('change', (e) => {
+        const selectedDate = e.target.value;
+        document.getElementById('summaryDate').value = selectedDate;
+        loadSummary();
+    });
+
+    document.getElementById('summaryDate').addEventListener('change', () => {
+        loadSummary();
+    });
 
     function toggleCardSection(bodyId, iconId) {
         const body = document.getElementById(bodyId);
@@ -440,10 +472,7 @@
         setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    document.getElementById('summaryDate').addEventListener('change', () => {
-        loadSummary();
-    });
-
+    // Meal Submit Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
@@ -486,6 +515,7 @@
         }
     });
 
+    // Delete Record Handler
     document.getElementById('deleteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const deleteBtn = document.getElementById('deleteBtn');
@@ -526,6 +556,7 @@
         }
     });
 
+    // Load and Render Accordion Summary
     async function loadSummary(expandMeal = null) {
         const date = document.getElementById('summaryDate').value;
         const container = document.getElementById('summaryContainer');
@@ -558,21 +589,4 @@
                         .replace(/(All Shift)/g, '<div class="shift-title" style="color:var(--text-main); margin-top:14px;">🌐 $1</div>')
                         .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
                         .replace(/F-\s*(\d+)/g, '<span class="count-badge tag-fried">F- $1</span>')
-                        .replace(/P-\s*(\d+)/g, '<span class="count-badge tag-poached">P- $1</span>')
-                        .replace(/M-\s*(\d+)/g, '<span class="count-badge tag-mutton">M- $1</span>')
-                        .replace(/Total-\s*(\d+)/g, '<span class="count-badge tag-total">Total: $1</span>')
-                        .replace(/Count\s*:/g, '<div class="count-line">Count: ')
-                        .replace(/\n\n/g, '</div>\n');
-
-                    contentInnerHtml = `
-                        <div>${shiftHtml}</div>
-
-                        <button type="button" class="btn-success" onclick="copyMealText('${mealType}', this)">Copy Format</button>
-
-                        ${copySection ? `
-                            <div class="copy-section-wrapper">
-                                <button type="button" class="btn-subtle" onclick="toggleCardSection('copy-box-${mealType}', 'copy-icon-${mealType}')">
-                                    <span>Show Plain Copy Format</span>
-                                    <span class="toggle-icon" id="copy-icon-${mealType}">▼</span>
-                                </button>
-       
+                        .replace(/P-\s*(\d+)/g, '<
