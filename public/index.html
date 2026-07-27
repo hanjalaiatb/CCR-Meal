@@ -166,16 +166,10 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Robust local date extraction (YYYY-MM-DD format using local time components)
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const localDateStr = `${year}-${month}-${day}`;
-
-        document.getElementById('e-date').value = localDateStr;
-        document.getElementById('s-date').value = localDateStr;
-        document.getElementById('d-date').value = localDateStr;
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('e-date').value = today;
+        document.getElementById('s-date').value = today;
+        document.getElementById('d-date').value = today;
 
         bindRadios('g-shift');
         bindRadios('g-meal');
@@ -416,4 +410,11 @@
     }
 
     function addLog(text) {
-        const time = new Date().to
+        const time = new Date().toLocaleTimeString();
+        logs.unshift(`[${time}] ${text}`);
+        if (logs.length > 15) logs.pop();
+        document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
+    }
+</script>
+</body>
+</html>
