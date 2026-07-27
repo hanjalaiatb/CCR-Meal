@@ -7,105 +7,240 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f8f9fa;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
         }
-        .container {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .main-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         h2 {
             margin-top: 0;
-            color: #333;
-            text-align: center;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+            font-size: 22px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #495057;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        input, select, textarea {
+        input[type="text"], input[type="date"], select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            background-color: #28a745;
-            color: white;
             padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background: #fff;
         }
-        button:hover {
-            background-color: #218838;
+        .pill-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            flex: 1;
+            min-width: 30%;
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+        .pill.active {
+            background: #e6f4ea;
+            border-color: #137333;
+            color: #137333;
+        }
+        .btn-primary {
+            width: 100%;
+            background-color: #1a73e8;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #1557b0;
+        }
+        .btn-copy {
+            background-color: #137333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .copy-box {
+            background: #f1f3f4;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-line; /* Ensures proper line breaks */
+            color: #202124;
+            margin-top: 10px;
+            border: 1px solid #dadce0;
         }
         #response-message {
-            margin-top: 15px;
+            margin-top: 12px;
             text-align: center;
             font-weight: bold;
+            font-size: 14px;
+        }
+        .summary-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>CCR-Meal Entry</h2>
-        <form id="meal-form">
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" required>
-            </div>
+    <div class="main-container">
+        <!-- Meal Entry Form -->
+        <div class="card">
+            <h2>Meal Entry</h2>
+            <div class="subtitle">Log daily meal counts by employee shift</div>
+            
+            <form id="meal-form">
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+                    <input type="text" id="employeeId" placeholder="e.g. 437" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Shift</label>
+                    <div class="pill-group" id="shift-group">
+                        <div class="pill active" data-value="Morning">Morning</div>
+                        <div class="pill" data-value="Afternoon">Afternoon</div>
+                        <div class="pill" data-value="Night">Night</div>
+                    </div>
+                    <input type="hidden" id="shift" value="Morning">
+                </div>
+
+                <div class="form-group">
+                    <label>Meal Type</label>
+                    <div class="pill-group" id="mealType-group">
+                        <div class="pill active" data-value="Breakfast">Breakfast</div>
+                        <div class="pill" data-value="Lunch">Lunch</div>
+                        <div class="pill" data-value="Dinner">Dinner</div>
+                    </div>
+                    <input type="hidden" id="mealType" value="Breakfast">
+                </div>
+
+                <div class="form-group">
+                    <label>Menu Option</label>
+                    <div class="pill-group" id="menuOption-group">
+                        <div class="pill active" data-value="Regular">Regular</div>
+                        <div class="pill" data-value="Fried (F)">Fried (F)</div>
+                        <div class="pill" data-value="Poached (P)">Poached (P)</div>
+                        <div class="pill" data-value="Mutton (M)">Mutton (M)</div>
+                    </div>
+                    <input type="hidden" id="menuOption" value="Regular">
+                </div>
+
+                <button type="submit" class="btn-primary" id="save-btn">Save Entry</button>
+            </form>
+            <div id="response-message"></div>
+        </div>
+
+        <!-- Summary Output -->
+        <div class="card">
+            <h2>Summary Output</h2>
+            <div class="subtitle">Overview of shift meal totals</div>
 
             <div class="form-group">
-                <label for="mealType">Meal Type:</label>
-                <select id="mealType" required>
-                    <option value="">Select Meal Type</option>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                </select>
+                <label for="summaryDate">Select Date</label>
+                <input type="date" id="summaryDate">
             </div>
 
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" rows="3" placeholder="Enter meal details..." required></textarea>
-            </div>
+            <button type="button" class="btn-primary" id="generate-btn" style="background-color: #34a853;">Generate Summary</button>
 
-            <button type="submit" id="save-btn">Save Entry</button>
-        </form>
-        <div id="response-message"></div>
+            <div id="summary-results"></div>
+        </div>
     </div>
 
     <script>
-        // Automatically set today's date on load
-        document.getElementById('date').valueAsDate = new Date();
+        // Set today's date on load
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+        document.getElementById('summaryDate').value = today;
 
+        // Handle interactive option pills
+        function setupPills(groupId, inputId) {
+            const group = document.getElementById(groupId);
+            const input = document.getElementById(inputId);
+            group.querySelectorAll('.pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    group.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    input.value = pill.getAttribute('data-value');
+                });
+            });
+        }
+
+        setupPills('shift-group', 'shift');
+        setupPills('mealType-group', 'mealType');
+        setupPills('menuOption-group', 'menuOption');
+
+        // Submit Form Handler
         document.getElementById('meal-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevents page reload / green bar error glitch
-
+            e.preventDefault();
             const saveBtn = document.getElementById('save-btn');
             const responseMsg = document.getElementById('response-message');
-            
-            const mealData = {
+
+            const payload = {
+                employeeId: document.getElementById('employeeId').value.trim(),
                 date: document.getElementById('date').value,
+                shift: document.getElementById('shift').value,
                 mealType: document.getElementById('mealType').value,
-                description: document.getElementById('description').value
+                menuOption: document.getElementById('menuOption').value
             };
 
             saveBtn.disabled = true;
@@ -113,34 +248,91 @@
             responseMsg.textContent = '';
 
             try {
-                const response = await fetch('/api/meals', {
+                const res = await fetch('/api/meals', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(mealData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
+                const result = await res.json();
 
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    responseMsg.style.color = 'green';
+                if (res.ok && result.success) {
+                    responseMsg.style.color = '#137333';
                     responseMsg.textContent = 'Meal saved successfully!';
-                    document.getElementById('meal-form').reset();
-                    document.getElementById('date').valueAsDate = new Date();
+                    document.getElementById('employeeId').value = '';
+                    loadSummary(); // Refresh summary automatically
                 } else {
-                    responseMsg.style.color = 'red';
-                    responseMsg.textContent = result.message || 'Failed to save meal.';
+                    responseMsg.style.color = '#c5221f';
+                    responseMsg.textContent = result.message || 'Failed to save.';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                responseMsg.style.color = 'red';
-                responseMsg.textContent = 'Network error. Please try again.';
+            } catch (err) {
+                console.error(err);
+                responseMsg.style.color = '#c5221f';
+                responseMsg.textContent = 'Network error occurred.';
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Entry';
             }
         });
+
+        // Generate Summary Function
+        document.getElementById('generate-btn').addEventListener('click', loadSummary);
+
+        async function loadSummary() {
+            const date = document.getElementById('summaryDate').value;
+            const container = document.getElementById('summary-results');
+            container.innerHTML = '<p style="text-align:center; color:#666; margin-top:15px;">Loading summary...</p>';
+
+            try {
+                const res = await fetch(`/api/meals/summary?date=${date}`);
+                const data = await res.json();
+
+                if (!data.success || data.meals.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#666; margin-top:15px;">No meal entries found for this date.</p>';
+                    return;
+                }
+
+                // Group meals by MealType and Shift
+                const grouped = {};
+                data.meals.forEach(meal => {
+                    if (!grouped[meal.mealType]) grouped[meal.mealType] = {};
+                    if (!grouped[meal.mealType][meal.shift]) grouped[meal.mealType][meal.shift] = [];
+                    grouped[meal.mealType][meal.shift].push(meal);
+                });
+
+                let html = '';
+                for (const [mealType, shifts] of Object.entries(grouped)) {
+                    html += `<div style="margin-top:20px; border-top:2px solid #e9ecef; padding-top:10px;">`;
+                    html += `<h3 style="color:#1a73e8; margin-bottom:10px;">${mealType} Summary</h3>`;
+
+                    for (const [shift, meals] of Object.entries(shifts)) {
+                        const ids = meals.map(m => m.employeeId).join(', ');
+                        const totalCount = meals.length;
+                        
+                        // Format with line breaks (\n) for clean copying
+                        const copyText = `Date: ${date}\nMeal: ${mealType}\nShift: ${shift}\nEmployee IDs: ${ids}\nTotal Count: ${totalCount}`;
+
+                        html += `
+                            <div class="summary-card">
+                                <strong style="color:#202124;">📍 ${shift} Shift</strong><br>
+                                <span style="font-size:13px; color:#5f6368;">IDs: ${ids}</span><br>
+                                <span style="font-size:13px; font-weight:bold; color:#137333;">Total Count: ${totalCount}</span>
+                                
+                                <div class="copy-box">${copyText}</div>
+                                <button type="button" class="btn-copy" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); alert('Copied to clipboard!');">Copy Format</button>
+                            </div>
+                        `;
+                    }
+                    html += `</div>`;
+                }
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<p style="text-align:center; color:#c5221f; margin-top:15px;">Error loading summary.</p>';
+            }
+        }
+
+        // Load summary on initial page load
+        loadSummary();
     </script>
 </body>
 </html>
