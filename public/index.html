@@ -440,20 +440,31 @@
 <script>
     const rawDataStore = {};
 
-    // 1. Initialize default dates to TODAY
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('dateStr').value = today;
-    document.getElementById('deleteDateStr').value = today;
-    document.getElementById('summaryDate').value = today;
+    // Helper: Synchronize all date pickers across the app
+    function syncAllDates(dateVal) {
+        if (!dateVal) return;
+        document.getElementById('dateStr').value = dateVal;
+        document.getElementById('summaryDate').value = dateVal;
+        document.getElementById('deleteDateStr').value = dateVal;
+    }
 
-    // 2. Sync meal entry date change -> summary date automatically
+    // 1. Initialize default date to TODAY for all pickers
+    const today = new Date().toISOString().split('T')[0];
+    syncAllDates(today);
+
+    // 2. Automatic date sync listeners across all fields
     document.getElementById('dateStr').addEventListener('change', (e) => {
-        const selectedDate = e.target.value;
-        document.getElementById('summaryDate').value = selectedDate;
+        syncAllDates(e.target.value);
         loadSummary();
     });
 
-    document.getElementById('summaryDate').addEventListener('change', () => {
+    document.getElementById('summaryDate').addEventListener('change', (e) => {
+        syncAllDates(e.target.value);
+        loadSummary();
+    });
+
+    document.getElementById('deleteDateStr').addEventListener('change', (e) => {
+        syncAllDates(e.target.value);
         loadSummary();
     });
 
@@ -502,7 +513,7 @@
                 showStatus('submit-status', 'Entry saved successfully!', true);
                 document.getElementById('employeeId').value = '';
                 
-                document.getElementById('summaryDate').value = entryDate;
+                syncAllDates(entryDate);
                 loadSummary(selectedMeal);
             } else {
                 showStatus('submit-status', 'Error: ' + (data.error || 'Failed to save'), false);
@@ -543,7 +554,7 @@
                 showStatus('delete-status', 'Record deleted successfully!', true);
                 document.getElementById('deleteId').value = '';
 
-                document.getElementById('summaryDate').value = deleteDate;
+                syncAllDates(deleteDate);
                 loadSummary(deleteMeal);
             } else {
                 showStatus('delete-status', data.message || 'Record not found.', false);
@@ -587,6 +598,4 @@
                         .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '')
                         .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
                         .replace(/(All Shift)/g, '<div class="shift-title" style="color:var(--text-main); margin-top:14px;">🌐 $1</div>')
-                        .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
-                        .replace(/F-\s*(\d+)/g, '<span class="count-badge tag-fried">F- $1</span>')
-                        .replace(/P-\s*(\d+)/g, '<
+                      
