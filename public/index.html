@@ -7,244 +7,281 @@
     <style>
         :root {
             --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --danger: #dc2626;
-            --danger-hover: #b91c1c;
-            --bg: #f8fafc;
+            --primary-light: #eff6ff;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --success: #10b981;
+            --bg: #f1f5f9;
             --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
             background-color: var(--bg);
-            color: var(--text);
-            padding: 15px 10px;
+            color: var(--text-main);
+            padding: 24px 12px;
             display: flex;
             justify-content: center;
         }
 
         .container {
             width: 100%;
-            max-width: 550px;
+            max-width: 520px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
         }
 
+        .card-header-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
         h2 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-top: 14px;
         }
 
         label {
             display: block;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
             margin-bottom: 6px;
-            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         input[type="text"],
         input[type="date"],
         select {
             width: 100%;
-            padding: 12px;
+            padding: 12px 14px;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1.05rem;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            color: var(--text-main);
             outline: none;
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
             background-color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
 
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 8px;
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 8px;
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 6px;
         }
 
-        .radio-label {
+        .radio-card {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
+            transition: all 0.15s ease;
         }
 
-        .radio-label input {
-            width: 20px;
-            height: 20px;
+        .radio-card:has(input:checked) {
+            background: var(--primary-light);
+            border-color: #93c5fd;
+            color: var(--primary);
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 8px;
-            font-size: 1.05rem;
-            font-weight: 700;
-            cursor: pointer;
-            color: white;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.8;
-        }
-
-        .btn-primary { background-color: var(--primary); }
-        .btn-danger { background-color: var(--danger); }
-        .btn-success { background-color: #059669; margin-top: 15px; }
-
-        .status-msg {
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            display: none;
+            border-radius: var(--radius-md);
             font-size: 0.95rem;
             font-weight: 600;
-            text-align: center;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+            margin-top: 16px;
         }
 
-        .status-success { background-color: #dcfce7; color: #166534; }
-        .status-error { background-color: #fee2e2; color: #991b1b; }
+        button:active { opacity: 0.85; }
 
-        /* ACCORDION & EXPANDABLE SUMMARY */
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: #059669; color: white; margin-top: 12px; }
+
+        .collapsible-body {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .collapsible-body.open { display: block; }
+
+        .status-msg {
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            display: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-success { background: #dcfce7; color: #15803d; }
+        .status-error { background: var(--danger-light); color: #991b1b; }
+
+        /* MODERN ACCORDION SUMMARY */
         .summary-accordion {
-            margin-top: 15px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
+            margin-top: 10px;
             overflow: hidden;
             background: #fff;
         }
 
         .accordion-btn {
-            background: #e2e8f0;
-            color: #0f172a;
-            font-size: 1.15rem;
-            font-weight: 800;
-            padding: 14px 18px;
+            width: 100%;
+            background: #ffffff;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 14px 16px;
             text-align: left;
             border: none;
-            border-bottom: 1px solid #cbd5e1;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 0;
+            margin: 0;
+            cursor: pointer;
         }
 
-        .accordion-btn:hover {
-            background: #cbd5e1;
-        }
+        .accordion-btn:hover { background: #f8fafc; }
 
         .accordion-content {
             display: none;
             padding: 16px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
         }
 
-        .accordion-content.active {
-            display: block;
-        }
+        .accordion-content.active { display: block; }
 
         .shift-title {
-            font-size: 1.15rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 8px;
-            margin-top: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 12px 0 6px 0;
         }
 
         .id-list {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #0284c7;
-            background: #f0f9ff;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            background: #ffffff;
             padding: 8px 12px;
-            border-radius: 6px;
-            word-break: break-all;
-            margin: 8px 0 12px 0;
-            border: 1px solid #bae6fd;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
         }
 
         .count-line {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 12px;
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
             gap: 6px;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.88rem;
         }
 
         .count-badge {
-            display: inline-block;
-            font-weight: 700;
-            font-size: 0.95rem;
-            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 3px 8px;
             border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .tag-fried { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-        .tag-poached { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
-        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
-        .tag-total { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+        .tag-fried { background-color: #dcfce7; color: #166534; }
+        .tag-poached { background-color: #dbeafe; color: #1e40af; }
+        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
+        .tag-total { background-color: #e2e8f0; color: #334155; }
 
         .copy-section-wrapper {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 2px solid #e2e8f0;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
         }
 
         .copy-section-title {
-            font-size: 1.05rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #475569;
-            margin-bottom: 8px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
         }
 
         .copy-text-box {
             white-space: pre-wrap;
-            background: #f8fafc;
-            color: #0f172a;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: monospace;
-            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            border: 1px solid var(--border);
             line-height: 1.5;
+        }
+
+        .toggle-icon {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
         }
     </style>
 </head>
@@ -252,33 +289,34 @@
 
 <div class="container">
 
-    <!-- SUBMIT MEAL CARD -->
+    <!-- MEAL ENTRY CARD -->
     <div class="card">
         <h2>Meal Entry</h2>
+        <div class="subtitle">Log daily meal counts by employee shift</div>
         <div id="submit-status" class="status-msg"></div>
 
         <form id="mealForm">
             <div class="form-group">
-                <label for="dateStr">Date:</label>
+                <label for="dateStr">Date</label>
                 <input type="date" id="dateStr" required>
             </div>
 
             <div class="form-group">
-                <label for="employeeId">Employee ID:</label>
+                <label for="employeeId">Employee ID</label>
                 <input type="text" id="employeeId" placeholder="e.g. 437" required>
             </div>
 
             <div class="form-group">
-                <label for="shift">Shift:</label>
+                <label for="shift">Shift</label>
                 <select id="shift" required>
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Night">Night</option>
+                    <option value="Morning">Morning Shift</option>
+                    <option value="Afternoon">Afternoon Shift</option>
+                    <option value="Night">Night Shift</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="meal">Meal Type:</label>
+                <label for="meal">Meal Type</label>
                 <select id="meal" required>
                     <option value="Breakfast">Breakfast</option>
                     <option value="Lunch">Lunch</option>
@@ -287,61 +325,72 @@
             </div>
 
             <div class="form-group">
-                <label>Preferred Menu Option:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="menuOption" value="None" checked> Regular Menu (None)
+                <label>Menu Option</label>
+                <div class="radio-grid">
+                    <label class="radio-card">
+                        <input type="radio" name="menuOption" value="None" checked> Regular
                     </label>
-                    <label class="radio-label">
-                        <input type="radio" name="menuOption" value="Fried Egg"> Fried Egg (F)
+                    <label class="radio-card">
+                        <input type="radio" name="menuOption" value="Fried Egg"> Fried (F)
                     </label>
-                    <label class="radio-label">
-                        <input type="radio" name="menuOption" value="Poached Egg"> Poached Egg (P)
+                    <label class="radio-card">
+                        <input type="radio" name="menuOption" value="Poached Egg"> Poached (P)
                     </label>
-                    <label class="radio-label">
+                    <label class="radio-card">
                         <input type="radio" name="menuOption" value="Mutton"> Mutton (M)
                     </label>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary" id="submitBtn">Submit Meal Entry</button>
+            <button type="submit" class="btn-primary" id="submitBtn">Save Entry</button>
         </form>
     </div>
 
-    <!-- DELETE RECORD CARD -->
+    <!-- EXPANDABLE MODIFY & DELETE RECORD SECTION -->
     <div class="card">
-        <h2>Delete Record</h2>
-        <div id="delete-status" class="status-msg"></div>
-
-        <form id="deleteForm">
-            <div class="form-group">
-                <label for="deleteDateStr">Date:</label>
-                <input type="date" id="deleteDateStr" required>
+        <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
+            <div>
+                <h2>Modify / Delete Record</h2>
+                <div class="subtitle">Remove or correct an existing meal log</div>
             </div>
+            <span class="toggle-icon" id="modifyIcon">▼</span>
+        </div>
 
-            <div class="form-group">
-                <label for="deleteId">Employee ID to Delete:</label>
-                <input type="text" id="deleteId" placeholder="e.g. 437" required>
-            </div>
+        <div id="modifyBody" class="collapsible-body">
+            <div id="delete-status" class="status-msg"></div>
 
-            <div class="form-group">
-                <label for="deleteMeal">Meal Type:</label>
-                <select id="deleteMeal" required>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                </select>
-            </div>
+            <form id="deleteForm">
+                <div class="form-group">
+                    <label for="deleteDateStr">Date</label>
+                    <input type="date" id="deleteDateStr" required>
+                </div>
 
-            <button type="submit" class="btn-danger" id="deleteBtn">Delete Record</button>
-        </form>
+                <div class="form-group">
+                    <label for="deleteId">Employee ID to Delete</label>
+                    <input type="text" id="deleteId" placeholder="e.g. 437" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="deleteMeal">Meal Type</label>
+                    <select id="deleteMeal" required>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-danger" id="deleteBtn">Delete Record</button>
+            </form>
+        </div>
     </div>
 
-    <!-- SUMMARY CARD -->
+    <!-- SUMMARY SECTION -->
     <div class="card">
         <h2>Summary Output</h2>
+        <div class="subtitle">Overview of shift meal totals</div>
+
         <div class="form-group">
-            <label for="summaryDate">Select Date for Summary:</label>
+            <label for="summaryDate">Select Date</label>
             <input type="date" id="summaryDate">
         </div>
 
@@ -355,6 +404,13 @@
     document.getElementById('dateStr').value = today;
     document.getElementById('deleteDateStr').value = today;
     document.getElementById('summaryDate').value = today;
+
+    function toggleCardSection(bodyId, iconId) {
+        const body = document.getElementById(bodyId);
+        const icon = document.getElementById(iconId);
+        body.classList.toggle('open');
+        icon.innerText = body.classList.contains('open') ? '▲' : '▼';
+    }
 
     function showStatus(elementId, message, isSuccess) {
         const el = document.getElementById(elementId);
@@ -399,7 +455,6 @@
                 showStatus('submit-status', 'Entry saved successfully!', true);
                 document.getElementById('employeeId').value = '';
                 
-                // Set summary date to match input date and auto-expand submitted meal summary
                 document.getElementById('summaryDate').value = entryDate;
                 loadSummary(selectedMeal);
             } else {
@@ -409,7 +464,7 @@
             showStatus('submit-status', 'Network connection error.', false);
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Submit Meal Entry';
+            submitBtn.innerText = 'Save Entry';
         }
     });
 
@@ -458,7 +513,7 @@
     async function loadSummary(expandMeal = null) {
         const date = document.getElementById('summaryDate').value;
         const container = document.getElementById('summaryContainer');
-        container.innerHTML = '<p style="margin-top:15px; font-weight:bold; color:#64748b;">Updating summary...</p>';
+        container.innerHTML = '<p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Updating summary...</p>';
 
         try {
             const res = await fetch(`/api/summary?date=${date}`);
@@ -482,7 +537,7 @@
                     let shiftHtml = shiftSection
                         .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '')
                         .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
-                        .replace(/(All Shift)/g, '<div class="shift-title" style="color:#0f172a; margin-top:15px;">🌐 $1</div>')
+                        .replace(/(All Shift)/g, '<div class="shift-title" style="color:var(--text-main); margin-top:14px;">🌐 $1</div>')
                         .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
                         .replace(/F-\s*(\d+)/g, '<span class="count-badge tag-fried">F- $1</span>')
                         .replace(/P-\s*(\d+)/g, '<span class="count-badge tag-poached">P- $1</span>')
@@ -502,52 +557,16 @@
                         <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
                     `;
                 } else {
-                    contentInnerHtml = `<p style="color:#64748b; font-weight:600;">No ${mealType} entries recorded for this date.</p>`;
+                    contentInnerHtml = `<p style="color:var(--text-muted); font-size:0.88rem;">No ${mealType} entries recorded for this date.</p>`;
                 }
 
                 const accordionItem = `
                     <div class="summary-accordion">
                         <button class="accordion-btn" onclick="toggleAccordion('${mealType}')">
                             <span>${mealType} Summary</span>
-                            <span id="icon-${mealType}">${isTargetToExpand ? '▲' : '▼'}</span>
+                            <span class="toggle-icon" id="icon-${mealType}">${isTargetToExpand ? '▲' : '▼'}</span>
                         </button>
                         <div id="content-${mealType}" class="accordion-content ${isTargetToExpand ? 'active' : ''}">
                             ${contentInnerHtml}
                         </div>
-                    </div>
-                `;
-
-                container.innerHTML += accordionItem;
-            });
-
-        } catch (err) {
-            container.innerHTML = '<p style="margin-top:15px; color:#dc2626; font-weight:bold;">Error loading summary data.</p>';
-        }
-    }
-
-    function toggleAccordion(mealType) {
-        const content = document.getElementById(`content-${mealType}`);
-        const icon = document.getElementById(`icon-${mealType}`);
-        if (content.classList.contains('active')) {
-            content.classList.remove('active');
-            icon.innerText = '▼';
-        } else {
-            content.classList.add('active');
-            icon.innerText = '▲';
-        }
-    }
-
-    function copyToClipboard(text, btn) {
-        navigator.clipboard.writeText(text).then(() => {
-            const origText = btn.innerText;
-            btn.innerText = 'Copied to Clipboard! ✓';
-            setTimeout(() => { btn.innerText = origText; }, 2000);
-        });
-    }
-
-    // Initial load on page view
-    loadSummary();
-</script>
-
-</body>
-</html>
+                    </di
