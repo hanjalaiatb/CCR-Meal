@@ -6,7 +6,6 @@
     <title>CCR Meal System</title>
     <style>
         :root {
-            /* Universal Theme Defaults */
             --action-btn: #2563eb;
             --danger: #ef4444;
             --danger-light: #fef2f2;
@@ -19,15 +18,13 @@
             --radius-lg: 16px;
             --radius-md: 10px;
 
-            /* Group 1: Shift Selection Theme (Emerald Green) */
+            /* Unique Option Group Themes */
             --shift-primary: #059669;
             --shift-light: #ecfdf5;
 
-            /* Group 2: Meal Type Selection Theme (Teal/Cyan) */
             --mealtype-primary: #0d9488;
             --mealtype-light: #f0fdfa;
 
-            /* Group 3: Menu Option Selection Theme (Violet/Purple) */
             --menu-primary: #7c3aed;
             --menu-light: #f5f3ff;
 
@@ -88,7 +85,6 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-main);
-            letter-spacing: -0.01em;
         }
 
         .subtitle {
@@ -141,7 +137,6 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
 
-        /* FAST SELECTION OPTION GRIDS */
         .option-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -177,13 +172,11 @@
             display: none;
         }
 
-        /* Unique Color Coding per Option Group */
         .shift-group .radio-card:has(input:checked) {
             background: var(--shift-light);
             border-color: var(--shift-primary);
             color: var(--shift-primary);
             font-weight: 700;
-            box-shadow: 0 1px 3px rgba(5, 150, 105, 0.15);
         }
 
         .mealtype-group .radio-card:has(input:checked) {
@@ -191,7 +184,6 @@
             border-color: var(--mealtype-primary);
             color: var(--mealtype-primary);
             font-weight: 700;
-            box-shadow: 0 1px 3px rgba(13, 148, 136, 0.15);
         }
 
         .menu-group .radio-card:has(input:checked) {
@@ -199,7 +191,6 @@
             border-color: var(--menu-primary);
             color: var(--menu-primary);
             font-weight: 700;
-            box-shadow: 0 1px 3px rgba(124, 58, 237, 0.15);
         }
 
         button {
@@ -250,13 +241,11 @@
         .status-success { background: #dcfce7; color: #15803d; }
         .status-error { background: var(--danger-light); color: #991b1b; }
 
-        /* THEMED ACCORDIONS FOR SUMMARY */
         .summary-accordion {
             border-radius: var(--radius-md);
             margin-top: 12px;
             overflow: hidden;
             border: 1px solid var(--border);
-            transition: all 0.2s ease;
         }
 
         .theme-Breakfast { border-color: var(--breakfast-border); }
@@ -296,7 +285,6 @@
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             margin: 12px 0 6px 0;
         }
 
@@ -334,12 +322,6 @@
         .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
         .tag-total { background-color: #e2e8f0; color: #334155; }
 
-        .copy-section-wrapper {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed var(--border);
-        }
-
         .copy-text-box {
             white-space: pre-wrap;
             background: #f8fafc;
@@ -347,22 +329,17 @@
             padding: 12px;
             border-radius: var(--radius-md);
             font-size: 0.85rem;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-family: monospace;
             border: 1px solid var(--border);
-            line-height: 1.5;
             margin-top: 8px;
         }
 
-        .toggle-icon {
-            font-size: 0.8rem;
-            transition: transform 0.2s ease;
-        }
+        .toggle-icon { font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-
     <!-- 1. MEAL ENTRY CARD -->
     <div class="card">
         <h2>Meal Entry</h2>
@@ -370,67 +347,42 @@
         <div id="submit-status" class="status-msg"></div>
 
         <form id="mealForm">
-            <!-- Row 1: ID & Date -->
             <div class="form-row">
                 <div class="form-group">
                     <label for="employeeId">Employee ID</label>
                     <input type="text" id="employeeId" placeholder="e.g. 437" required>
                 </div>
-
                 <div class="form-group">
                     <label for="dateStr">Date</label>
                     <input type="date" id="dateStr" value="2026-07-27" required>
                 </div>
             </div>
 
-            <!-- Fast Selection: Shift (Emerald Theme) -->
             <div class="form-group shift-group">
                 <label>Shift</label>
                 <div class="option-grid">
-                    <label class="radio-card">
-                        <input type="radio" name="shift" value="Morning" checked> Morning
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="shift" value="Afternoon"> Afternoon
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="shift" value="Night"> Night
-                    </label>
+                    <label class="radio-card"><input type="radio" name="shift" value="Morning" checked> Morning</label>
+                    <label class="radio-card"><input type="radio" name="shift" value="Afternoon"> Afternoon</label>
+                    <label class="radio-card"><input type="radio" name="shift" value="Night"> Night</label>
                 </div>
             </div>
 
-            <!-- Fast Selection: Meal Type (Teal Theme) -->
             <div class="form-group mealtype-group">
                 <label>Meal Type</label>
                 <div class="option-grid">
-                    <label class="radio-card">
-                        <input type="radio" name="meal" value="Breakfast" checked> Breakfast
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="meal" value="Lunch"> Lunch
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="meal" value="Dinner"> Dinner
-                    </label>
+                    <label class="radio-card"><input type="radio" name="meal" value="Breakfast" checked> Breakfast</label>
+                    <label class="radio-card"><input type="radio" name="meal" value="Lunch"> Lunch</label>
+                    <label class="radio-card"><input type="radio" name="meal" value="Dinner"> Dinner</label>
                 </div>
             </div>
 
-            <!-- Fast Selection: Menu Option (Violet Theme) -->
             <div class="form-group menu-group">
                 <label>Menu Option</label>
                 <div class="option-grid-2">
-                    <label class="radio-card">
-                        <input type="radio" name="menuOption" value="None" checked> Regular
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="menuOption" value="Fried Egg"> Fried (F)
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="menuOption" value="Poached Egg"> Poached (P)
-                    </label>
-                    <label class="radio-card">
-                        <input type="radio" name="menuOption" value="Mutton"> Mutton (M)
-                    </label>
+                    <label class="radio-card"><input type="radio" name="menuOption" value="None" checked> Regular</label>
+                    <label class="radio-card"><input type="radio" name="menuOption" value="Fried Egg"> Fried (F)</label>
+                    <label class="radio-card"><input type="radio" name="menuOption" value="Poached Egg"> Poached (P)</label>
+                    <label class="radio-card"><input type="radio" name="menuOption" value="Mutton"> Mutton (M)</label>
                 </div>
             </div>
 
@@ -442,16 +394,14 @@
     <div class="card">
         <h2>Summary Output</h2>
         <div class="subtitle">Overview of shift meal totals</div>
-
         <div class="form-group">
             <label for="summaryDate">Select Date</label>
             <input type="date" id="summaryDate" value="2026-07-27">
         </div>
-
         <div id="summaryContainer"></div>
     </div>
 
-    <!-- 3. EXPANDABLE MODIFY & DELETE RECORD CARD -->
+    <!-- 3. MODIFY & DELETE RECORD CARD -->
     <div class="card">
         <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
             <div>
@@ -463,14 +413,12 @@
 
         <div id="modifyBody" class="collapsible-body">
             <div id="delete-status" class="status-msg"></div>
-
             <form id="deleteForm">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="deleteId">Employee ID</label>
                         <input type="text" id="deleteId" placeholder="e.g. 437" required>
                     </div>
-
                     <div class="form-group">
                         <label for="deleteDateStr">Date</label>
                         <input type="date" id="deleteDateStr" value="2026-07-27" required>
@@ -480,15 +428,9 @@
                 <div class="form-group mealtype-group">
                     <label>Meal Type to Delete</label>
                     <div class="option-grid">
-                        <label class="radio-card">
-                            <input type="radio" name="deleteMeal" value="Breakfast" checked> Breakfast
-                        </label>
-                        <label class="radio-card">
-                            <input type="radio" name="deleteMeal" value="Lunch"> Lunch
-                        </label>
-                        <label class="radio-card">
-                            <input type="radio" name="deleteMeal" value="Dinner"> Dinner
-                        </label>
+                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Breakfast" checked> Breakfast</label>
+                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Lunch"> Lunch</label>
+                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Dinner"> Dinner</label>
                     </div>
                 </div>
 
@@ -496,7 +438,6 @@
             </form>
         </div>
     </div>
-
 </div>
 
 <script>
@@ -504,29 +445,19 @@
 
     function updateAllDates(newDate) {
         if (!newDate) return;
-        const d1 = document.getElementById('dateStr');
-        const d2 = document.getElementById('summaryDate');
-        const d3 = document.getElementById('deleteDateStr');
-
-        if (d1 && d1.value !== newDate) d1.value = newDate;
-        if (d2 && d2.value !== newDate) d2.value = newDate;
-        if (d3 && d3.value !== newDate) d3.value = newDate;
+        ['dateStr', 'summaryDate', 'deleteDateStr'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value !== newDate) el.value = newDate;
+        });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
         loadSummary();
-
         ['dateStr', 'summaryDate', 'deleteDateStr'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.addEventListener('input', (e) => {
-                    updateAllDates(e.target.value);
-                    loadSummary();
-                });
-                el.addEventListener('change', (e) => {
-                    updateAllDates(e.target.value);
-                    loadSummary();
-                });
+                el.addEventListener('input', (e) => { updateAllDates(e.target.value); loadSummary(); });
+                el.addEventListener('change', (e) => { updateAllDates(e.target.value); loadSummary(); });
             }
         });
     });
@@ -546,7 +477,6 @@
         setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    // Meal Submit Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
@@ -575,7 +505,6 @@
             if (data.success) {
                 showStatus('submit-status', 'Entry saved successfully!', true);
                 document.getElementById('employeeId').value = '';
-                
                 updateAllDates(entryDate);
                 loadSummary(selectedMeal);
             } else {
@@ -589,7 +518,6 @@
         }
     });
 
-    // Delete Record Handler
     document.getElementById('deleteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const deleteBtn = document.getElementById('deleteBtn');
@@ -597,4 +525,58 @@
         deleteBtn.innerText = 'Deleting...';
 
         const deleteMeal = document.querySelector('input[name="deleteMeal"]:checked').value;
-        const deleteDate = document.getElementById('delete
+        const deleteDate = document.getElementById('deleteDateStr').value;
+
+        const payload = {
+            dateStr: deleteDate,
+            id: document.getElementById('deleteId').value.trim(),
+            meal: deleteMeal
+        };
+
+        try {
+            const res = await fetch('/api/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showStatus('delete-status', 'Record deleted successfully!', true);
+                document.getElementById('deleteId').value = '';
+                updateAllDates(deleteDate);
+                loadSummary(deleteMeal);
+            } else {
+                showStatus('delete-status', data.message || 'Record not found.', false);
+            }
+        } catch (err) {
+            showStatus('delete-status', 'Network connection error.', false);
+        } finally {
+            deleteBtn.disabled = false;
+            deleteBtn.innerText = 'Delete Record';
+        }
+    });
+
+    async function loadSummary(expandMeal = null) {
+        const dateInput = document.getElementById('summaryDate');
+        if (!dateInput || !dateInput.value) return;
+        const date = dateInput.value;
+        
+        const container = document.getElementById('summaryContainer');
+        container.innerHTML = '<p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Loading summary...</p>';
+
+        try {
+            const res = await fetch(`/api/summary?date=${date}`);
+            const data = await res.json();
+            container.innerHTML = '';
+
+            ['Breakfast', 'Lunch', 'Dinner'].forEach(mealType => {
+                const mealData = data[mealType];
+                const isTargetToExpand = expandMeal === mealType;
+                let contentInnerHtml = '';
+
+                if (mealData) {
+                    rawDataStore[mealType] = mealData.text;
+                    const parts = mealData.text.split("Copy section:");
+                    const shiftSection = parts[0] || "";
+                    const copySection =
