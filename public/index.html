@@ -440,15 +440,17 @@
 <script>
     const rawDataStore = {};
 
-    // Helper: Synchronize all date pickers across the app safely
     function syncAllDates(dateVal) {
         if (!dateVal) return;
-        document.getElementById('dateStr').value = dateVal;
-        document.getElementById('summaryDate').value = dateVal;
-        document.getElementById('deleteDateStr').value = dateVal;
+        const d1 = document.getElementById('dateStr');
+        const d2 = document.getElementById('summaryDate');
+        const d3 = document.getElementById('deleteDateStr');
+        
+        if (d1) d1.value = dateVal;
+        if (d2) d2.value = dateVal;
+        if (d3) d3.value = dateVal;
     }
 
-    // 1. Bulletproof date initialization for Dhaka, Bangladesh (Asia/Dhaka)
     function getDhakaToday() {
         try {
             const d = new Date();
@@ -464,7 +466,6 @@
             const day = parts.find(p => p.type === 'day').value;
             return `${year}-${month}-${day}`;
         } catch (e) {
-            // Fallback if timezone string is unsupported
             const d = new Date();
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -472,22 +473,29 @@
             return `${year}-${month}-${day}`;
         }
     }
-    
-    syncAllDates(getDhakaToday());
 
-    // 2. Automatic date sync listeners across all fields
-    document.getElementById('dateStr').addEventListener('change', (e) => {
-        syncAllDates(e.target.value);
-        loadSummary();
-    });
+    // Run strictly after the DOM has fully parsed the inputs
+    window.addEventListener('DOMContentLoaded', () => {
+        const todayStr = getDhakaToday();
+        syncAllDates(todayStr);
 
-    document.getElementById('summaryDate').addEventListener('change', (e) => {
-        syncAllDates(e.target.value);
-        loadSummary();
-    });
+        // Attach listeners once fields are verified
+        document.getElementById('dateStr').addEventListener('change', (e) => {
+            syncAllDates(e.target.value);
+            loadSummary();
+        });
 
-    document.getElementById('deleteDateStr').addEventListener('change', (e) => {
-        syncAllDates(e.target.value);
+        document.getElementById('summaryDate').addEventListener('change', (e) => {
+            syncAllDates(e.target.value);
+            loadSummary();
+        });
+
+        document.getElementById('deleteDateStr').addEventListener('change', (e) => {
+            syncAllDates(e.target.value);
+            loadSummary();
+        });
+
+        // Initial summary load
         loadSummary();
     });
 
@@ -592,16 +600,12 @@
 
     // Load and Render Accordion Summary
     async function loadSummary(expandMeal = null) {
-        const date = document.getElementById('summaryDate').value;
+        const dateInput = document.getElementById('summaryDate');
+        if (!dateInput || !dateInput.value) return;
+        const date = dateInput.value;
+        
         const container = document.getElementById('summaryContainer');
         container.innerHTML = '<p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Updating summary...</p>';
 
         try {
-            const res = await fetch(`/api/summary?date=${date}`);
-            const data = await res.json();
-            container.innerHTML = '';
-
-            const allMeals = ['Breakfast', 'Lunch', 'Dinner'];
-
-            allMeals.forEach(mealType => {
-            
+        
