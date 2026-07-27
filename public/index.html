@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCR-Meal Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #response-message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>CCR-Meal Entry</h2>
+        <form id="meal-form">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mealType">Meal Type:</label>
+                <select id="mealType" required>
+                    <option value="">Select Meal Type</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" rows="3" placeholder="Enter meal details..." required></textarea>
+            </div>
+
+            <button type="submit" id="save-btn">Save Entry</button>
+        </form>
+        <div id="response-message"></div>
+    </div>
+
+    <script>
+        // Automatically set today's date on load
+        document.getElementById('date').valueAsDate = new Date();
+
+        document.getElementById('meal-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevents page reload / green bar error glitch
+
+            const saveBtn = document.getElementById('save-btn');
+            const responseMsg = document.getElementById('response-message');
+            
+            const mealData = {
+                date: document.getElementById('date').value,
+                mealType: document.getElementById('mealType').value,
+                description: document.getElementById('description').value
+            };
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            responseMsg.textContent = '';
+
+            try {
+                const response = await fetch('/api/meals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(mealData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    responseMsg.style.color = 'green';
+                    responseMsg.textContent = 'Meal saved successfully!';
+                    document.getElementById('meal-form').reset();
+                    document.getElementById('date').valueAsDate = new Date();
+                } else {
+                    responseMsg.style.color = 'red';
+                    responseMsg.textContent = result.message || 'Failed to save meal.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                responseMsg.style.color = 'red';
+                responseMsg.textContent = 'Network error. Please try again.';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Entry';
+            }
+        });
+    </script>
+</body>
+</html>
