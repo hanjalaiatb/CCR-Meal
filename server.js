@@ -4,102 +4,95 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-
-// Middleware
-app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from public folder
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI;
-
-if (!MONGO_URI) {
-  console.error("ERROR: MONGO_URI environment variable is not defined!");
-}
-
+// MongoDB Connection (uses environment variable MONGO_URI or local fallback)
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ccr-meal-tracker';
 mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 })
-.then(() => {
-  console.log("Connected to MongoDB Cloud");
-})
-.catch((err) => {
-  console.error("MongoDB connection error:", err);
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('Database connection error:', err));
+
+// Meal Schema Definition
+const mealSchema = new mongoose.Schema({
+    dateStr: { type: String, required: true },
+    id: { type: String, required: true },
+    shift: { type: String, required: true },
+    meal: { type: String, required: true },
+    menuOption: { type: String, required: true, default: 'Regular' }
 });
 
-// Define Meal Schema & Model
-const mealSchema = new mongoose.Schema({
-  empId: { type: String, required: true },
-  date: { type: String, required: true },
-  shift: { type: String, required: true },
-  mealType: { type: String, required: true },
-  menuOption: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
+// Composite unique index to prevent duplicate employee entries for the same meal on the same date, enabling seamless updates
+mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 
 const Meal = mongoose.model('Meal', mealSchema);
 
-// POST Endpoint: Save or update (detects modifications)
-app.post('/api/meals', async (req, res) => {
-  try {
-    const { empId, date, shift, mealType, menuOption } = req.body;
-    
-    if (!empId || !date || !shift || !mealType || !menuOption) {
-      return res.status(400).json({ success: false, message: 'All fields are required.' });
+// 1. Submit or Update Entry Route
+app.post('/api/submit', async (req, res) => {
+    try {
+        const { dateStr, id, shift, meal, menuOption } = req.body;
+        
+        if (!dateStr || !id || !shift || !meal) {
+            return res.status(400).json({ success: false, error: 'Missing required fields' });
+        }
+
+        // Use findOneAndUpdate with upsert to safely insert or update modified options (e.g., changing from Regular to Fried)
+        const updatedRecord = await Meal.findOneAndUpdate(
+            { dateStr, id, meal },
+            { shift, menuOption },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+
+        res.status(200).json({ success: true, data: updatedRecord });
+    } catch (err) {
+        console.error('Submit error:', err);
+        res.status(500).json({ success: false, error: err.message });
     }
+});
 
-    let existing = await Meal.findOne({ empId, date, mealType });
-    let modified = false;
+// 2. Fetch Summary Route for a Specific Date
+app.get('/api/summary', async (req, res) => {
+    try {
+        const { dateStr } = req.query;
+        if (!dateStr) {
+            return res.status(400).json({ success: false, error: 'Date string is required' });
+        }
 
-    if (existing) {
-      if (existing.shift !== shift || existing.menuOption !== menuOption) {
-        modified = true;
-      }
-      existing.shift = shift;
-      existing.menuOption = menuOption;
-      await existing.save();
-      return res.status(200).json({ success: true, modified, message: 'Updated successfully' });
+        const records = await Meal.find({ dateStr });
+        res.status(200).json({ success: true, records });
+    } catch (err) {
+        console.error('Summary error:', err);
+        res.status(500).json({ success: false, error: err.message });
     }
-
-    const newMeal = new Meal({ empId, date, shift, mealType, menuOption });
-    await newMeal.save();
-    res.status(201).json({ success: true, modified: false, message: 'Saved successfully' });
-  } catch (error) {
-    console.error('Error saving meal:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
 });
 
-// GET Endpoint: Fetch meals by date
-app.get('/api/meals', async (req, res) => {
-  try {
-    const { date } = req.query;
-    const filter = date ? { date } : {};
-    const meals = await Meal.find(filter).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, meals });
-  } catch (error) {
-    console.error('Error fetching meals:', error);
-    res.status(500).json({ success: false, message: 'Server error while fetching meals.' });
-  }
+// 3. Delete Specific Record Route
+app.post('/api/delete', async (req, res) => {
+    try {
+        const { id, dateStr, meal } = req.body;
+        
+        if (!id || !dateStr || !meal) {
+            return res.status(400).json({ success: false, error: 'Missing deletion parameters' });
+        }
+
+        const result = await Meal.findOneAndDelete({ id, dateStr, meal });
+        
+        if (!result) {
+            return res.status(404).json({ success: false, error: 'Record not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Record deleted successfully' });
+    } catch (err) {
+        console.error('Delete error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
-// DELETE Endpoint: Delete specific entry by ID
-app.delete('/api/meals/:id', async (req, res) => {
-  try {
-    await Meal.findByIdAndDelete(req.params.id);
-    res.status(200).json({ success: true, message: 'Deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting meal:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// Start Server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
