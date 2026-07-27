@@ -23,7 +23,7 @@ const mealSchema = new mongoose.Schema({
     menuOption: { type: String, required: true, default: 'Regular' }
 });
 
-// Ensure a unique entry per employee, date, and meal type to handle updates seamlessly
+// Unique index compound to manage upserts properly
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 
 const Meal = mongoose.model('Meal', mealSchema);
@@ -37,13 +37,17 @@ app.post('/api/submit', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
 
+        // Check if document already exists to report whether it was new or updated
+        const existing = await Meal.findOne({ dateStr, id, meal });
+        const isNew = !existing;
+
         const updatedRecord = await Meal.findOneAndUpdate(
             { dateStr, id, meal },
             { shift, menuOption },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
 
-        res.status(200).json({ success: true, data: updatedRecord });
+        res.status(200).json({ success: true, isNew, data: updatedRecord });
     } catch (err) {
         console.error('Submit error:', err);
         res.status(500).json({ success: false, error: err.message });
