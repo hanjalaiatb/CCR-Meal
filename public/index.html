@@ -5,141 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
-            --danger: #ef4444;
-            --success: #059669;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 10px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg); color: var(--text-main); padding: 16px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
-        .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 10px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; }
+        h2 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+        .sub { font-size: 0.75rem; color: #64748b; margin-bottom: 8px; }
         
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .group { margin-bottom: 8px; }
+        label { display: block; font-size: 0.7rem; font-weight: 600; color: #64748b; margin-bottom: 3px; text-transform: uppercase; }
         
-        input[type="text"], input[type="date"], select {
-            width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.9rem; outline: none; background: #f8fafc; color: var(--text-main);
+        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; background: #f8fafc; }
+        input:focus, select:focus { border-color: #2563eb; background: #fff; outline: none; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+
+        .radio-lbl {
+            display: flex; align-items: center; justify-content: center; padding: 6px 2px;
+            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center;
         }
-        input:focus, select:focus { border-color: var(--primary); background: #fff; }
+        .radio-lbl input { display: none; }
+        .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
 
-        .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .option-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+        button { width: 100%; padding: 8px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        .btn-blue { background: #2563eb; color: #fff; }
+        .btn-red { background: #ef4444; color: #fff; }
+        .btn-green { background: #059669; color: #fff; padding: 4px 8px; font-size: 0.75rem; width: auto; margin-top: 6px; }
 
-        .radio-btn {
-            display: flex; align-items: center; justify-content: center; padding: 8px 4px;
-            background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius);
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted); text-align: center;
-        }
-        .radio-btn input { display: none; }
-        .radio-btn.checked { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+        .msg { padding: 6px; border-radius: 4px; margin-bottom: 8px; display: none; font-size: 0.8rem; }
+        .msg-ok { background: #dcfce7; color: #15803d; }
+        .msg-err { background: #fee2e2; color: #991b1b; }
 
-        button { width: 100%; padding: 10px; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: var(--success); color: white; padding: 6px 12px; font-size: 0.8rem; width: auto; margin-top: 8px; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 6px; overflow: hidden; background: #fff; }
+        .acc-btn { width: 100%; padding: 8px 10px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.85rem; cursor: pointer; text-align: left; }
+        .acc-body { display: none; padding: 8px; border-top: 1px solid #cbd5e1; font-size: 0.8rem; }
+        .acc-body.show { display: block; }
 
-        .status-msg { padding: 8px; border-radius: var(--radius); margin-bottom: 10px; display: none; font-size: 0.85rem; }
-        .status-success { background: #dcfce7; color: #15803d; }
-        .status-error { background: #fee2e2; color: #991b1b; }
-
-        /* Accordion Styling */
-        .accordion-item { border: 1px solid var(--border); border-radius: var(--radius); margin-top: 8px; overflow: hidden; background: #fff; }
-        .accordion-header { width: 100%; padding: 12px 14px; background: #f8fafc; border: none; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--primary); font-size: 0.9rem; cursor: pointer; text-align: left; margin: 0; }
-        .accordion-content { display: none; padding: 12px; border-top: 1px solid var(--border); background: #fff; }
-        .accordion-content.open { display: block; }
-
-        .shift-block { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); }
-        .shift-title { font-weight: 700; font-size: 0.82rem; color: var(--text-main); margin-bottom: 4px; text-transform: uppercase; }
-        .detail-line { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
-        
-        .whatsapp-box { 
-            font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid var(--border); 
-            border-radius: var(--radius); font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; margin-top: 6px; color: #1e293b;
-        }
-
-        .log-item { font-size: 0.78rem; padding: 4px 0; border-bottom: 1px solid #f1f5f9; color: var(--text-muted); }
+        .shift- blk { margin-top: 6px; padding-top: 4px; border-top: 1px dashed #cbd5e1; }
+        .shift-title { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; margin-bottom: 2px; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; white-space: pre-wrap; line-height: 1.4; margin-top: 4px; }
+        .log-row { font-size: 0.72rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 1. MEAL ENTRY CARD -->
+<div class="box">
+    <!-- 1. MEAL ENTRY -->
     <div class="card">
         <h2>Meal Entry</h2>
-        <div class="subtitle">Log daily meal counts</div>
-        <div id="submit-status" class="status-msg"></div>
+        <div class="sub">Log daily meal counts</div>
+        <div id="s-msg" class="msg"></div>
 
-        <form id="mealForm">
-            <div class="form-row">
-                <div class="form-group" style="margin-bottom:0;">
+        <form id="f-meal">
+            <div class="row">
+                <div class="group" style="margin-bottom:0;">
                     <label>Employee ID</label>
-                    <input type="text" id="employeeId" placeholder="e.g. 437" required>
+                    <input type="text" id="e-id" placeholder="e.g. 437" required>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
+                <div class="group" style="margin-bottom:0;">
                     <label>Date</label>
-                    <input type="date" id="dateStr" required>
+                    <input type="date" id="e-date" required>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-top:10px;">
+            <div class="group" style="margin-top:8px;">
                 <label>Shift</label>
-                <div class="option-grid" id="shiftGroup">
-                    <label class="radio-btn checked"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                    <label class="radio-btn"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                    <label class="radio-btn"><input type="radio" name="shift" value="Night">Night</label>
+                <div class="grid-3" id="g-shift">
+                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="group">
                 <label>Meal Type</label>
-                <div class="option-grid" id="mealGroup">
-                    <label class="radio-btn checked"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                    <label class="radio-btn"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                    <label class="radio-btn"><input type="radio" name="meal" value="Dinner">Dinner</label>
+                <div class="grid-3" id="g-meal">
+                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="group">
                 <label>Menu Option</label>
-                <div class="option-grid-4" id="menuGroup">
-                    <label class="radio-btn checked"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-btn"><input type="radio" name="menuOption" value="Fried Egg">Fried</label>
-                    <label class="radio-btn"><input type="radio" name="menuOption" value="Poached Egg">Poached</label>
-                    <label class="radio-btn"><input type="radio" name="menuOption" value="Mutton">Mutton</label>
+                <div class="grid-4" id="g-menu">
+                    <label class="radio-lbl active"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Fried Egg">Fried</label>
+                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Poached Egg">Poached</label>
+                    <label class="radio-lbl"><input type="radio" name="menuOption" value="Mutton">Mutton</label>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary" id="submitBtn">Save Entry</button>
+            <button type="submit" class="btn-blue" id="btn-save">Save Entry</button>
         </form>
     </div>
 
-    <!-- 2. DELETE RECORD CARD -->
+    <!-- 2. DELETE RECORD -->
     <div class="card">
         <h2>Delete Specific Record</h2>
-        <div class="subtitle">Remove entry by Date, Meal, and ID selection</div>
-        <div id="delete-status" class="status-msg"></div>
+        <div class="sub">Remove entry by Date, Meal, and ID</div>
+        <div id="d-msg" class="msg"></div>
 
-        <form id="deleteForm">
-            <div class="form-row">
-                <div class="form-group" style="margin-bottom:0;">
+        <form id="f-del">
+            <div class="row">
+                <div class="group" style="margin-bottom:0;">
                     <label>Date</label>
-                    <input type="date" id="deleteDateStr" required>
+                    <input type="date" id="d-date" required>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
+                <div class="group" style="margin-bottom:0;">
                     <label>Meal Type</label>
-                    <select id="deleteMeal" required>
+                    <select id="d-meal" required>
                         <option value="Breakfast">Breakfast</option>
                         <option value="Lunch">Lunch</option>
                         <option value="Dinner">Dinner</option>
@@ -147,212 +124,177 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-top:10px;">
-                <label>Select Employee ID</label>
-                <select id="deleteIdSelect" required>
-                    <option value="">-- Choose ID to Delete --</option>
+            <div class="group" style="margin-top:8px;">
+                <label>Select ID</label>
+                <select id="d-id-select" required>
+                    <option value="">-- Choose ID --</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn-danger">Delete Record</button>
+            <button type="submit" class="btn-red">Delete Record</button>
         </form>
     </div>
 
-    <!-- 3. SUMMARY SECTION -->
+    <!-- 3. SUMMARY -->
     <div class="card">
         <h2>Summary Output</h2>
-        <div class="form-group" style="margin-top:8px;">
+        <div class="group" style="margin-top:6px;">
             <label>Select Date</label>
-            <input type="date" id="summaryDate">
+            <input type="date" id="s-date">
         </div>
-        <div id="summaryContainer"></div>
+        <div id="summary-box"></div>
     </div>
 
-    <!-- 4. DELETE & MODIFIED LOG SECTION (AT THE VERY BOTTOM) -->
+    <!-- 4. AUDIT LOG -->
     <div class="card">
         <h2>Activity Audit Log</h2>
-        <div class="subtitle">Tracks modifications and deletions for clarity</div>
-        <div id="auditLogContainer" style="margin-top: 8px; max-height: 150px; overflow-y: auto;">
-            <div style="font-size: 0.8rem; color: var(--text-muted);">No modification or deletion actions recorded yet.</div>
+        <div class="sub">Tracks updates & deletions</div>
+        <div id="log-box" style="max-height:100px; overflow-y:auto;">
+            <div style="font-size:0.75rem; color:#64748b;">No actions recorded yet.</div>
         </div>
     </div>
 </div>
 
 <script>
-    let globalRecords = [];
-    let auditLogs = [];
+    let records = [];
+    let logs = [];
 
-    function setupRadioGroup(groupId) {
-        const container = document.getElementById(groupId);
-        container.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                container.querySelectorAll('.radio-btn').forEach(lbl => lbl.classList.remove('checked'));
-                e.target.closest('.radio-btn').classList.add('checked');
+    function bindRadios(groupId) {
+        const c = document.getElementById(groupId);
+        c.querySelectorAll('input').forEach(inp => {
+            inp.addEventListener('change', e => {
+                c.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
+                e.target.closest('.radio-lbl').classList.add('active');
             });
         });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateStr').value = today;
-        document.getElementById('summaryDate').value = today;
-        document.getElementById('deleteDateStr').value = today;
+        document.getElementById('e-date').value = today;
+        document.getElementById('s-date').value = today;
+        document.getElementById('d-date').value = today;
 
-        setupRadioGroup('shiftGroup');
-        setupRadioGroup('mealGroup');
-        setupRadioGroup('menuGroup');
+        bindRadios('g-shift');
+        bindRadios('g-meal');
+        bindRadios('g-menu');
 
-        loadSummaryAndDropdowns('Breakfast');
+        loadData('Breakfast');
 
-        document.getElementById('dateStr').addEventListener('input', (e) => {
-            document.getElementById('summaryDate').value = e.target.value;
-            document.getElementById('deleteDateStr').value = e.target.value;
-            loadSummaryAndDropdowns();
+        document.getElementById('e-date').addEventListener('input', e => {
+            document.getElementById('s-date').value = e.target.value;
+            document.getElementById('d-date').value = e.target.value;
+            loadData();
         });
-        
-        document.getElementById('summaryDate').addEventListener('input', () => loadSummaryAndDropdowns());
-        document.getElementById('deleteDateStr').addEventListener('input', updateDeleteDropdown);
-        document.getElementById('deleteMeal').addEventListener('change', updateDeleteDropdown);
+        document.getElementById('s-date').addEventListener('input', () => loadData());
+        document.getElementById('d-date').addEventListener('input', updateDelDropdown);
+        document.getElementById('d-meal').addEventListener('change', updateDelDropdown);
     });
 
-    function showStatus(elementId, msg, success) {
-        const el = document.getElementById(elementId);
-        el.innerText = msg;
-        el.className = 'status-msg ' + (success ? 'status-success' : 'status-error');
+    function showMsg(id, text, ok) {
+        const el = document.getElementById(id);
+        el.innerText = text;
+        el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 3000);
+        setTimeout(() => el.style.display = 'none', 2500);
     }
 
-    // Submit Handler
-    document.getElementById('mealForm').addEventListener('submit', async (e) => {
+    document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.innerText = 'Saving...';
-
         const payload = {
-            dateStr: document.getElementById('dateStr').value,
-            id: document.getElementById('employeeId').value.trim(),
+            dateStr: document.getElementById('e-date').value,
+            id: document.getElementById('e-id').value.trim(),
             shift: document.querySelector('input[name="shift"]:checked').value,
             meal: document.querySelector('input[name="meal"]:checked').value,
             menuOption: document.querySelector('input[name="menuOption"]:checked').value
         };
 
-        try {
-            const res = await fetch('/api/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (res.ok) {
-                const actionType = data.isNew ? 'Added' : 'Modified';
-                showStatus('submit-status', `Record ${actionType.toLowerCase()} successfully!`, true);
-                
-                addAuditLog(`${actionType}: ID ${payload.id} for ${payload.meal} (${payload.dateStr})`);
-                
-                document.getElementById('employeeId').value = '';
-                document.getElementById('summaryDate').value = payload.dateStr;
-                document.getElementById('deleteDateStr').value = payload.dateStr;
-                
-                loadSummaryAndDropdowns(payload.meal);
-            } else {
-                showStatus('submit-status', data.error || 'Failed to save', false);
-            }
-        } catch (err) {
-            showStatus('submit-status', 'Network error', false);
-        } finally {
-            btn.disabled = false;
-            btn.innerText = 'Save Entry';
+        const res = await fetch('/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+            const action = data.isNew ? 'Added' : 'Updated';
+            showMsg('s-msg', `Saved successfully!`, true);
+            addLog(`${action}: ID ${payload.id} (${payload.meal})`);
+            document.getElementById('e-id').value = '';
+            document.getElementById('s-date').value = payload.dateStr;
+            document.getElementById('d-date').value = payload.dateStr;
+            loadData(payload.meal);
+        } else {
+            showMsg('s-msg', data.error || 'Error', false);
         }
     });
 
-    // Delete Form Handler
-    document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+    document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
-        const id = document.getElementById('deleteIdSelect').value;
-        const dateStr = document.getElementById('deleteDateStr').value;
-        const meal = document.getElementById('deleteMeal').value;
+        const id = document.getElementById('d-id-select').value;
+        const dateStr = document.getElementById('d-date').value;
+        const meal = document.getElementById('d-meal').value;
 
-        if (!id) {
-            showStatus('delete-status', 'Please select a valid ID to delete.', false);
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, dateStr, meal })
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                showStatus('delete-status', `Successfully deleted ID ${id}`, true);
-                addAuditLog(`Deleted: ID ${id} from ${meal} (${dateStr})`);
-                loadSummaryAndDropdowns(meal);
-            } else {
-                showStatus('delete-status', 'Failed to delete record', false);
-            }
-        } catch (err) {
-            showStatus('delete-status', 'Network error while deleting', false);
+        if (!id) return;
+        const res = await fetch('/api/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, dateStr, meal })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showMsg('d-msg', `Deleted ID ${id}`, true);
+            addLog(`Deleted: ID ${id} (${meal})`);
+            loadData(meal);
+        } else {
+            showMsg('d-msg', 'Delete failed', false);
         }
     });
 
-    async function loadSummaryAndDropdowns(targetOpenMeal = null) {
-        const dateStr = document.getElementById('summaryDate').value;
-        try {
-            const res = await fetch(`/api/summary?dateStr=${dateStr}`);
-            const data = await res.json();
-            globalRecords = data.records || [];
-
-            renderSummary(dateStr, targetOpenMeal);
-            updateDeleteDropdown();
-        } catch (err) {
-            console.error('Error fetching summary data');
-        }
+    async function loadData(openMeal = null) {
+        const dateStr = document.getElementById('s-date').value;
+        const res = await fetch(`/api/summary?dateStr=${dateStr}`);
+        const data = await res.json();
+        records = data.records || [];
+        renderSummary(dateStr, openMeal);
+        updateDelDropdown();
     }
 
-    function updateDeleteDropdown() {
-        const deleteDate = document.getElementById('deleteDateStr').value;
-        const deleteMeal = document.getElementById('deleteMeal').value;
-        const selectEl = document.getElementById('deleteIdSelect');
-
-        selectEl.innerHTML = '<option value="">-- Choose ID to Delete --</option>';
-        
-        const filtered = globalRecords.filter(r => r.dateStr === deleteDate && r.meal === deleteMeal);
-        filtered.forEach(rec => {
+    function updateDelDropdown() {
+        const dDate = document.getElementById('d-date').value;
+        const dMeal = document.getElementById('d-meal').value;
+        const sel = document.getElementById('d-id-select');
+        sel.innerHTML = '<option value="">-- Choose ID --</option>';
+        records.filter(r => r.dateStr === dDate && r.meal === dMeal).forEach(r => {
             const opt = document.createElement('option');
-            opt.value = rec.id;
-            opt.textContent = `ID: ${rec.id} [Shift: ${rec.shift} - Opt: ${rec.menuOption}]`;
-            selectEl.appendChild(opt);
+            opt.value = r.id;
+            opt.textContent = `ID: ${r.id} (${r.shift} - ${r.menuOption})`;
+            sel.appendChild(opt);
         });
     }
 
-    function renderSummary(dateStr, openMeal = null) {
-        const container = document.getElementById('summaryContainer');
+    function renderSummary(dateStr, openMeal) {
+        const box = document.getElementById('summary-box');
         let html = '';
 
         ['Breakfast', 'Lunch', 'Dinner'].forEach(meal => {
-            const mealRecs = globalRecords.filter(r => r.meal === meal);
+            const mRecs = records.filter(r => r.meal === meal);
             const isOpen = (meal === openMeal);
 
             html += `
-                <div class="accordion-item">
-                    <button type="button" class="accordion-header" onclick="toggleAccordion('${meal}')">
-                        <span>${meal} Summary</span>
-                        <span>Total: ${mealRecs.length} ${isOpen ? '▲' : '▼'}</span>
+                <div class="acc">
+                    <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')">
+                        <span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span>
                     </button>
-                    <div class="accordion-content ${isOpen ? 'open' : ''}" id="acc-${meal}">
+                    <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
             `;
 
-            if (mealRecs.length === 0) {
-                html += `<div style="font-size:0.8rem; color:var(--text-muted);">No entries found for ${meal}.</div>`;
+            if (mRecs.length === 0) {
+                html += `<div>No entries found.</div>`;
             } else {
-                // Shift Based Breakdown
                 ['Morning', 'Afternoon', 'Night'].forEach(shift => {
-                    const shiftRecs = mealRecs.filter(r => r.shift === shift);
-                    if (shiftRecs.length > 0) {
-                        const idsWithShortOption = shiftRecs.map(r => {
+                    const sRecs = mRecs.filter(r => r.shift === shift);
+                    if (sRecs.length > 0) {
+                        const idsShort = sRecs.map(r => {
                             if (r.menuOption === 'Poached Egg') return `${r.id}(p)`;
                             if (r.menuOption === 'Fried Egg') return `${r.id}(f)`;
                             if (r.menuOption === 'Mutton') return `${r.id}(m)`;
@@ -360,62 +302,60 @@
                         }).join(', ');
 
                         const counts = {};
-                        shiftRecs.forEach(r => {
-                            let key = 'Regular';
-                            if (r.menuOption === 'Poached Egg') key = 'P';
-                            else if (r.menuOption === 'Fried Egg') key = 'F';
-                            else if (r.menuOption === 'Mutton') key = 'M';
-                            counts[key] = (counts[key] || 0) + 1;
+                        sRecs.forEach(r => {
+                            let k = 'Regular';
+                            if (r.menuOption === 'Poached Egg') k = 'P';
+                            else if (r.menuOption === 'Fried Egg') k = 'F';
+                            else if (r.menuOption === 'Mutton') k = 'M';
+                            counts[k] = (counts[k] || 0) + 1;
                         });
-
-                        const countParts = Object.entries(counts).map(([k, v]) => `${k}-${v}`).join(', ');
+                        const countStr = Object.entries(counts).map(([k,v]) => `${k}-${v}`).join(', ');
 
                         html += `
-                            <div class="shift-block">
+                            <div class="shift-blk">
                                 <div class="shift-title">${shift} shift</div>
-                                <div class="detail-line">Meal ID: ${idsWithShortOption}</div>
-                                <div class="detail-line">Meal count: ${countParts}, Total-${shiftRecs.length}</div>
+                                <div>Meal ID: ${idsShort}</div>
+                                <div>Meal count: ${countStr}, Total-${sRecs.length}</div>
                             </div>
                         `;
                     }
                 });
 
-                // WhatsApp Format Section
-                let waIds = mealRecs.map(r => r.id).join(', ');
-                let waText = `${meal} Meal from CCR on ${dateStr}\nID: ${waIds}\nTotal Meal Count: ${mealRecs.length}`;
-
-                const poachedRecs = mealRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (poachedRecs.length > 0) {
-                    waText += `\nPoached Egg: ${poachedRecs.length} (${poachedRecs.map(r => r.id).join(', ')})`;
-                }
-
-                const friedRecs = mealRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (friedRecs.length > 0) {
-                    waText += `\nFried Egg: ${friedRecs.length} (${friedRecs.map(r => r.id).join(', ')})`;
-                }
-
-                const muttonRecs = mealRecs.filter(r => r.menuOption === 'Mutton');
-                if (muttonRecs.length > 0) {
-                    waText += `\nMutton: ${muttonRecs.length} (${muttonRecs.map(r => r.id).join(', ')})`;
-                }
+                // WhatsApp block
+                let waIds = mRecs.map(r => r.id).join(', ');
+                let wa = `${meal} Meal from CCR on ${dateStr}\nID: ${waIds}\nTotal Meal Count: ${mRecs.length}`;
+                
+                ['Poached Egg', 'Fried Egg', 'Mutton'].forEach(opt => {
+                    const sub = mRecs.filter(r => r.menuOption === opt);
+                    if (sub.length > 0) wa += `\n${opt}: ${sub.length} (${sub.map(r => r.id).join(', ')})`;
+                });
 
                 html += `
-                    <div style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px;">
-                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">WhatsApp Canteen Format:</div>
-                        <div class="whatsapp-box" id="wa-text-${meal}">${waText}</div>
-                        <button type="button" class="btn-success" onclick="copyWhatsAppBox('wa-text-${meal}', this)">Copy WhatsApp Format</button>
+                    <div style="margin-top:8px; border-top:1px solid #cbd5e1; padding-top:6px;">
+                        <div style="font-size:0.7rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>
+                        <div class="txt-pre" id="wa-${meal}">${wa}</div>
+                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText).then(()=>alert('Copied!'))">Copy WhatsApp Format</button>
                     </div>
                 `;
             }
-
             html += `</div></div>`;
         });
-
-        container.innerHTML = html;
+        box.innerHTML = html;
     }
 
-    function toggleAccordion(meal) {
-        const content = document.getElementById(`acc-${meal}`);
-        const isOpen = content.classList.contains('open');
-        
-       
+    function toggleAcc(meal) {
+        const el = document.getElementById(`acc-${meal}`);
+        const show = el.classList.contains('show');
+        document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
+        if (!show) el.classList.add('show');
+    }
+
+    function addLog(text) {
+        const time = new Date().toLocaleTimeString();
+        logs.unshift(`[${time}] ${text}`);
+        if (logs.length > 10) logs.pop();
+        document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
+    }
+</script>
+</body>
+</html>
