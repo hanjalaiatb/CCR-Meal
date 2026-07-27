@@ -122,7 +122,7 @@
 
         .btn-primary { background-color: var(--primary); }
         .btn-danger { background-color: var(--danger); }
-        .btn-success { background-color: #059669; margin-top: 10px; }
+        .btn-success { background-color: #059669; margin-top: 15px; }
 
         .status-msg {
             padding: 10px;
@@ -137,75 +137,114 @@
         .status-success { background-color: #dcfce7; color: #166534; }
         .status-error { background-color: #fee2e2; color: #991b1b; }
 
-        /* ENHANCED SUMMARY STYLING */
-        .summary-card-view {
-            background: #ffffff;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 16px;
+        /* ACCORDION & EXPANDABLE SUMMARY */
+        .summary-accordion {
             margin-top: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
         }
 
-        .summary-header {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #0f172a;
+        .accordion-btn {
             background: #e2e8f0;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+            color: #0f172a;
+            font-size: 1.15rem;
+            font-weight: 800;
+            padding: 14px 18px;
+            text-align: left;
+            border: none;
+            border-bottom: 1px solid #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
         }
 
-        .shift-block {
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #cbd5e1;
+        .accordion-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 16px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .accordion-content.active {
+            display: block;
         }
 
         .shift-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #1e40af;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            margin-top: 12px;
         }
 
         .id-list {
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #0284c7;
             background: #f0f9ff;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             word-break: break-all;
-            margin: 4px 0;
+            margin: 8px 0 12px 0;
+            border: 1px solid #bae6fd;
+        }
+
+        .count-line {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
         }
 
         .count-badge {
             display: inline-block;
             font-weight: 700;
-            font-size: 1rem;
-            padding: 3px 8px;
-            border-radius: 5px;
-            margin-right: 5px;
-            margin-top: 4px;
+            font-size: 0.95rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
 
-        .tag-fried { background-color: #dcfce7; color: #15803d; }
-        .tag-poached { background-color: #dbeafe; color: #1e40af; }
-        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
+        .tag-fried { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .tag-poached { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
         .tag-total { background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
 
-        .raw-text-box {
+        .copy-section-wrapper {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .copy-section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .copy-text-box {
             white-space: pre-wrap;
-            background: #0f172a;
-            color: #38bdf8;
-            padding: 12px;
+            background: #f8fafc;
+            color: #0f172a;
+            padding: 14px;
             border-radius: 8px;
             font-size: 0.95rem;
             font-family: monospace;
-            margin-top: 10px;
-            display: none;
+            border: 1px solid #cbd5e1;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -305,7 +344,6 @@
             <label for="summaryDate">Select Date for Summary:</label>
             <input type="date" id="summaryDate">
         </div>
-        <button type="button" class="btn-primary" id="getSummaryBtn">Generate Summary</button>
 
         <div id="summaryContainer"></div>
     </div>
@@ -326,6 +364,11 @@
         setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
+    // Auto-fetch summary when date changes
+    document.getElementById('summaryDate').addEventListener('change', () => {
+        loadSummary();
+    });
+
     // Submit Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -333,11 +376,14 @@
         submitBtn.disabled = true;
         submitBtn.innerText = 'Saving...';
 
+        const selectedMeal = document.getElementById('meal').value;
+        const entryDate = document.getElementById('dateStr').value;
+
         const payload = {
-            dateStr: document.getElementById('dateStr').value,
+            dateStr: entryDate,
             id: document.getElementById('employeeId').value.trim(),
             shift: document.getElementById('shift').value,
-            meal: document.getElementById('meal').value,
+            meal: selectedMeal,
             menuOption: document.querySelector('input[name="menuOption"]:checked').value
         };
 
@@ -352,6 +398,10 @@
             if (data.success) {
                 showStatus('submit-status', 'Entry saved successfully!', true);
                 document.getElementById('employeeId').value = '';
+                
+                // Set summary date to match input date and auto-expand submitted meal summary
+                document.getElementById('summaryDate').value = entryDate;
+                loadSummary(selectedMeal);
             } else {
                 showStatus('submit-status', 'Error: ' + (data.error || 'Failed to save'), false);
             }
@@ -370,10 +420,13 @@
         deleteBtn.disabled = true;
         deleteBtn.innerText = 'Deleting...';
 
+        const deleteMeal = document.getElementById('deleteMeal').value;
+        const deleteDate = document.getElementById('deleteDateStr').value;
+
         const payload = {
-            dateStr: document.getElementById('deleteDateStr').value,
+            dateStr: deleteDate,
             id: document.getElementById('deleteId').value.trim(),
-            meal: document.getElementById('deleteMeal').value
+            meal: deleteMeal
         };
 
         try {
@@ -387,6 +440,9 @@
             if (data.success) {
                 showStatus('delete-status', 'Record deleted successfully!', true);
                 document.getElementById('deleteId').value = '';
+
+                document.getElementById('summaryDate').value = deleteDate;
+                loadSummary(deleteMeal);
             } else {
                 showStatus('delete-status', data.message || 'Record not found.', false);
             }
@@ -398,47 +454,88 @@
         }
     });
 
-    // High-Contrast Formatted Summary Renderer
-    document.getElementById('getSummaryBtn').addEventListener('click', async () => {
+    // Load and Render Accordion Summary
+    async function loadSummary(expandMeal = null) {
         const date = document.getElementById('summaryDate').value;
         const container = document.getElementById('summaryContainer');
-        container.innerHTML = '<p style="margin-top:15px; font-weight:bold;">Loading summary...</p>';
+        container.innerHTML = '<p style="margin-top:15px; font-weight:bold; color:#64748b;">Updating summary...</p>';
 
         try {
             const res = await fetch(`/api/summary?date=${date}`);
             const data = await res.json();
             container.innerHTML = '';
 
-            if (Object.keys(data).length === 0) {
-                container.innerHTML = '<p style="margin-top:15px; color:#64748b; font-weight:bold;">No meal records found for this date.</p>';
-                return;
-            }
+            const allMeals = ['Breakfast', 'Lunch', 'Dinner'];
 
-            for (const mealType in data) {
-                const rawText = data[mealType].text;
+            allMeals.forEach(mealType => {
+                const mealData = data[mealType];
+                const isTargetToExpand = expandMeal === mealType;
                 
-                // Colorize key tokens for instant visual reading
-                let htmlFormatted = rawText
-                    .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '<div class="summary-header">$1</div>')
-                    .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
-                    .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
-                    .replace(/F-(\d+)/g, '<span class="count-badge tag-fried">Fried Egg: $1</span>')
-                    .replace(/P-(\d+)/g, '<span class="count-badge tag-poached">Poached Egg: $1</span>')
-                    .replace(/M-(\d+)/g, '<span class="count-badge tag-mutton">Mutton: $1</span>')
-                    .replace(/Total- (\d+)/g, '<span class="count-badge tag-total">Total: $1</span>');
+                let contentInnerHtml = '';
 
-                const cardHtml = `
-                    <div class="summary-card-view">
-                        <div>${htmlFormatted}</div>
+                if (mealData) {
+                    const rawText = mealData.text;
+                    const parts = rawText.split("Copy section:");
+                    const shiftSection = parts[0] || "";
+                    const copySection = parts[1] ? "Copy section:" + parts[1] : "";
+
+                    let shiftHtml = shiftSection
+                        .replace(/(Breakfast Summary|Lunch Summary|Dinner Summary)/g, '')
+                        .replace(/(Morning Shift|Afternoon Shift|Night Shift)/g, '<div class="shift-title">📍 $1</div>')
+                        .replace(/(All Shift)/g, '<div class="shift-title" style="color:#0f172a; margin-top:15px;">🌐 $1</div>')
+                        .replace(/ID : (.*)/g, '<div class="id-list">ID: <strong>$1</strong></div>')
+                        .replace(/F-\s*(\d+)/g, '<span class="count-badge tag-fried">F- $1</span>')
+                        .replace(/P-\s*(\d+)/g, '<span class="count-badge tag-poached">P- $1</span>')
+                        .replace(/M-\s*(\d+)/g, '<span class="count-badge tag-mutton">M- $1</span>')
+                        .replace(/Total-\s*(\d+)/g, '<span class="count-badge tag-total">Total: $1</span>')
+                        .replace(/Count\s*:/g, '<div class="count-line">Count: ')
+                        .replace(/\n\n/g, '</div>\n');
+
+                    contentInnerHtml = `
+                        <div>${shiftHtml}</div>
+                        ${copySection ? `
+                            <div class="copy-section-wrapper">
+                                <div class="copy-section-title">Copy Section</div>
+                                <div class="copy-text-box">${copySection.trim()}</div>
+                            </div>
+                        ` : ''}
                         <button type="button" class="btn-success" onclick="copyToClipboard(\`${rawText.replace(/`/g, '\\`')}\`, this)">Copy Format</button>
+                    `;
+                } else {
+                    contentInnerHtml = `<p style="color:#64748b; font-weight:600;">No ${mealType} entries recorded for this date.</p>`;
+                }
+
+                const accordionItem = `
+                    <div class="summary-accordion">
+                        <button class="accordion-btn" onclick="toggleAccordion('${mealType}')">
+                            <span>${mealType} Summary</span>
+                            <span id="icon-${mealType}">${isTargetToExpand ? '▲' : '▼'}</span>
+                        </button>
+                        <div id="content-${mealType}" class="accordion-content ${isTargetToExpand ? 'active' : ''}">
+                            ${contentInnerHtml}
+                        </div>
                     </div>
                 `;
-                container.innerHTML += cardHtml;
-            }
+
+                container.innerHTML += accordionItem;
+            });
+
         } catch (err) {
-            container.innerHTML = '<p style="margin-top:15px; color:#dc2626; font-weight:bold;">Error fetching summary data.</p>';
+            container.innerHTML = '<p style="margin-top:15px; color:#dc2626; font-weight:bold;">Error loading summary data.</p>';
         }
-    });
+    }
+
+    function toggleAccordion(mealType) {
+        const content = document.getElementById(`content-${mealType}`);
+        const icon = document.getElementById(`icon-${mealType}`);
+        if (content.classList.contains('active')) {
+            content.classList.remove('active');
+            icon.innerText = '▼';
+        } else {
+            content.classList.add('active');
+            icon.innerText = '▲';
+        }
+    }
 
     function copyToClipboard(text, btn) {
         navigator.clipboard.writeText(text).then(() => {
@@ -447,6 +544,9 @@
             setTimeout(() => { btn.innerText = origText; }, 2000);
         });
     }
+
+    // Initial load on page view
+    loadSummary();
 </script>
 
 </body>
