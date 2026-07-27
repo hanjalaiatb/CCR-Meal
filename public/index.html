@@ -3,345 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Office Meal Management System</title>
+    <title>CCR Meal System</title>
     <style>
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #f1f5f9; color: #0f172a; margin: 0; padding: 12px; }
-        .container { max-width: 520px; margin: 0 auto; }
-        .card { background: #ffffff; border-radius: 12px; border: 1px solid #cbd5e1; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .card-header { font-size: 1.1rem; font-weight: 700; color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-top: 0; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
-        label { display: block; font-weight: 600; font-size: 0.88rem; color: #334155; margin-top: 14px; margin-bottom: 6px; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; color: #0f172a; background-color: #f8fafc; outline: none; }
-        input:focus, select:focus { border-color: #2563eb; background-color: #ffffff; }
-        .date-dropdowns { display: flex; gap: 8px; }
-        .date-dropdowns select { flex: 1; }
-        .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .radio-item { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; cursor: pointer; color: #334155; }
-        .radio-item input { width: 18px; height: 18px; accent-color: #2563eb; }
-        .btn { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 16px; text-align: center; transition: all 0.2s; }
-        .btn-primary { background-color: #2563eb; color: #ffffff; }
-        .btn-danger { background-color: #dc2626; color: #ffffff; }
-        .btn-copy { background-color: #059669; color: #ffffff; margin-top: 10px; }
-        .btn-refresh { background-color: #0284c7; color: #ffffff; width: auto; padding: 6px 12px; font-size: 0.8rem; margin-top: 0; }
-        .summary-card { background-color: #0f172a; color: #f8fafc; border-radius: 10px; padding: 16px; margin-top: 12px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.88rem; line-height: 1.6; white-space: pre-wrap; }
-        .history-item { font-size: 0.82rem; padding: 10px 0; border-bottom: 1px solid #e2e8f0; color: #475569; }
-        .history-item:last-child { border-bottom: none; }
-        .badge-mod { background: #fef3c7; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; }
-        .badge-del { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; }
-        .modal-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(15, 23, 42, 0.7); align-items: center; justify-content: center; padding: 16px; z-index: 1000; }
-        .modal { background: #ffffff; border-radius: 12px; padding: 20px; width: 100%; max-width: 400px; }
-        .modal-title { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-top: 0; }
-        .modal-body { font-size: 0.9rem; color: #334155; margin: 14px 0; line-height: 1.5; }
-        .modal-actions { display: flex; gap: 10px; }
-        .modal-actions button { flex: 1; margin-top: 0; }
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .radio-label input {
+            width: 18px;
+            height: 18px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            margin-top: 10px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .status-msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: none;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
 
-    <!-- Input Section -->
+    <!-- SUBMIT MEAL CARD -->
     <div class="card">
-        <h2 class="card-header">Meal Entry Form</h2>
+        <h2>Meal Entry</h2>
+        <div id="submit-status" class="status-msg"></div>
+
         <form id="mealForm">
-            <label>Date Selection:</label>
-            <div class="date-dropdowns">
-                <select id="daySelect"></select>
-                <select id="monthSelect"></select>
-                <select id="yearSelect"></select>
+            <div class="form-group">
+                <label for="dateStr">Date:</label>
+                <input type="date" id="dateStr" required>
             </div>
 
-            <label for="employeeId">Employee ID (Max 4 Digits):</label>
-            <input type="number" id="employeeId" placeholder="e.g. 437" required pattern="\d*" oninput="if(this.value.length>4)this.value=this.value.slice(0,4)">
+            <div class="form-group">
+                <label for="employeeId">Employee ID:</label>
+                <input type="text" id="employeeId" placeholder="e.g. 437" required>
+            </div>
 
-            <label for="dutyShift">Duty Shift:</label>
-            <select id="dutyShift" required>
-                <option value="">-- Select Shift --</option>
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Night">Night</option>
-            </select>
+            <div class="form-group">
+                <label for="shift">Shift:</label>
+                <select id="shift" required>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
 
-            <label for="mealType">Meal Type:</label>
-            <select id="mealType" onchange="toggleMenuOption()" required>
-                <option value="">-- Select Meal --</option>
-                <option value="Breakfast">Breakfast</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Dinner">Dinner</option>
-            </select>
+            <div class="form-group">
+                <label for="meal">Meal Type:</label>
+                <select id="meal" required>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                </select>
+            </div>
 
-            <div id="preferredMenuSection" style="display: none;">
-                <label>Preferred Menu (Optional):</label>
+            <div class="form-group">
+                <label>Preferred Menu Option:</label>
                 <div class="radio-group">
-                    <label class="radio-item"><input type="radio" name="menuOption" value="None" checked> Regular Menu (None)</label>
-                    <label class="radio-item"><input type="radio" name="menuOption" value="Fried Egg"> Fried Egg (F)</label>
-                    <label class="radio-item"><input type="radio" name="menuOption" value="Poached Egg"> Poached Egg (P)</label>
-                    <label class="radio-item"><input type="radio" name="menuOption" value="Mutton"> Mutton (M)</label>
+                    <label class="radio-label">
+                        <input type="radio" name="menuOption" value="None" checked> Regular Menu (None)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="menuOption" value="Fried Egg"> Fried Egg (F)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="menuOption" value="Poached Egg"> Poached Egg (P)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="menuOption" value="Mutton"> Mutton (M)
+                    </label>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit Meal Entry</button>
+            <button type="submit" class="btn-primary" id="submitBtn">Submit Meal Entry</button>
         </form>
     </div>
 
-    <!-- Delete Entry Section -->
+    <!-- DELETE RECORD CARD -->
     <div class="card">
-        <h2 class="card-header">Delete Record</h2>
-        <label>Employee ID to Delete:</label>
-        <input type="number" id="deleteId" placeholder="e.g. 437" pattern="\d*" oninput="if(this.value.length>4)this.value=this.value.slice(0,4)">
-        
-        <label>Meal Type:</label>
-        <select id="deleteMeal">
-            <option value="Lunch">Lunch</option>
-            <option value="Breakfast">Breakfast</option>
-            <option value="Dinner">Dinner</option>
-        </select>
-        
-        <button class="btn btn-danger" onclick="requestDelete()">Delete Record</button>
+        <h2>Delete Record</h2>
+        <div id="delete-status" class="status-msg"></div>
+
+        <form id="deleteForm">
+            <div class="form-group">
+                <label for="deleteDateStr">Date:</label>
+                <input type="date" id="deleteDateStr" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deleteId">Employee ID to Delete:</label>
+                <input type="text" id="deleteId" placeholder="e.g. 437" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deleteMeal">Meal Type:</label>
+                <select id="deleteMeal" required>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-danger" id="deleteBtn">Delete Record</button>
+        </form>
     </div>
 
-    <!-- Summary Section -->
+    <!-- SUMMARY & OUTPUT CARD -->
     <div class="card">
-        <div class="card-header">
-            <span>Summary Dashboard</span>
-            <button class="btn btn-refresh" onclick="loadSummary()">🔄 Refresh</button>
+        <h2>Summary Output</h2>
+        <div class="form-group">
+            <label for="summaryDate">Select Date for Summary:</label>
+            <input type="date" id="summaryDate">
         </div>
-        <label>Select Summary Date:</label>
-        <input type="date" id="summaryDate" onchange="loadSummary()">
+        <button type="button" class="btn-primary" id="getSummaryBtn">Generate Summary</button>
 
-        <div id="summaryDisplay" style="margin-top: 16px;"></div>
-    </div>
-
-    <!-- History Log Bar -->
-    <div class="card">
-        <div class="card-header">
-            <span>Activity & Audit Log</span>
-            <button class="btn btn-refresh" onclick="loadHistory()">🔄 Sync Log</button>
-        </div>
-        <div id="historyLog">
-            <em style="font-size:0.85rem; color:#64748b;">Loading activity logs...</em>
+        <div style="margin-top: 15px;">
+            <pre id="summaryOutput">Select a date and click 'Generate Summary'...</pre>
         </div>
     </div>
 
-</div>
-
-<!-- Confirmation Modal -->
-<div id="modalOverlay" class="modal-overlay">
-    <div class="modal">
-        <div id="modalTitle" class="modal-title">Confirm Action</div>
-        <div id="modalBody" class="modal-body"></div>
-        <div class="modal-actions">
-            <button class="btn" style="background:#e2e8f0; color:#1e293b;" onclick="closeModal()">Cancel</button>
-            <button id="modalConfirmBtn" class="btn btn-primary">Accept</button>
-        </div>
-    </div>
 </div>
 
 <script>
-    let pendingSubmission = null;
+    // Set default date to today for all date pickers
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateStr').value = today;
+    document.getElementById('deleteDateStr').value = today;
+    document.getElementById('summaryDate').value = today;
 
-    window.addEventListener('DOMContentLoaded', () => {
-        initDateDropdowns();
-        loadSummary();
-        loadHistory();
-    });
-
-    function initDateDropdowns() {
-        const daySel = document.getElementById('daySelect');
-        const monthSel = document.getElementById('monthSelect');
-        const yearSel = document.getElementById('yearSelect');
-        const today = new Date();
-        
-        for (let i = 1; i <= 31; i++) {
-            let opt = document.createElement('option');
-            opt.value = i; opt.textContent = i;
-            if (i === today.getDate()) opt.selected = true;
-            daySel.appendChild(opt);
-        }
-
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        months.forEach((m, idx) => {
-            let opt = document.createElement('option');
-            opt.value = idx + 1; opt.textContent = m;
-            if (idx === today.getMonth()) opt.selected = true;
-            monthSel.appendChild(opt);
-        });
-
-        for (let y = 2025; y <= 2030; y++) {
-            let opt = document.createElement('option');
-            opt.value = y; opt.textContent = y;
-            if (y === today.getFullYear()) opt.selected = true;
-            yearSel.appendChild(opt);
-        }
-
-        document.getElementById('summaryDate').valueAsDate = today;
+    function showStatus(elementId, message, isSuccess) {
+        const el = document.getElementById(elementId);
+        el.innerText = message;
+        el.className = 'status-msg ' + (isSuccess ? 'status-success' : 'status-error');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    function getSelectedFormattedDate() {
-        const d = document.getElementById('daySelect').value;
-        const m = document.getElementById('monthSelect').value;
-        const y = document.getElementById('yearSelect').value;
-        return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    }
-
-    function toggleMenuOption() {
-        const meal = document.getElementById('mealType').value;
-        const section = document.getElementById('preferredMenuSection');
-        if (meal === 'Lunch' || meal === 'Dinner') {
-            section.style.display = 'block';
-        } else {
-            section.style.display = 'none';
-            document.querySelector('input[name="menuOption"][value="None"]').checked = true;
-        }
-    }
-
+    // Submit Entry Handler
     document.getElementById('mealForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const dateStr = getSelectedFormattedDate();
-        const id = document.getElementById('employeeId').value.trim();
-        const shift = document.getElementById('dutyShift').value;
-        const meal = document.getElementById('mealType').value;
-        const menuOption = document.querySelector('input[name="menuOption"]:checked').value;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Saving...';
 
-        pendingSubmission = { dateStr, id, shift, meal, menuOption };
+        const payload = {
+            dateStr: document.getElementById('dateStr').value,
+            id: document.getElementById('employeeId').value.trim(),
+            shift: document.getElementById('shift').value,
+            meal: document.getElementById('meal').value,
+            menuOption: document.querySelector('input[name="menuOption"]:checked').value
+        };
 
-        const checkRes = await fetch(`/api/check-entry?date=${dateStr}&id=${id}&meal=${meal}&t=${Date.now()}`);
-        const checkData = await checkRes.json();
+        try {
+            const res = await fetch('/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
 
-        if (checkData.exists) {
-            if (checkData.entry.shift === shift && checkData.entry.menuOption === menuOption) {
-                alert(`Employee ID ${id} has already submitted ${meal} for this date!`);
-                return;
+            if (data.success) {
+                showStatus('submit-status', 'Entry saved successfully!', true);
+                document.getElementById('employeeId').value = '';
             } else {
-                openModal(
-                    "Update Existing Entry?",
-                    `ID <b>${id}</b> already submitted <b>${meal}</b> for this date.<br><br>` +
-                    `<b>Proposed Changes:</b><br>` +
-                    `• Shift: ${checkData.entry.shift} ➔ <b>${shift}</b><br>` +
-                    `• Menu Option: ${checkData.entry.menuOption} ➔ <b>${menuOption}</b>`,
-                    executeSubmit
-                );
-                return;
+                showStatus('submit-status', 'Error: ' + (data.error || 'Failed to save'), false);
             }
+        } catch (err) {
+            showStatus('submit-status', 'Network connection error.', false);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Submit Meal Entry';
         }
-
-        executeSubmit();
     });
 
-    async function executeSubmit() {
-        closeModal();
-        const res = await fetch('/api/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pendingSubmission)
-        });
+    // Delete Record Handler
+    document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const deleteBtn = document.getElementById('deleteBtn');
+        deleteBtn.disabled = true;
+        deleteBtn.innerText = 'Deleting...';
 
-        if (res.ok) {
-            document.getElementById('employeeId').value = '';
-            await loadSummary();
-            await loadHistory();
-            alert('Meal entry saved successfully!');
-        }
-    }
+        const payload = {
+            dateStr: document.getElementById('deleteDateStr').value,
+            id: document.getElementById('deleteId').value.trim(),
+            meal: document.getElementById('deleteMeal').value
+        };
 
-    async function requestDelete() {
-        const id = document.getElementById('deleteId').value.trim();
-        const meal = document.getElementById('deleteMeal').value;
-        const dateStr = getSelectedFormattedDate();
+        try {
+            const res = await fetch('/api/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
 
-        if (!id) { alert("Please enter Employee ID to delete."); return; }
-
-        openModal(
-            "Confirm Deletion",
-            `Are you sure you want to <b>DELETE</b> ID <b>${id}</b>'s ${meal} entry for date <b>${dateStr}</b>?`,
-            async () => {
-                closeModal();
-                const res = await fetch('/api/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ dateStr, id, meal })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('deleteId').value = '';
-                    await loadSummary();
-                    await loadHistory();
-                    alert('Record deleted successfully.');
-                } else {
-                    alert(data.message || 'Error deleting record.');
-                }
+            if (data.success) {
+                showStatus('delete-status', 'Record deleted successfully!', true);
+                document.getElementById('deleteId').value = '';
+            } else {
+                showStatus('delete-status', data.message || 'Record not found.', false);
             }
-        );
-    }
+        } catch (err) {
+            showStatus('delete-status', 'Network connection error.', false);
+        } finally {
+            deleteBtn.disabled = false;
+            deleteBtn.innerText = 'Delete Record';
+        }
+    });
 
-    async function loadSummary() {
+    // Generate Summary Handler
+    document.getElementById('getSummaryBtn').addEventListener('click', async () => {
         const date = document.getElementById('summaryDate').value;
-        if(!date) return;
-        
-        const res = await fetch(`/api/summary?date=${date}&t=${Date.now()}`);
-        const data = await res.json();
+        const outputEl = document.getElementById('summaryOutput');
+        outputEl.innerText = 'Loading summary...';
 
-        const container = document.getElementById('summaryDisplay');
-        container.innerHTML = '';
+        try {
+            const res = await fetch(`/api/summary?date=${date}`);
+            const data = await res.json();
 
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(meal => {
-            if (data[meal] && data[meal].text) {
-                const box = document.createElement('div');
-                box.style.marginBottom = '20px';
-                box.innerHTML = `
-                    <div style="font-weight:700; color:#1e293b; font-size:0.95rem;">${meal.toUpperCase()} MEAL REPORT</div>
-                    <div class="summary-card" id="box-${meal}">${data[meal].text}</div>
-                    <button class="btn btn-copy" onclick="copySummary('box-${meal}')">Copy ${meal} Summary</button>
-                `;
-                container.appendChild(box);
+            let textOutput = '';
+            for (const mealType in data) {
+                textOutput += data[mealType].text + '\n\n' + '='.repeat(30) + '\n\n';
             }
-        });
 
-        if (container.innerHTML === '') {
-            container.innerHTML = '<div style="font-size:0.88rem; color:#64748b; text-align:center; padding:12px;">No meal records found for this date.</div>';
+            outputEl.innerText = textOutput.trim() || 'No meal records found for this date.';
+        } catch (err) {
+            outputEl.innerText = 'Error fetching summary data.';
         }
-    }
-
-    async function loadHistory() {
-        const res = await fetch(`/api/history?t=${Date.now()}`);
-        const logs = await res.json();
-        const logBox = document.getElementById('historyLog');
-        logBox.innerHTML = '';
-
-        if (logs.length === 0) {
-            logBox.innerHTML = '<em style="font-size:0.85rem; color:#64748b;">No activity recorded yet.</em>';
-            return;
-        }
-
-        logs.reverse().slice(0, 10).forEach(log => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            let badge = '<span class="badge-mod">MODIFIED</span>';
-            if (log.type === 'DELETE') badge = '<span class="badge-del">DELETED</span>';
-
-            div.innerHTML = `${badge} <b>${log.time}</b> — ID <b>${log.id}</b> (${log.meal})<br><span style="color:#64748b; font-size:0.8rem;">${log.details}</span>`;
-            logBox.appendChild(div);
-        });
-    }
-
-    function copySummary(elementId) {
-        const text = document.getElementById(elementId).innerText;
-        navigator.clipboard.writeText(text);
-        alert('Summary copied to clipboard!');
-    }
-
-    function openModal(title, bodyHtml, onConfirm) {
-        document.getElementById('modalTitle').innerHTML = title;
-        document.getElementById('modalBody').innerHTML = bodyHtml;
-        const confirmBtn = document.getElementById('modalConfirmBtn');
-        confirmBtn.onclick = onConfirm;
-        document.getElementById('modalOverlay').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('modalOverlay').style.display = 'none';
-    }
+    });
 </script>
+
 </body>
 </html>
