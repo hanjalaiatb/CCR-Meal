@@ -7,16 +7,16 @@
     <style>
         body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
         .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 10px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
         h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
         .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
         
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        .row-3 { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: end; }
+        .row-3 { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: end; }
         .group { margin-bottom: 6px; }
         label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748b; margin-bottom: 2px; text-transform: uppercase; }
         
-        input, select { width: 100%; height: 30px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.8rem; background: #f8fafc; box-sizing: border-box; }
+        input, select { width: 100%; height: 30px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #f8fafc; box-sizing: border-box; }
         input:focus, select:focus { border-color: #2563eb; background: #fff; outline: none; }
         
         .date-short { max-width: 130px; }
@@ -26,30 +26,30 @@
         
         .radio-lbl {
             display: flex; align-items: center; justify-content: center; height: 30px; padding: 0 2px;
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 3px;
+            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;
             font-size: 0.7rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center; box-sizing: border-box;
         }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
         .radio-lbl.disabled { opacity: 0.3; cursor: not-allowed; background: #f1f5f9; }
 
-        button { width: 100%; height: 30px; border: none; border-radius: 3px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; box-sizing: border-box; }
+        button { width: 100%; height: 30px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; box-sizing: border-box; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 26px; padding: 0 8px; font-size: 0.7rem; width: auto; margin-top: 4px; display: inline-block; }
+        .btn-green { background: #059669; color: #fff; height: 26px; padding: 0 8px; font-size: 0.7rem; width: auto; margin-top: 4px; display: inline-block; border-radius: 4px; }
 
-        .msg { padding: 5px; border-radius: 3px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
+        .msg { padding: 5px; border-radius: 6px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
         .msg-ok { background: #dcfce7; color: #15803d; }
         .msg-err { background: #fee2e2; color: #991b1b; }
 
-        .acc { border: 1px solid #cbd5e1; border-radius: 3px; margin-top: 5px; overflow: hidden; background: #fff; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 5px; overflow: hidden; background: #fff; }
         .acc-btn { width: 100%; padding: 7px 8px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.8rem; cursor: pointer; text-align: left; align-items: center; }
         .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.75rem; }
         .acc-body.show { display: block; }
 
         .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dashed #cbd5e1; }
         .shift-title { font-weight: 700; font-size: 0.73rem; text-transform: uppercase; margin-bottom: 1px; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
         .log-row { font-size: 0.68rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
     </style>
 </head>
@@ -101,13 +101,29 @@
         </form>
     </div>
 
-    <!-- 2. DELETE RECORD -->
+    <!-- 2. SUMMARY -->
+    <div class="card">
+        <h2>Summary Output</h2>
+        <div class="group date-short" style="margin-top:5px;">
+            <label>Select Date</label>
+            <input type="date" id="s-date">
+        </div>
+        <div id="summary-box"></div>
+    </div>
+
+    <!-- 3. DELETE RECORD -->
     <div class="card">
         <h2>Delete Specific Record</h2>
         <div class="sub">Remove entry by Date, Meal, and ID</div>
         <div id="d-msg" class="msg"></div>
         <form id="f-del">
             <div class="row-3">
+                <div class="group" style="margin-bottom:0;">
+                    <label>Select ID</label>
+                    <select id="d-id-select" required>
+                        <option value="">None</option>
+                    </select>
+                </div>
                 <div class="group" style="margin-bottom:0;">
                     <label>Date</label>
                     <input type="date" id="d-date" required>
@@ -120,32 +136,16 @@
                         <option value="Dinner">Dinner</option>
                     </select>
                 </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Select ID</label>
-                    <select id="d-id-select" required>
-                        <option value="">-- ID --</option>
-                    </select>
-                </div>
             </div>
             <button type="submit" class="btn-red" style="margin-top:6px;">Delete Record</button>
         </form>
-    </div>
-
-    <!-- 3. SUMMARY -->
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div class="group date-short" style="margin-top:5px;">
-            <label>Select Date</label>
-            <input type="date" id="s-date">
-        </div>
-        <div id="summary-box"></div>
     </div>
 
     <!-- 4. AUDIT LOG -->
     <div class="card">
         <h2>Activity Audit Log</h2>
         <div class="sub">Tracks updates & deletions</div>
-        <div id="log-box" style="max-height:80px; overflow-y:auto;">
+        <div id="log-box" style="max-height:110px; overflow-y:auto;">
             <div style="font-size:0.7rem; color:#64748b;">No actions recorded yet.</div>
         </div>
     </div>
@@ -287,7 +287,7 @@
         const dDate = document.getElementById('d-date').value;
         const dMeal = document.getElementById('d-meal').value;
         const sel = document.getElementById('d-id-select');
-        sel.innerHTML = '<option value="">-- ID --</option>';
+        sel.innerHTML = '<option value="">None</option>';
         records.filter(r => r.dateStr === dDate && r.meal === dMeal).forEach(r => {
             const opt = document.createElement('option');
             opt.value = r.id;
@@ -372,7 +372,6 @@
         const show = el.classList.contains('show');
         document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
         
-        // Reset all arrows to downward
         ['Breakfast', 'Lunch', 'Dinner'].forEach(m => {
             const btnSpan = document.querySelector(`button[onclick="toggleAcc('${m}')"] span:last-child`);
             if (btnSpan) {
@@ -394,7 +393,7 @@
     function addLog(text) {
         const time = new Date().toLocaleTimeString();
         logs.unshift(`[${time}] ${text}`);
-        if (logs.length > 8) logs.pop();
+        if (logs.length > 15) logs.pop();
         document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
     }
 </script>
