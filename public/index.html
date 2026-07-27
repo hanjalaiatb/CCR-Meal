@@ -3,580 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCR Meal System</title>
+    <title>CCR-Meal Tracker</title>
     <style>
-        :root {
-            --action-btn: #2563eb;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --success: #059669;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-
-            /* Unique Option Group Themes */
-            --shift-primary: #059669;
-            --shift-light: #ecfdf5;
-
-            --mealtype-primary: #0d9488;
-            --mealtype-light: #f0fdfa;
-
-            --menu-primary: #7c3aed;
-            --menu-light: #f5f3ff;
-
-            /* Summary Accordion Themes */
-            --breakfast-accent: #d97706;
-            --breakfast-bg: #fffbeb;
-            --breakfast-border: #fde68a;
-
-            --lunch-accent: #059669;
-            --lunch-bg: #ecfdf5;
-            --lunch-border: #a7f3d0;
-
-            --dinner-accent: #4f46e5;
-            --dinner-bg: #eef2ff;
-            --dinner-border: #c7d2fe;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
         body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            padding: 24px 12px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
         }
-
         .container {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 520px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            max-width: 400px;
         }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border);
-        }
-
-        .card-header-toggle {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
         h2 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .form-group {
-            margin-top: 14px;
-        }
-
-        .form-row .form-group {
             margin-top: 0;
+            color: #333;
+            text-align: center;
         }
-
+        .form-group {
+            margin-bottom: 15px;
+        }
         label {
             display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
         }
-
-        input[type="text"],
-        input[type="date"] {
+        input, select, textarea {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            color: var(--text-main);
-            outline: none;
-            background-color: #f8fafc;
-            transition: all 0.2s ease;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-
-        input:focus {
-            background-color: #fff;
-            border-color: var(--action-btn);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-
-        .option-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .option-grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .radio-card {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            gap: 6px;
-            padding: 10px 8px;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            color: var(--text-muted);
-        }
-
-        .radio-card input[type="radio"] {
-            display: none;
-        }
-
-        .shift-group .radio-card:has(input:checked) {
-            background: var(--shift-light);
-            border-color: var(--shift-primary);
-            color: var(--shift-primary);
-            font-weight: 700;
-        }
-
-        .mealtype-group .radio-card:has(input:checked) {
-            background: var(--mealtype-light);
-            border-color: var(--mealtype-primary);
-            color: var(--mealtype-primary);
-            font-weight: 700;
-        }
-
-        .menu-group .radio-card:has(input:checked) {
-            background: var(--menu-light);
-            border-color: var(--menu-primary);
-            color: var(--menu-primary);
-            font-weight: 700;
-        }
-
         button {
             width: 100%;
-            padding: 12px 16px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.15s ease;
-            margin-top: 16px;
-        }
-
-        button:active { opacity: 0.85; }
-
-        .btn-primary { background: var(--action-btn); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: var(--success); color: white; margin-top: 10px; }
-        .btn-subtle {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            margin-top: 12px;
-            text-align: center;
-        }
-
-        .collapsible-body {
-            display: none;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .collapsible-body.open { display: block; }
-
-        .status-msg {
-            padding: 10px 14px;
-            border-radius: var(--radius-md);
-            margin-bottom: 12px;
-            display: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .status-success { background: #dcfce7; color: #15803d; }
-        .status-error { background: var(--danger-light); color: #991b1b; }
-
-        .summary-accordion {
-            border-radius: var(--radius-md);
-            margin-top: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .theme-Breakfast { border-color: var(--breakfast-border); }
-        .theme-Breakfast .accordion-btn { background: var(--breakfast-bg); color: var(--breakfast-accent); }
-
-        .theme-Lunch { border-color: var(--lunch-border); }
-        .theme-Lunch .accordion-btn { background: var(--lunch-bg); color: var(--lunch-accent); }
-
-        .theme-Dinner { border-color: var(--dinner-border); }
-        .theme-Dinner .accordion-btn { background: var(--dinner-bg); color: var(--dinner-accent); }
-
-        .accordion-btn {
-            width: 100%;
-            font-size: 0.95rem;
-            font-weight: 700;
-            padding: 14px 16px;
-            text-align: left;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        .accordion-content {
-            display: none;
-            padding: 16px;
-            background: #ffffff;
-            border-top: 1px solid var(--border);
-        }
-
-        .accordion-content.active { display: block; }
-
-        .shift-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin: 12px 0 6px 0;
-        }
-
-        .id-list {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-main);
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            margin-bottom: 8px;
-        }
-
-        .count-line {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.88rem;
-        }
-
-        .count-badge {
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .tag-fried { background-color: #dcfce7; color: #166534; }
-        .tag-poached { background-color: #dbeafe; color: #1e40af; }
-        .tag-mutton { background-color: #f3e8ff; color: #6b21a8; }
-        .tag-total { background-color: #e2e8f0; color: #334155; }
-
-        .copy-text-box {
-            white-space: pre-wrap;
-            background: #f8fafc;
-            color: #334155;
+            background-color: #28a745;
+            color: white;
             padding: 12px;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-family: monospace;
-            border: 1px solid var(--border);
-            margin-top: 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
         }
-
-        .toggle-icon { font-size: 0.8rem; }
+        button:hover {
+            background-color: #218838;
+        }
+        #response-message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 1. MEAL ENTRY CARD -->
-    <div class="card">
-        <h2>Meal Entry</h2>
-        <div class="subtitle">Log daily meal counts by employee shift</div>
-        <div id="submit-status" class="status-msg"></div>
-
-        <form id="mealForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="employeeId">Employee ID</label>
-                    <input type="text" id="employeeId" placeholder="e.g. 437" required>
-                </div>
-                <div class="form-group">
-                    <label for="dateStr">Date</label>
-                    <input type="date" id="dateStr" value="2026-07-27" required>
-                </div>
+    <div class="container">
+        <h2>CCR-Meal Entry</h2>
+        <form id="meal-form">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
             </div>
 
-            <div class="form-group shift-group">
-                <label>Shift</label>
-                <div class="option-grid">
-                    <label class="radio-card"><input type="radio" name="shift" value="Morning" checked> Morning</label>
-                    <label class="radio-card"><input type="radio" name="shift" value="Afternoon"> Afternoon</label>
-                    <label class="radio-card"><input type="radio" name="shift" value="Night"> Night</label>
-                </div>
+            <div class="form-group">
+                <label for="mealType">Meal Type:</label>
+                <select id="mealType" required>
+                    <option value="">Select Meal Type</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                </select>
             </div>
 
-            <div class="form-group mealtype-group">
-                <label>Meal Type</label>
-                <div class="option-grid">
-                    <label class="radio-card"><input type="radio" name="meal" value="Breakfast" checked> Breakfast</label>
-                    <label class="radio-card"><input type="radio" name="meal" value="Lunch"> Lunch</label>
-                    <label class="radio-card"><input type="radio" name="meal" value="Dinner"> Dinner</label>
-                </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" rows="3" placeholder="Enter meal details..." required></textarea>
             </div>
 
-            <div class="form-group menu-group">
-                <label>Menu Option</label>
-                <div class="option-grid-2">
-                    <label class="radio-card"><input type="radio" name="menuOption" value="None" checked> Regular</label>
-                    <label class="radio-card"><input type="radio" name="menuOption" value="Fried Egg"> Fried (F)</label>
-                    <label class="radio-card"><input type="radio" name="menuOption" value="Poached Egg"> Poached (P)</label>
-                    <label class="radio-card"><input type="radio" name="menuOption" value="Mutton"> Mutton (M)</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-primary" id="submitBtn">Save Entry</button>
+            <button type="submit" id="save-btn">Save Entry</button>
         </form>
+        <div id="response-message"></div>
     </div>
 
-    <!-- 2. SUMMARY OUTPUT SECTION -->
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div class="subtitle">Overview of shift meal totals</div>
-        <div class="form-group">
-            <label for="summaryDate">Select Date</label>
-            <input type="date" id="summaryDate" value="2026-07-27">
-        </div>
-        <div id="summaryContainer"></div>
-    </div>
+    <script>
+        // Automatically set today's date on load
+        document.getElementById('date').valueAsDate = new Date();
 
-    <!-- 3. MODIFY & DELETE RECORD CARD -->
-    <div class="card">
-        <div class="card-header-toggle" onclick="toggleCardSection('modifyBody', 'modifyIcon')">
-            <div>
-                <h2>Modify & Delete Record</h2>
-                <div class="subtitle">Remove or adjust existing entries</div>
-            </div>
-            <span class="toggle-icon" id="modifyIcon">▼</span>
-        </div>
+        document.getElementById('meal-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevents page reload / green bar error glitch
 
-        <div id="modifyBody" class="collapsible-body">
-            <div id="delete-status" class="status-msg"></div>
-            <form id="deleteForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="deleteId">Employee ID</label>
-                        <input type="text" id="deleteId" placeholder="e.g. 437" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="deleteDateStr">Date</label>
-                        <input type="date" id="deleteDateStr" value="2026-07-27" required>
-                    </div>
-                </div>
+            const saveBtn = document.getElementById('save-btn');
+            const responseMsg = document.getElementById('response-message');
+            
+            const mealData = {
+                date: document.getElementById('date').value,
+                mealType: document.getElementById('mealType').value,
+                description: document.getElementById('description').value
+            };
 
-                <div class="form-group mealtype-group">
-                    <label>Meal Type to Delete</label>
-                    <div class="option-grid">
-                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Breakfast" checked> Breakfast</label>
-                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Lunch"> Lunch</label>
-                        <label class="radio-card"><input type="radio" name="deleteMeal" value="Dinner"> Dinner</label>
-                    </div>
-                </div>
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            responseMsg.textContent = '';
 
-                <button type="submit" class="btn-danger" id="deleteBtn">Delete Record</button>
-            </form>
-        </div>
-    </div>
-</div>
+            try {
+                const response = await fetch('/api/meals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(mealData)
+                });
 
-<script>
-    const rawDataStore = {};
+                const result = await response.json();
 
-    function updateAllDates(newDate) {
-        if (!newDate) return;
-        ['dateStr', 'summaryDate', 'deleteDateStr'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.value !== newDate) el.value = newDate;
-        });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        loadSummary();
-        ['dateStr', 'summaryDate', 'deleteDateStr'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('input', (e) => { updateAllDates(e.target.value); loadSummary(); });
-                el.addEventListener('change', (e) => { updateAllDates(e.target.value); loadSummary(); });
+                if (response.ok && result.success) {
+                    responseMsg.style.color = 'green';
+                    responseMsg.textContent = 'Meal saved successfully!';
+                    document.getElementById('meal-form').reset();
+                    document.getElementById('date').valueAsDate = new Date(); // Reset date back to today
+                } else {
+                    responseMsg.style.color = 'red';
+                    responseMsg.textContent = result.message || 'Failed to save meal.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                responseMsg.style.color = 'red';
+                responseMsg.textContent = 'Network error. Please try again.';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Entry';
             }
         });
-    });
-
-    function toggleCardSection(bodyId, iconId) {
-        const body = document.getElementById(bodyId);
-        const icon = document.getElementById(iconId);
-        body.classList.toggle('open');
-        icon.innerText = body.classList.contains('open') ? '▲' : '▼';
-    }
-
-    function showStatus(elementId, message, isSuccess) {
-        const el = document.getElementById(elementId);
-        el.innerText = message;
-        el.className = 'status-msg ' + (isSuccess ? 'status-success' : 'status-error');
-        el.style.display = 'block';
-        setTimeout(() => { el.style.display = 'none'; }, 4000);
-    }
-
-    document.getElementById('mealForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerText = 'Saving...';
-
-        const selectedMeal = document.querySelector('input[name="meal"]:checked').value;
-        const entryDate = document.getElementById('dateStr').value;
-
-        const payload = {
-            dateStr: entryDate,
-            id: document.getElementById('employeeId').value.trim(),
-            shift: document.querySelector('input[name="shift"]:checked').value,
-            meal: selectedMeal,
-            menuOption: document.querySelector('input[name="menuOption"]:checked').value
-        };
-
-        try {
-            const res = await fetch('/api/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showStatus('submit-status', 'Entry saved successfully!', true);
-                document.getElementById('employeeId').value = '';
-                updateAllDates(entryDate);
-                loadSummary(selectedMeal);
-            } else {
-                showStatus('submit-status', 'Error: ' + (data.error || 'Failed to save'), false);
-            }
-        } catch (err) {
-            showStatus('submit-status', 'Network connection error.', false);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = 'Save Entry';
-        }
-    });
-
-    document.getElementById('deleteForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const deleteBtn = document.getElementById('deleteBtn');
-        deleteBtn.disabled = true;
-        deleteBtn.innerText = 'Deleting...';
-
-        const deleteMeal = document.querySelector('input[name="deleteMeal"]:checked').value;
-        const deleteDate = document.getElementById('deleteDateStr').value;
-
-        const payload = {
-            dateStr: deleteDate,
-            id: document.getElementById('deleteId').value.trim(),
-            meal: deleteMeal
-        };
-
-        try {
-            const res = await fetch('/api/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showStatus('delete-status', 'Record deleted successfully!', true);
-                document.getElementById('deleteId').value = '';
-                updateAllDates(deleteDate);
-                loadSummary(deleteMeal);
-            } else {
-                showStatus('delete-status', data.message || 'Record not found.', false);
-            }
-        } catch (err) {
-            showStatus('delete-status', 'Network connection error.', false);
-        } finally {
-            deleteBtn.disabled = false;
-            deleteBtn.innerText = 'Delete Record';
-        }
-    });
-
-    async function loadSummary(expandMeal = null) {
-        const dateInput = document.getElementById('summaryDate');
-        if (!dateInput || !dateInput.value) return;
-        const date = dateInput.value;
-        
-        const container = document.getElementById('summaryContainer');
-        container.innerHTML = '<p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Loading summary...</p>';
-
-        try {
-            const res = await fetch(`/api/summary?date=${date}`);
-            const data = await res.json();
-            container.innerHTML = '';
-
-            ['Breakfast', 'Lunch', 'Dinner'].forEach(mealType => {
-                const mealData = data[mealType];
-                const isTargetToExpand = expandMeal === mealType;
-                let contentInnerHtml = '';
-
-                if (mealData) {
-                    rawDataStore[mealType] = mealData.text;
-                    const parts = mealData.text.split("Copy section:");
-                    const shiftSection = parts[0] || "";
-                    const copySection =
+    </script>
+</body>
+</html>
