@@ -6,12 +6,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+// MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -22,11 +25,16 @@ mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log("Connected to MongoDB Cloud"))
-.catch((err) => console.error("MongoDB connection error:", err));
+.then(() => {
+  console.log("Connected to MongoDB Cloud");
+})
+.catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
 
+// Define Meal Schema & Model
 const mealSchema = new mongoose.Schema({
-  employeeId: { type: String, required: true },
+  empId: { type: String, required: true },
   date: { type: String, required: true },
   shift: { type: String, required: true },
   mealType: { type: String, required: true },
@@ -36,38 +44,62 @@ const mealSchema = new mongoose.Schema({
 
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Save Meal Entry
+// POST Endpoint: Save or update (detects modifications)
 app.post('/api/meals', async (req, res) => {
   try {
-    const { employeeId, date, shift, mealType, menuOption } = req.body;
+    const { empId, date, shift, mealType, menuOption } = req.body;
     
-    if (!employeeId || !date || !shift || !mealType || !menuOption) {
+    if (!empId || !date || !shift || !mealType || !menuOption) {
       return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    const newMeal = new Meal({ employeeId, date, shift, mealType, menuOption });
-    await newMeal.save();
+    let existing = await Meal.findOne({ empId, date, mealType });
+    let modified = false;
 
-    res.status(201).json({ success: true, message: 'Meal saved successfully!' });
+    if (existing) {
+      if (existing.shift !== shift || existing.menuOption !== menuOption) {
+        modified = true;
+      }
+      existing.shift = shift;
+      existing.menuOption = menuOption;
+      await existing.save();
+      return res.status(200).json({ success: true, modified, message: 'Updated successfully' });
+    }
+
+    const newMeal = new Meal({ empId, date, shift, mealType, menuOption });
+    await newMeal.save();
+    res.status(201).json({ success: true, modified: false, message: 'Saved successfully' });
   } catch (error) {
     console.error('Error saving meal:', error);
-    res.status(500).json({ success: false, message: 'Server error while saving meal.' });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get Summary By Date
-app.get('/api/meals/summary', async (req, res) => {
+// GET Endpoint: Fetch meals by date
+app.get('/api/meals', async (req, res) => {
   try {
     const { date } = req.query;
-    const query = date ? { date } : {};
-    const meals = await Meal.find(query).sort({ createdAt: -1 });
+    const filter = date ? { date } : {};
+    const meals = await Meal.find(filter).sort({ createdAt: -1 });
     res.status(200).json({ success: true, meals });
   } catch (error) {
-    console.error('Error fetching summary:', error);
-    res.status(500).json({ success: false, message: 'Server error fetching summary.' });
+    console.error('Error fetching meals:', error);
+    res.status(500).json({ success: false, message: 'Server error while fetching meals.' });
   }
 });
 
+// DELETE Endpoint: Delete specific entry by ID
+app.delete('/api/meals/:id', async (req, res) => {
+  try {
+    await Meal.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: 'Deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting meal:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
