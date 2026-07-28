@@ -24,6 +24,7 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
+// Native MongoDB TTL index: automatically deletes logs after 48 hours (172800s) without blocking RAM
 const logSchema = new mongoose.Schema({
     text: { type: String, required: true },
     createdAt: { type: Date, default: Date.now, expires: 172800 }
@@ -36,11 +37,6 @@ app.post('/api/submit', async (req, res) => {
         if (!dateStr || !id || !shift || !meal) {
             return res.status(400).json({ success: false, error: 'Missing fields' });
         }
-
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 2);
-        const cutoffStr = cutoff.toISOString().split('T')[0];
-        await Meal.deleteMany({ dateStr: { $lt: cutoffStr } });
 
         const existing = await Meal.findOne({ dateStr, id, meal });
 
@@ -103,10 +99,11 @@ app.post('/api/logs', async (req, res) => {
         if (!text) return res.status(400).json({ success: false, error: 'Missing text' });
         await Log.create({ text });
         
-        const allLogs = await Log.find().sort({ _id: -1 }).lean();
-        if (allLogs.length > 15) {
-            const idsToDelete = allLogs.slice(15).map(l => l._id);
-            await Log.deleteMany({ _id: { $in: idsToDelete } });
+        // Lightweight trim to max 15 logs capacity
+        const count = await Log.countDocuments();
+        if (count > 15) {
+            const oldest = await Log.find().sort({ createdAt: 1 }).limit(count - 15).lean();
+            await Log.deleteMany({ _id: { $in: oldest.map(l => l._id) } });
         }
 
         res.status(200).json({ success: true });
