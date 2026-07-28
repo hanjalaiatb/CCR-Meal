@@ -24,13 +24,6 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
-const logSchema = new mongoose.Schema({
-    text: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-logSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 });
-const Log = mongoose.model('Log', logSchema);
-
 app.post('/api/submit', async (req, res) => {
     try {
         const { dateStr, id, shift, meal, menuOption } = req.body;
@@ -77,33 +70,6 @@ app.post('/api/delete', async (req, res) => {
 
         const result = await Meal.findOneAndDelete({ id, dateStr, meal });
         if (!result) return res.status(404).json({ success: false, error: 'Not found' });
-
-        res.status(200).json({ success: true });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-app.get('/api/logs', async (req, res) => {
-    try {
-        const logs = await Log.find().sort({ _id: -1 }).limit(15).lean();
-        res.status(200).json({ success: true, logs });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-app.post('/api/logs', async (req, res) => {
-    try {
-        const { text } = req.body;
-        if (!text) return res.status(400).json({ success: false, error: 'Missing text' });
-        await Log.create({ text });
-        
-        const count = await Log.countDocuments();
-        if (count > 15) {
-            const oldest = await Log.find().sort({ createdAt: 1 }).limit(count - 15).lean();
-            await Log.deleteMany({ _id: { $in: oldest.map(l => l._id) } });
-        }
 
         res.status(200).json({ success: true });
     } catch (err) {
