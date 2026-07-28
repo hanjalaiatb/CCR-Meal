@@ -167,6 +167,7 @@
         const d = new Date();
         const localDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+        // 4 days max limit for ordering meals (e.g., July 1 -> up to July 5)
         const maxDateObj = new Date();
         maxDateObj.setDate(maxDateObj.getDate() + 4);
         const maxDateStr = `${maxDateObj.getFullYear()}-${String(maxDateObj.getMonth() + 1).padStart(2, '0')}-${String(maxDateObj.getDate()).padStart(2, '0')}`;
@@ -411,5 +412,4 @@
             el.classList.add('show');
             const activeSpan = document.querySelector(`button[onclick="toggleAcc('${meal}')"] span:last-child`);
             if (activeSpan) {
-                const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
-                activeSpan.innerText = totalText + 
+                const totalText = activeSpan.innerText.re
