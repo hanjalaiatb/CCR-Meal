@@ -152,8 +152,32 @@
 </div>
 
 <script>
+    // Instant execution to guarantee date fields load instantly without lag
+    (function() {
+        const d = new Date();
+        const localDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+        const maxDateObj = new Date();
+        maxDateObj.setDate(maxDateObj.getDate() + 4);
+        const maxDateStr = `${maxDateObj.getFullYear()}-${String(maxDateObj.getMonth() + 1).padStart(2, '0')}-${String(maxDateObj.getDate()).padStart(2, '0')}`;
+
+        const eDateInput = document.getElementById('e-date');
+        if (eDateInput) {
+            eDateInput.value = localDateStr;
+            eDateInput.min = localDateStr;
+            eDateInput.max = maxDateStr;
+        }
+
+        const sDateInput = document.getElementById('s-date');
+        if (sDateInput) sDateInput.value = localDateStr;
+
+        const dDateInput = document.getElementById('d-date');
+        if (dDateInput) dDateInput.value = localDateStr;
+    })();
+
     function bindRadios(groupId) {
         const c = document.getElementById(groupId);
+        if(!c) return;
         c.querySelectorAll('input').forEach(inp => {
             inp.addEventListener('change', e => {
                 if (e.target.disabled) return;
@@ -164,22 +188,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        const d = new Date();
-        const localDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-        // 4 days max limit for ordering meals (e.g., July 1 -> up to July 5)
-        const maxDateObj = new Date();
-        maxDateObj.setDate(maxDateObj.getDate() + 4);
-        const maxDateStr = `${maxDateObj.getFullYear()}-${String(maxDateObj.getMonth() + 1).padStart(2, '0')}-${String(maxDateObj.getDate()).padStart(2, '0')}`;
-
-        const eDateInput = document.getElementById('e-date');
-        eDateInput.value = localDateStr;
-        eDateInput.min = localDateStr;
-        eDateInput.max = maxDateStr;
-
-        document.getElementById('s-date').value = localDateStr;
-        document.getElementById('d-date').value = localDateStr;
-
         bindRadios('g-shift');
         bindRadios('g-meal');
         bindRadios('g-menu');
@@ -195,6 +203,7 @@
                 const regInp = document.querySelector('input[value="Regular"]');
 
                 [friedInp, poachedInp, muttonInp].forEach(el => {
+                    if (!el) return;
                     el.disabled = isBreakfast;
                     const lbl = el.closest('.radio-lbl');
                     if (isBreakfast) {
@@ -205,10 +214,11 @@
                     }
                 });
 
-                if (isBreakfast) {
+                if (isBreakfast && regInp) {
                     regInp.checked = true;
                     document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
-                    document.getElementById('lbl-reg').classList.add('active');
+                    const lblReg = document.getElementById('lbl-reg');
+                    if (lblReg) lblReg.classList.add('active');
                 }
             });
         });
@@ -216,20 +226,29 @@
         loadSummaryData('Breakfast');
         updateDelDropdown();
 
-        eDateInput.addEventListener('input', e => {
-            document.getElementById('s-date').value = e.target.value;
-            document.getElementById('d-date').value = e.target.value;
-            loadSummaryData();
-            updateDelDropdown();
-        });
+        const eDateInput = document.getElementById('e-date');
+        if (eDateInput) {
+            eDateInput.addEventListener('input', e => {
+                document.getElementById('s-date').value = e.target.value;
+                document.getElementById('d-date').value = e.target.value;
+                loadSummaryData();
+                updateDelDropdown();
+            });
+        }
         
-        document.getElementById('s-date').addEventListener('input', () => loadSummaryData());
-        document.getElementById('d-date').addEventListener('input', () => updateDelDropdown());
-        document.getElementById('d-meal').addEventListener('change', () => updateDelDropdown());
+        const sDateInput = document.getElementById('s-date');
+        if (sDateInput) sDateInput.addEventListener('input', () => loadSummaryData());
+        
+        const dDateInput = document.getElementById('d-date');
+        if (dDateInput) dDateInput.addEventListener('input', () => updateDelDropdown());
+        
+        const dMealInput = document.getElementById('d-meal');
+        if (dMealInput) dMealInput.addEventListener('change', () => updateDelDropdown());
     });
 
     function showMsg(id, text, ok) {
         const el = document.getElementById(id);
+        if(!el) return;
         el.innerText = text;
         el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
         el.style.display = 'block';
@@ -301,6 +320,7 @@
 
     async function loadSummaryData(openMeal = null) {
         const dateStr = document.getElementById('s-date').value;
+        if (!dateStr) return;
         const res = await fetch(`/api/summary?dateStr=${dateStr}`);
         const data = await res.json();
         renderSummary(dateStr, data.records || [], openMeal);
@@ -310,6 +330,7 @@
         const dDate = document.getElementById('d-date').value;
         const dMeal = document.getElementById('d-meal').value;
         const sel = document.getElementById('d-id-select');
+        if (!sel || !dDate) return;
         
         const res = await fetch(`/api/summary?dateStr=${dDate}`);
         const data = await res.json();
@@ -326,6 +347,7 @@
 
     function renderSummary(dateStr, records, openMeal) {
         const box = document.getElementById('summary-box');
+        if (!box) return;
         let html = '';
 
         ['Breakfast', 'Lunch', 'Dinner'].forEach(meal => {
@@ -397,19 +419,5 @@
 
     function toggleAcc(meal) {
         const el = document.getElementById(`acc-${meal}`);
-        const show = el.classList.contains('show');
-        document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
-        
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(m => {
-            const btnSpan = document.querySelector(`button[onclick="toggleAcc('${m}')"] span:last-child`);
-            if (btnSpan) {
-                const totalText = btnSpan.innerText.replace(/[▲▼]/g, '').trim();
-                btnSpan.innerText = totalText + ' ▼';
-            }
-        });
-
-        if (!show) {
-            el.classList.add('show');
-            const activeSpan = document.querySelector(`button[onclick="toggleAcc('${meal}')"] span:last-child`);
-            if (activeSpan) {
-                const totalText = activeSpan.innerText.re
+        if (!el) return;
+    
