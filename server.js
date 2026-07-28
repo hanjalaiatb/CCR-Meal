@@ -24,12 +24,25 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
+// Log Schema with 48 hours expiration (172800 seconds)
+const logSchema = new mongoose.Schema({
+    text: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now, expires: 172800 } 
+});
+const Log = mongoose.model('Log', logSchema);
+
 app.post('/api/submit', async (req, res) => {
     try {
         const { dateStr, id, shift, meal, menuOption } = req.body;
         if (!dateStr || !id || !shift || !meal) {
             return res.status(400).json({ success: false, error: 'Missing fields' });
         }
+
+        // Cleanup meals older than 48 hours based strictly on Meal Date (dateStr)
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 2);
+        const cutoffStr = cutoff.toISOString().split('T')[0];
+        await Meal.deleteMany({ dateStr: { $lt: cutoffStr } });
 
         const existing = await Meal.findOne({ dateStr, id, meal });
 
@@ -70,6 +83,34 @@ app.post('/api/delete', async (req, res) => {
 
         const result = await Meal.findOneAndDelete({ id, dateStr, meal });
         if (!result) return res.status(404).json({ success: false, error: 'Not found' });
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/logs', async (req, res) => {
+    try {
+        const logs = await Log.find().sort({ _id: -1 }).limit(15).lean();
+        res.status(200).json({ success: true, logs });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.post('/api/logs', async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) return res.status(400).json({ success: false, error: 'Missing text' });
+        await Log.create({ text });
+        
+        // Strict enforcement of maximum capacity of 15 logs
+        const allLogs = await Log.find().sort({ _id: -1 }).lean();
+        if (allLogs.length > 15) {
+            const idsToDelete = allLogs.slice(15).map(l => l._id);
+            await Log.deleteMany({ _id: { $in: idsToDelete } });
+        }
 
         res.status(200).json({ success: true });
     } catch (err) {
