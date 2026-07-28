@@ -1,159 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCR Meal System</title>
-    <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
-        .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
-        
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        .row-3 { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: end; }
-        .group { margin-bottom: 6px; }
-        label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748b; margin-bottom: 2px; text-transform: uppercase; }
-        
-        input, select { width: 100%; height: 30px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #f8fafc; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #2563eb; background: #fff; outline: none; }
-        
-        .date-short { max-width: 130px; }
-
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-        
-        .radio-lbl {
-            display: flex; align-items: center; justify-content: center; height: 30px; padding: 0 2px;
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center; box-sizing: border-box;
-        }
-        .radio-lbl input { display: none; }
-        .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
-        .radio-lbl.disabled { opacity: 0.3; cursor: not-allowed; background: #f1f5f9; }
-
-        button { width: 100%; height: 30px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; box-sizing: border-box; }
-        .btn-blue { background: #2563eb; color: #fff; }
-        .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 26px; padding: 0 8px; font-size: 0.7rem; width: auto; margin-top: 4px; display: inline-block; border-radius: 4px; }
-
-        .msg { padding: 5px; border-radius: 6px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
-        .msg-ok { background: #dcfce7; color: #15803d; }
-        .msg-err { background: #fee2e2; color: #991b1b; }
-
-        .acc { border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 5px; overflow: hidden; background: #fff; }
-        .acc-btn { width: 100%; padding: 7px 8px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.8rem; cursor: pointer; text-align: left; align-items: center; }
-        .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.75rem; }
-        .acc-body.show { display: block; }
-
-        .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dashed #cbd5e1; }
-        .shift-title { font-weight: 700; font-size: 0.73rem; text-transform: uppercase; margin-bottom: 1px; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
-        .log-row { font-size: 0.68rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
-    </style>
-</head>
-<body>
-
-<div class="box">
-    <!-- 1. MEAL ENTRY -->
-    <div class="card">
-        <h2>Meal Entry</h2>
-        <div class="sub">Log daily meal counts</div>
-        <div id="s-msg" class="msg"></div>
-        <form id="f-meal">
-            <div class="row-2">
-                <div class="group" style="margin-bottom:0;">
-                    <label>Employee ID</label>
-                    <input type="text" id="e-id" required>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Date</label>
-                    <input type="date" id="e-date" required>
-                </div>
-            </div>
-            <div class="group" style="margin-top:6px;">
-                <label>Shift</label>
-                <div class="grid-3" id="g-shift">
-                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
-                </div>
-            </div>
-            <div class="group">
-                <label>Meal Type</label>
-                <div class="grid-3" id="g-meal">
-                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
-                </div>
-            </div>
-            <div class="group">
-                <label>Menu Option</label>
-                <div class="grid-4" id="g-menu">
-                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
-                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
-                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
-                </div>
-            </div>
-            <button type="submit" class="btn-blue" id="btn-save">Save Entry</button>
-        </form>
-    </div>
-
-    <!-- 2. SUMMARY -->
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div class="group date-short" style="margin-top:5px;">
-            <label>Select Date</label>
-            <input type="date" id="s-date">
-        </div>
-        <div id="summary-box"></div>
-    </div>
-
-    <!-- 3. DELETE RECORD -->
-    <div class="card">
-        <h2>Delete Specific Record</h2>
-        <div class="sub">Remove entry by Date, Meal, and ID</div>
-        <div id="d-msg" class="msg"></div>
-        <form id="f-del">
-            <div class="row-3">
-                <div class="group" style="margin-bottom:0;">
-                    <label>Select ID</label>
-                    <select id="d-id-select" required>
-                        <option value="">None</option>
-                    </select>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Date</label>
-                    <input type="date" id="d-date" required>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Meal Type</label>
-                    <select id="d-meal" required>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn-red" style="margin-top:6px;">Delete Record</button>
-        </form>
-    </div>
-
-    <!-- 4. AUDIT LOG -->
-    <div class="card">
-        <h2>Activity Audit Log</h2>
-        <div class="sub">Tracks updates & deletions</div>
-        <div id="log-box" style="max-height:110px; overflow-y:auto;">
-            <div style="font-size:0.7rem; color:#64748b;">No actions recorded yet.</div>
-        </div>
-    </div>
-</div>
-
 <script>
-    let logs = [];
-
     function bindRadios(groupId) {
         const c = document.getElementById(groupId);
         c.querySelectorAll('input').forEach(inp => {
@@ -166,14 +11,29 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('e-date').value = today;
-        document.getElementById('s-date').value = today;
-        document.getElementById('d-date').value = today;
+        // Local device date setting
+        const d = new Date();
+        const localDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+        // Calculate max allowed date for meal entry (4 days after today, e.g. July 1 -> July 5 limit)
+        const maxDateObj = new Date();
+        maxDateObj.setDate(maxDateObj.getDate() + 4);
+        const maxDateStr = `${maxDateObj.getFullYear()}-${String(maxDateObj.getMonth() + 1).padStart(2, '0')}-${String(maxDateObj.getDate()).padStart(2, '0')}`;
+
+        // Apply min/max constraints and defaults
+        const eDateInput = document.getElementById('e-date');
+        eDateInput.value = localDateStr;
+        eDateInput.min = localDateStr;
+        eDateInput.max = maxDateStr;
+
+        document.getElementById('s-date').value = localDateStr;
+        document.getElementById('d-date').value = localDateStr;
 
         bindRadios('g-shift');
         bindRadios('g-meal');
         bindRadios('g-menu');
+
+        fetchLogs();
 
         document.querySelectorAll('input[name="meal"]').forEach(inp => {
             inp.addEventListener('change', e => {
@@ -205,7 +65,7 @@
         loadSummaryData('Breakfast');
         updateDelDropdown();
 
-        document.getElementById('e-date').addEventListener('input', e => {
+        eDateInput.addEventListener('input', e => {
             document.getElementById('s-date').value = e.target.value;
             document.getElementById('d-date').value = e.target.value;
             loadSummaryData();
@@ -246,20 +106,18 @@
             let logText = '';
             if (data.status === 'added') {
                 msgText = 'Added successfully!';
-                logText = `Added: ID ${payload.id} (${payload.meal})`;
+                logText = `Added: ID ${payload.id} (${payload.meal}) for ${payload.dateStr}`;
             } else if (data.status === 'modified') {
                 msgText = 'Modified successfully!';
-                logText = `Modified: ID ${payload.id} (${payload.meal})`;
+                logText = `Modified: ID ${payload.id} (${payload.meal}) for ${payload.dateStr}`;
             } else {
                 msgText = 'Already recorded!';
-                logText = `Checked (No change): ID ${payload.id} (${payload.meal})`;
+                logText = `Checked: ID ${payload.id} (${payload.meal})`;
             }
 
             showMsg('s-msg', msgText, true);
-            addLog(logText);
+            await addLog(logText);
             document.getElementById('e-id').value = '';
-            document.getElementById('s-date').value = payload.dateStr;
-            document.getElementById('d-date').value = payload.dateStr;
             loadSummaryData(payload.meal);
             updateDelDropdown();
         } else {
@@ -282,7 +140,7 @@
         const data = await res.json();
         if (res.ok && data.success) {
             showMsg('d-msg', `Deleted ID ${id}`, true);
-            addLog(`Deleted: ID ${id} (${meal})`);
+            await addLog(`Deleted: ID ${id} (${meal}) on ${dateStr}`);
             loadSummaryData();
             updateDelDropdown();
         } else {
@@ -409,12 +267,29 @@
         }
     }
 
-    function addLog(text) {
-        const time = new Date().toLocaleTimeString();
-        logs.unshift(`[${time}] ${text}`);
-        if (logs.length > 15) logs.pop();
-        document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
+    async function addLog(text) {
+        const timeStr = new Date().toLocaleTimeString();
+        const fullText = `[${timeStr}] ${text}`;
+        await fetch('/api/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: fullText })
+        });
+        await fetchLogs();
+    }
+
+    async function fetchLogs() {
+        try {
+            const res = await fetch('/api/logs');
+            const data = await res.json();
+            const logBox = document.getElementById('log-box');
+            if (data.success && data.logs && data.logs.length > 0) {
+                logBox.innerHTML = data.logs.map(l => `<div class="log-row">${l.text}</div>`).join('');
+            } else {
+                logBox.innerHTML = `<div style="font-size:0.7rem; color:#64748b;">No actions recorded yet.</div>`;
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
 </script>
-</body>
-</html>
