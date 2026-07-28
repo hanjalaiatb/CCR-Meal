@@ -24,10 +24,9 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Log Schema with 48 hours expiration (172800 seconds)
 const logSchema = new mongoose.Schema({
     text: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now, expires: 172800 } 
+    createdAt: { type: Date, default: Date.now, expires: 172800 }
 });
 const Log = mongoose.model('Log', logSchema);
 
@@ -38,7 +37,6 @@ app.post('/api/submit', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Missing fields' });
         }
 
-        // Cleanup meals older than 48 hours based strictly on Meal Date (dateStr)
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() - 2);
         const cutoffStr = cutoff.toISOString().split('T')[0];
@@ -105,7 +103,6 @@ app.post('/api/logs', async (req, res) => {
         if (!text) return res.status(400).json({ success: false, error: 'Missing text' });
         await Log.create({ text });
         
-        // Strict enforcement of maximum capacity of 15 logs
         const allLogs = await Log.find().sort({ _id: -1 }).lean();
         if (allLogs.length > 15) {
             const idsToDelete = allLogs.slice(15).map(l => l._id);
