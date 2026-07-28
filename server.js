@@ -24,11 +24,11 @@ const mealSchema = new mongoose.Schema({
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Native MongoDB TTL index: automatically deletes logs after 48 hours (172800s) without blocking RAM
 const logSchema = new mongoose.Schema({
     text: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now, expires: 172800 }
+    createdAt: { type: Date, default: Date.now }
 });
+logSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 });
 const Log = mongoose.model('Log', logSchema);
 
 app.post('/api/submit', async (req, res) => {
@@ -99,7 +99,6 @@ app.post('/api/logs', async (req, res) => {
         if (!text) return res.status(400).json({ success: false, error: 'Missing text' });
         await Log.create({ text });
         
-        // Lightweight trim to max 15 logs capacity
         const count = await Log.countDocuments();
         if (count > 15) {
             const oldest = await Log.find().sort({ createdAt: 1 }).limit(count - 15).lean();
