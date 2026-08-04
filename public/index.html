@@ -296,7 +296,14 @@
         if (!dateStr) return;
         const res = await fetch('/api/summary?dateStr=' + dateStr);
         const data = await res.json();
-        renderSummary(dateStr, data.records || [], openMeal);
+        
+        let records = data.records || [];
+        // Sort numerically from small to large (e.g., 39, 74, 95, 116...)
+        records.sort(function(a, b) {
+            return (Number(a.id) || 0) - (Number(b.id) || 0);
+        });
+
+        renderSummary(dateStr, records, openMeal);
     }
 
     function renderSummary(dateStr, records, openMeal) {
@@ -381,7 +388,7 @@
 
         if (!show) {
             el.classList.add('show');
-            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + m + '\')"] span:last-child'); // Fixed selector
+            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + meal + '\')"] span:last-child');
             if (activeSpan) {
                 const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
                 activeSpan.innerText = totalText + ' ▲';
