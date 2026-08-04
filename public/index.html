@@ -99,7 +99,6 @@
 </div>
 
 <script>
-    // Helper to format Date object to DD/MM/YYYY
     function formatDateToDMY(dateObj) {
         const d = String(dateObj.getDate()).padStart(2, '0');
         const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -107,7 +106,6 @@
         return `${d}/${m}/${y}`;
     }
 
-    // Helper to parse DD/MM/YYYY to ISO format YYYY-MM-DD for backend
     function parseDMYToISO(str) {
         if (!str) return '';
         const parts = str.trim().split('/');
@@ -203,8 +201,17 @@
                             ['Morning', 'Afternoon', 'Night'].map(shift => {
                                 const sRecs = mRecs.filter(r => r.shift === shift);
                                 if (!sRecs.length) return '';
+                                const fCount = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
+                                const pCount = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
+                                const mCount = sRecs.filter(r => r.menuOption === 'Mutton').length;
+                                
+                                let countsStr = `Total: ${sRecs.length}`;
+                                if (fCount > 0) countsStr += `, F-${fCount}`;
+                                if (pCount > 0) countsStr += `, P-${pCount}`;
+                                if (mCount > 0) countsStr += `, M-${mCount}`;
+
                                 const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                                return `<div class="shift-blk"><div style="font-weight:700">${shift} shift (Total: ${sRecs.length})</div><div>Meal ID: ${ids}</div></div>`;
+                                return `<div class="shift-blk"><div style="font-weight:700">${shift} shift (${countsStr})</div><div>Meal ID: ${ids}</div></div>`;
                             }).join('') +
                             (() => {
                                 let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
