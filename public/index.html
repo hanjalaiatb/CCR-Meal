@@ -151,26 +151,6 @@
 </div>
 
 <script>
-    (function() {
-        const d = new Date();
-        const localDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-
-        const maxDateObj = new Date();
-        maxDateObj.setDate(maxDateObj.getDate() + 4);
-        const maxDateStr = maxDateObj.getFullYear() + '-' + String(maxDateObj.getMonth() + 1).padStart(2, '0') + '-' + String(maxDateObj.getDate()).padStart(2, '0');
-
-        ['e-date', 's-date', 'd-date'].forEach(function(id) {
-            const el = document.getElementById(id);
-            if (el) {
-                el.value = localDateStr;
-                if (id === 'e-date') {
-                    el.min = localDateStr;
-                    el.max = maxDateStr;
-                }
-            }
-        });
-    })();
-
     function bindRadios(groupId) {
         const c = document.getElementById(groupId);
         if(!c) return;
@@ -186,11 +166,27 @@
     window.addEventListener('DOMContentLoaded', function() {
         const d = new Date();
         const localDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        
-        ['e-date', 's-date', 'd-date'].forEach(function(id) {
-            const el = document.getElementById(id);
-            if (el && !el.value) el.value = localDateStr;
-        });
+
+        const maxDateObj = new Date();
+        maxDateObj.setDate(maxDateObj.getDate() + 4);
+        const maxDateStr = maxDateObj.getFullYear() + '-' + String(maxDateObj.getMonth() + 1).padStart(2, '0') + '-' + String(maxDateObj.getDate()).padStart(2, '0');
+
+        const eDateInput = document.getElementById('e-date');
+        if (eDateInput) {
+            eDateInput.value = localDateStr;
+            eDateInput.min = localDateStr;
+            eDateInput.max = maxDateStr;
+        }
+
+        const sDateInput = document.getElementById('s-date');
+        if (sDateInput) {
+            sDateInput.value = localDateStr;
+        }
+
+        const dDateInput = document.getElementById('d-date');
+        if (dDateInput) {
+            dDateInput.value = localDateStr;
+        }
 
         bindRadios('g-shift');
         bindRadios('g-meal');
@@ -228,7 +224,6 @@
         loadSummaryData('Breakfast');
         updateDelDropdown();
 
-        const eDateInput = document.getElementById('e-date');
         if (eDateInput) {
             eDateInput.addEventListener('input', function(e) {
                 document.getElementById('s-date').value = e.target.value;
@@ -238,14 +233,18 @@
             });
         }
         
-        const sDateInput = document.getElementById('s-date');
-        if (sDateInput) sDateInput.addEventListener('input', function() { loadSummaryData(); });
+        if (sDateInput) {
+            sDateInput.addEventListener('input', function() { loadSummaryData(); });
+        }
         
-        const dDateInput = document.getElementById('d-date');
-        if (dDateInput) dDateInput.addEventListener('input', function() { updateDelDropdown(); });
+        if (dDateInput) {
+            dDateInput.addEventListener('input', function() { updateDelDropdown(); });
+        }
         
         const dMealInput = document.getElementById('d-meal');
-        if (dMealInput) dMealInput.addEventListener('change', function() { updateDelDropdown(); });
+        if (dMealInput) {
+            dMealInput.addEventListener('change', function() { updateDelDropdown(); });
+        }
 
         document.getElementById('btn-delete-all').addEventListener('click', async function() {
             if (!confirm('Are you sure you want to delete ALL data?')) return;
@@ -410,4 +409,7 @@
                     if (sub.length > 0) wa += '\n' + opt + ': ' + sub.length + ' (' + sub.map(function(r) { return r.id; }).join(', ') + ')';
                 });
 
-                html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:
+                html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">' +
+                        '<div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>' +
+                        '<div class="txt-pre" id="wa-' + meal + '">' + wa + '</div>' +
+                        '<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementB
