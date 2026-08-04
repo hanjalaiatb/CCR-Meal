@@ -5,412 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal</title>
     <style>
-        body { font-family: sans-serif; background: #fff; color: #000; margin: 0; padding: 4px; font-size: 14px; }
-        .box { max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
-        .card { border: 1px solid #999; border-radius: 4px; padding: 6px; background: #fff; }
-        h2 { font-size: 14px; margin: 0 0 4px 0; font-weight: bold; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px; }
-        input, select { width: 100%; height: 32px; padding: 2px 4px; border: 1px solid #999; border-radius: 3px; font-size: 14px; box-sizing: border-box; }
-        .row { display: flex; gap: 4px; margin-bottom: 4px; }
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #1e293b; margin: 0; padding: 6px; font-size: 13px; }
+        .box { max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+        .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h2 { font-size: 13px; margin: 0 0 8px 0; font-weight: 700; color: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+        label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 3px; color: #475569; }
+        input, select { width: 100%; height: 34px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; color: #1e293b; outline: none; }
+        input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+        .field-group { margin-bottom: 8px; }
+        .row { display: flex; gap: 6px; margin-bottom: 8px; }
         .row > div { flex: 1; }
-        .grid-3 { display: flex; gap: 3px; }
-        .grid-4 { display: flex; gap: 2px; }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 30px; border: 1px solid #999; border-radius: 3px; font-size: 12px; font-weight: bold; cursor: pointer; background: #eee; color: #333; }
+        
+        /* Clean segmented toggles */
+        .segmented { display: flex; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #f8fafc; }
+        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 30px; font-size: 11px; font-weight: 600; cursor: pointer; background: #f8fafc; color: #475569; border-right: 1px solid #cbd5e1; transition: all 0.15s ease; }
+        .radio-lbl:last-child { border-right: none; }
         .radio-lbl input { display: none; }
-        .radio-lbl.active { background: #0066cc; color: #fff; border-color: #0044aa; }
-        .radio-lbl.disabled { opacity: 0.3; pointer-events: none; }
-        button { width: 100%; height: 34px; border: 1px solid #000; border-radius: 3px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 4px; }
-        .btn-blue { background: #0066cc; color: #fff; }
-        .btn-red { background: #cc0000; color: #fff; }
-        .btn-green { background: #009933; color: #fff; height: 30px; width: auto; padding: 0 8px; font-size: 12px; margin-top: 4px; display: inline-block; }
-        .tab-row { display: flex; gap: 2px; margin-top: 4px; }
-        .tab-btn { flex: 1; background: #ddd; border: 1px solid #999; font-weight: bold; font-size: 12px; padding: 6px 2px; text-align: center; border-radius: 3px; cursor: pointer; }
-        .tab-btn.active { background: #0066cc; color: #fff; }
-        .panel { border: 1px solid #999; border-top: none; padding: 6px; display: none; font-size: 13px; }
-        .panel.show { display: block; }
-        .shift-blk { margin-top: 6px; padding-top: 4px; border-top: 1px dashed #999; }
-        .txt-pre { font-family: monospace; background: #f5f5f5; padding: 6px; border: 1px solid #ccc; font-size: 11px; white-space: pre-wrap; margin-top: 4px; }
-        .msg-box { padding: 4px; font-size: 12px; margin-bottom: 4px; display: none; border-radius: 2px; }
-        .err-msg { background: #ffcccc; color: #990000; }
-        .suc-msg { background: #ccffcc; color: #006600; }
-        .chk-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; font-size: 12px; font-weight: bold; }
-        .chk-row input { width: 14px; height: 14px; }
-    </style>
-</head>
-<body>
+        .radio-lbl.active { background: #2563eb; color: #fff; }
+        .radio-lbl.disabled { opacity: 0.3; pointer-events: none; background: #e2e8f0; }
 
-<div class="box">
-    <div class="card">
-        <h2>Meal Entry</h2>
-        <div id="e-msg" class="msg-box"></div>
-        <form id="f-meal">
-            <div><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
-            
-            <label class="chk-row">
-                <input type="checkbox" id="e-multi"> Multiple Days
-            </label>
+        /* Distinct Entry Save Button */
+        .btn-entry { width: 100%; height: 38px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #4f46e5, #4338ca); color: #fff; margin-top: 4px; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25); transition: opacity 0.15s; }
+        .btn-entry:active { opacity: 0.9; transform: translateY(1px); }
 
-            <div class="row">
-                <div><label id="e-lbl-dt">Date</label><input type="date" id="e-start" required></div>
-                <div id="e-end-wrap" style="display:none;"><label>End Date</label><input type="date" id="e-end"></div>
-            </div>
-
-            <div><label>Shift</label>
-                <div class="grid-3" id="g-shift">
-                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
-                </div>
-            </div>
-
-            <div><label>Meal Type</label>
-                <div class="grid-3" id="g-meal">
-                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
-                </div>
-            </div>
-
-            <div><label>Menu Option</label>
-                <div class="grid-4" id="g-menu">
-                    <label class="radio-lbl active" id="l-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-lbl disabled" id="l-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
-                    <label class="radio-lbl disabled" id="l-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
-                    <label class="radio-lbl disabled" id="l-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
-                </div>
-            </div>
-            <button type="submit" class="btn-blue">Save</button>
-        </form>
-    </div>
-
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div><label>Select Date <span id="s-lbl" style="color:#0066cc;"></span></label><input type="date" id="s-date" required></div>
-        <div class="tab-row" id="tab-row"></div>
-        <div class="panel show" id="panel-Breakfast"></div>
-        <div class="panel" id="panel-Lunch"></div>
-        <div class="panel" id="panel-Dinner"></div>
-    </div>
-
-    <div class="card">
-        <h2>Delete Record</h2>
-        <div id="d-msg" class="msg-box"></div>
-        <form id="f-del">
-            <div><label>ID(s)</label><input type="text" id="d-id" required></div>
-            
-            <label class="chk-row">
-                <input type="checkbox" id="d-multi"> Multiple Days
-            </label>
-
-            <div class="row">
-                <div><label id="d-lbl-dt">Date</label><input type="date" id="d-start" required></div>
-                <div id="d-end-wrap" style="display:none;"><label>End Date</label><input type="date" id="d-end"></div>
-            </div>
-
-            <div><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
-            <button type="submit" class="btn-red">Delete</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    const cache = {};
-
-    function getToday() {
-        const d = new Date();
-        return d.toISOString().split('T')[0];
-    }
-
-    function fmtDMY(s) {
-        if (!s || !s.includes('-')) return '';
-        const p = s.split('-');
-        return `${p[2]}/${p[1]}/${p[0]}`;
-    }
-
-    function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
-    }
-
-    const today = getToday();
-    ['s-date', 'e-start', 'e-end', 'd-start', 'd-end'].forEach(id => {
-        document.getElementById(id).value = today;
-    });
-
-    const savedId = localStorage.getItem('ccr_id') || '';
-    ['e-id', 'd-id'].forEach(id => { document.getElementById(id).value = savedId; });
-
-    ['e-id', 'd-id'].forEach(idInput => {
-        document.getElementById(idInput).addEventListener('input', e => {
-            const first = e.target.value.split(',')[0].trim();
-            if (first) localStorage.setItem('ccr_id', first);
-        });
-    });
-
-    document.getElementById('e-multi').addEventListener('change', e => {
-        const m = e.target.checked;
-        document.getElementById('e-end-wrap').style.display = m ? 'block' : 'none';
-        document.getElementById('e-lbl-dt').innerText = m ? 'Start Date' : 'Date';
-        if (!m) document.getElementById('e-end').value = document.getElementById('e-start').value;
-    });
-
-    document.getElementById('d-multi').addEventListener('change', e => {
-        const m = e.target.checked;
-        document.getElementById('d-end-wrap').style.display = m ? 'block' : 'none';
-        document.getElementById('d-lbl-dt').innerText = m ? 'Start Date' : 'Date';
-        if (!m) document.getElementById('d-end').value = document.getElementById('d-start').value;
-    });
-
-    document.getElementById('e-start').addEventListener('change', e => {
-        if (!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
-        document.getElementById('s-date').value = e.target.value;
-        loadSum();
-    });
-
-    document.getElementById('d-start').addEventListener('change', e => {
-        if (!document.getElementById('d-multi').checked) document.getElementById('d-end').value = e.target.value;
-    });
-
-    let activeMeal = 'Breakfast';
-
-    function showMsg(id, txt, type) {
-        const el = document.getElementById(id);
-        el.className = `msg-box ${type === 'success' ? 'suc-msg' : 'err-msg'}`;
-        el.innerText = txt;
-        el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 5000);
-    }
-
-    ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
-        document.getElementById(gid).addEventListener('change', e => {
-            if (e.target.disabled) return;
-            const c = document.getElementById(gid);
-            c.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
-            e.target.closest('.radio-lbl').classList.add('active');
-        });
-    });
-
-    document.querySelectorAll('input[name="meal"]').forEach(inp => {
-        inp.addEventListener('change', e => {
-            const isB = e.target.value === 'Breakfast';
-            ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(val => {
-                const el = document.querySelector(`input[value="${val}"]`);
-                if (el) {
-                    el.disabled = isB;
-                    el.closest('.radio-lbl').classList.toggle('disabled', isB);
-                }
-            });
-            if (isB) {
-                document.querySelector('input[value="Regular"]').checked = true;
-                document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
-                document.getElementById('l-reg').classList.add('active');
-            }
-        });
-    });
-
-    async function loadSum(pref) {
-        if (pref) activeMeal = pref;
-        const dt = document.getElementById('s-date').value;
-        if (!dt) return;
-
-        document.getElementById('s-lbl').innerText = (dt === today) ? '(Today)' : '';
-
-        try {
-            let recs = cache[dt];
-            if (!recs) {
-                const res = await fetch(`/api/summary?dateStr=${dt}`);
-                const data = await res.json();
-                recs = data.records || [];
-                cache[dt] = recs;
-            }
-
-            const meals = ['Breakfast', 'Lunch', 'Dinner'];
-            let tabHtml = '';
-            meals.forEach(m => {
-                const cnt = recs.filter(r => r.meal === m).length;
-                tabHtml += `<button type="button" class="tab-btn ${m === activeMeal ? 'active' : ''}" onclick="switchT('${m}')">${m} (${cnt})</button>`;
-            });
-            document.getElementById('tab-row').innerHTML = tabHtml;
-
-            meals.forEach(m => {
-                const panel = document.getElementById(`panel-${m}`);
-                panel.classList.toggle('show', m === activeMeal);
-
-                const mRecs = recs.filter(r => r.meal === m);
-                if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; color:#666; padding:6px;">No entries</div>`;
-                    return;
-                }
-
-                let body = '';
-                ['Morning', 'Afternoon', 'Night'].forEach(sh => {
-                    const sRecs = mRecs.filter(r => r.shift === sh);
-                    if (!sRecs.length) return;
-                    const f = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
-                    const p = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
-                    const mu = sRecs.filter(r => r.menuOption === 'Mutton').length;
-
-                    let cStr = `Total:${sRecs.length}`;
-                    if (f) cStr += `, F-${f}`;
-                    if (p) cStr += `, P-${p}`;
-                    if (mu) cStr += `, M-${mu}`;
-
-                    const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:bold;">${sh} Shift (${cStr})</div><div>ID: ${ids}</div></div>`;
-                });
-
-                let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let wa = `${fmtDMY(dt)}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID: `;
-                
-                const reg = mRecs.filter(r => r.menuOption === 'Regular');
-                if (reg.length) wa += reg.map(r => r.id).join(', ');
-                
-                const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) wa += `\nডিম ভাজি: ${benNum(fr.length)} টা (${fr.map(r => r.id).join(', ')})`;
-                const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) wa += `\nডিম পোচ: ${benNum(po.length)} টা (${po.map(r => r.id).join(', ')})`;
-                const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) wa += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
-
-                body += `<div class="txt-pre" id="wa-${m}">${wa}</div>
-                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">Copy WhatsApp</button>`;
-
-                panel.innerHTML = body;
-            });
-        } catch (e) { console.error(e); }
-    }
-
-    window.switchT = function(m) {
-        activeMeal = m;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(m)));
-        document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === `panel-${m}`));
-    };
-
-    document.getElementById('f-meal').addEventListener('submit', async e => {
-        e.preventDefault();
-        const start = document.getElementById('e-start').value;
-        const isMulti = document.getElementById('e-multi').checked;
-        const end = isMulti ? document.getElementById('e-end').value : start;
+        /* Standard buttons */
+        .btn-main { width: 100%; height: 34px; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 4px; color: #fff; }
+        .btn-del { background: #dc2626; }
+        .btn-green { background: #16a34a; color: #fff; border: none; border-radius: 6px; height: 28px; padding: 0 10px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
         
-        if (!start || !end) return showMsg('e-msg', 'Invalid dates', 'error');
-
-        const mealType = document.querySelector('input[name="meal"]:checked').value;
-        const shift = document.querySelector('input[name="shift"]:checked').value;
-        const menuOpt = document.querySelector('input[name="menuOption"]:checked').value;
-        const ids = document.getElementById('e-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        if (!ids.length) return;
-
-        const now = new Date();
-        const todayIso = now.toISOString().split('T')[0];
-        const timeMin = now.getHours() * 60 + now.getMinutes();
-
-        let curr = new Date(start), last = new Date(end);
-        while (curr <= last) {
-            const dtStr = curr.toISOString().split('T')[0];
-            if (dtStr === todayIso) {
-                if (mealType === 'Breakfast' && timeMin > 435) return showMsg('e-msg', 'Breakfast closed after 7:15 AM today!', 'error');
-                if (mealType === 'Lunch' && timeMin > 660) return showMsg('e-msg', 'Lunch closed after 11:00 AM today!', 'error');
-                if (mealType === 'Dinner' && timeMin > 1140) return showMsg('e-msg', 'Dinner closed after 7:00 PM today!', 'error');
-            }
-            curr.setDate(curr.getDate() + 1);
-        }
-
-        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
-
-        let mod = 0, exist = 0, added = 0;
-        curr = new Date(start);
-        while (curr <= last) {
-            const dtStr = curr.toISOString().split('T')[0];
-            delete cache[dtStr];
-
-            const res = await fetch(`/api/summary?dateStr=${dtStr}`);
-            const data = await res.json();
-            const dayRecs = data.records || [];
-
-            for (let id of ids) {
-                const ex = dayRecs.find(r => r.id === id && r.meal === mealType);
-                if (ex) {
-                    if (ex.shift === shift && ex.menuOption === menuOpt) {
-                        exist++;
-                        continue;
-                    } else {
-                        mod++;
-                    }
-                } else {
-                    added++;
-                }
-
-                await fetch('/api/submit', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ dateStr: dtStr, id, shift, meal: mealType, menuOption: menuOpt })
-                });
-            }
-            curr.setDate(curr.getDate() + 1);
-        }
-
-        document.getElementById('s-date').value = start;
-        let parts = [];
-        if (added) parts.push(`${added} new`);
-        if (mod) parts.push(`${mod} modified`);
-        if (exist) parts.push(`${exist} already exists`);
+        .tab-row { display: flex; gap: 4px; margin-top: 6px; }
+        .tab-btn { flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: 600; font-size: 11px; padding: 6px 2px; text-align: center; border-radius: 6px; cursor: pointer; color: #475569; }
+        .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
         
-        showMsg('e-msg', parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
-        loadSum(mealType);
-    });
-
-    document.getElementById('f-del').addEventListener('submit', async e => {
-        e.preventDefault();
-        const start = document.getElementById('d-start').value;
-        const isMulti = document.getElementById('d-multi').checked;
-        const end = isMulti ? document.getElementById('d-end').value : start;
-
-        if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
-
-        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        const mealVal = document.getElementById('d-meal').value;
-
-        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
-
-        let curr = new Date(start), last = new Date(end);
-        while (curr <= last) {
-            const dtStr = curr.toISOString().split('T')[0];
-            delete cache[dtStr];
-            for (let id of ids) {
-                await fetch('/api/delete', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ id, dateStr: dtStr, meal: mealVal })
-                });
-            }
-            curr.setDate(curr.getDate() + 1);
-        }
-        document.getElementById('s-date').value = start;
-        showMsg('d-msg', 'Deleted successfully!', 'success');
-        loadSum(mealVal);
-    });
-
-    document.getElementById('e-start').addEventListener('change', e => {
-        if (!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
-        document.getElementById('s-date').value = e.target.value;
-        loadSum();
-    });
-    document.getElementById('s-date').addEventListener('change', () => loadSum());
-
-    loadSum();
-</script>
-</body>
-</html>        
-        .panel { border: 2px solid #000; border-top: none; border-radius: 0 0 3px 3px; padding: 6px; display: none; background: #fff; }
+        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; padding: 8px; display: none; background: #fff; }
         .panel.show { display: block; }
         
-        .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dotted #000; font-size: 11px; }
+        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; font-size: 11px; }
         .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f8f8f8; padding: 4px; border: 1px solid #000; border-radius: 3px; font-size: 10px; white-space: pre-wrap; margin-top: 3px; color: #000; font-weight: bold; line-height: 1.2; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 10px; white-space: pre-wrap; margin-top: 4px; color: #334155; line-height: 1.3; }
         
-        .msg-box { padding: 4px; font-size: 10px; margin-bottom: 6px; border: 2px solid #000; display: none; font-weight: bold; }
-        .err-msg { background: #000; color: #fff; }
-        .suc-msg { background: #fff; color: #000; }
+        .msg-box { padding: 6px 8px; font-size: 11px; margin-bottom: 8px; border-radius: 6px; display: none; font-weight: 600; }
+        .err-msg { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .suc-msg { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         
-        .chk-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .chk-row input { width: 13px; height: 13px; accent-color: #000; border: 2px solid #000; }
+        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 11px; font-weight: 600; cursor: pointer; color: #475569; }
+        .chk-row input { width: 14px; height: 14px; accent-color: #2563eb; border: 1px solid #cbd5e1; }
     </style>
 </head>
 <body>
@@ -423,7 +63,7 @@
         <form id="f-meal">
             <div class="field-group">
                 <label>Employee ID(s)</label>
-                <input type="text" id="e-id" placeholder="116, 117" required>
+                <input type="text" id="e-id" placeholder="e.g. 116, 117" required>
             </div>
             
             <label class="chk-row">
@@ -462,13 +102,13 @@
                     <label class="radio-lbl disabled" id="l-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
-            <button type="submit" class="btn-entry">Save Entry</button>
+            <button type="submit" class="btn-entry">Save Meal Entry</button>
         </form>
     </div>
 
     <!-- Summary Output Card -->
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:10px;"></span></h2>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px; color:#2563eb; font-weight:600;"></span></h2>
         <div class="field-group">
             <label>Select Date</label>
             <input type="date" id="s-date" required>
@@ -486,7 +126,7 @@
         <form id="f-del">
             <div class="field-group">
                 <label>ID(s)</label>
-                <input type="text" id="d-id" placeholder="116, 117" required>
+                <input type="text" id="d-id" placeholder="e.g. 116, 117" required>
             </div>
             
             <label class="chk-row">
@@ -526,7 +166,7 @@
     }
 
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯')[w] || w);
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
     }
 
     const today = getToday();
@@ -610,7 +250,7 @@
         const dt = document.getElementById('s-date').value;
         if (!dt) return;
 
-        document.getElementById('s-lbl').innerText = (dt === today) ? '[TODAY]' : '';
+        document.getElementById('s-lbl').innerText = (dt === today) ? '(Today)' : '';
 
         try {
             let recs = cache[dt];
@@ -635,7 +275,7 @@
 
                 const mRecs = recs.filter(r => r.meal === m);
                 if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; padding:6px; font-size:10px; font-weight:bold;">No entries found</div>`;
+                    panel.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:8px; font-weight:500;">No entries found</div>`;
                     return;
                 }
 
@@ -653,7 +293,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:bold;">${sh} Shift (${cStr})</div><div style="margin-top:1px;">ID: ${ids}</div></div>`;
+                    body += `<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#475569;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -670,7 +310,7 @@
                 if (mt.length) wa += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
 
                 body += `<div class="txt-pre" id="wa-${m}">${wa}</div>
-                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 COPY WHATSAPP</button>`;
+                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
 
                 panel.innerHTML = body;
             });
@@ -752,13 +392,4 @@
         if (exist) parts.push(`${exist} exists`);
         
         showMsg('e-msg', parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
-        loadSum(mealType);
-    });
-
-    document.getElementById('f-del').addEventListener('submit', async e => {
-        e.preventDefault();
-        const start = document.getElementById('d-start').value;
-        const isMulti = document.getElementById('d-multi').checked;
-        const end = isMulti ? document.getElementById('d-end').value : start;
-
-        if (!start || !end) return showMsg(
+        loadSum(mealTy
