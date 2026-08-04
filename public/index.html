@@ -118,10 +118,8 @@
         <form id="f-del">
             <div class="row-3">
                 <div class="group" style="margin-bottom:0;">
-                    <label>Select ID</label>
-                    <select id="d-id-select" required>
-                        <option value="">None</option>
-                    </select>
+                    <label>Employee ID</label>
+                    <input type="text" id="d-id" required placeholder="Enter ID">
                 </div>
                 <div class="group" style="margin-bottom:0;">
                     <label>Date</label>
@@ -213,28 +211,17 @@
         });
 
         loadSummaryData('Breakfast');
-        updateDelDropdown();
 
         if (eDateInput) {
             eDateInput.addEventListener('input', function(e) {
                 document.getElementById('s-date').value = e.target.value;
                 document.getElementById('d-date').value = e.target.value;
                 loadSummaryData();
-                updateDelDropdown();
             });
         }
         
         if (sDateInput) {
             sDateInput.addEventListener('input', function() { loadSummaryData(); });
-        }
-        
-        if (dDateInput) {
-            dDateInput.addEventListener('input', function() { updateDelDropdown(); });
-        }
-        
-        const dMealInput = document.getElementById('d-meal');
-        if (dMealInput) {
-            dMealInput.addEventListener('change', function() { updateDelDropdown(); });
         }
     });
 
@@ -276,7 +263,6 @@
             showMsg('s-msg', msgText, true);
             document.getElementById('e-id').value = '';
             loadSummaryData(payload.meal);
-            updateDelDropdown();
         } else {
             showMsg('s-msg', data.error || 'Error', false);
         }
@@ -284,7 +270,7 @@
 
     document.getElementById('f-del').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const id = document.getElementById('d-id-select').value;
+        const id = document.getElementById('d-id').value.trim();
         const dateStr = document.getElementById('d-date').value;
         const meal = document.getElementById('d-meal').value;
 
@@ -297,10 +283,10 @@
         const data = await res.json();
         if (res.ok && data.success) {
             showMsg('d-msg', 'Deleted ID ' + id, true);
+            document.getElementById('d-id').value = '';
             loadSummaryData();
-            updateDelDropdown();
         } else {
-            showMsg('d-msg', 'Delete failed', false);
+            showMsg('d-msg', data.error || 'Delete failed', false);
         }
     });
 
@@ -311,25 +297,6 @@
         const res = await fetch('/api/summary?dateStr=' + dateStr);
         const data = await res.json();
         renderSummary(dateStr, data.records || [], openMeal);
-    }
-
-    async function updateDelDropdown() {
-        const dDate = document.getElementById('d-date').value;
-        const dMeal = document.getElementById('d-meal').value;
-        const sel = document.getElementById('d-id-select');
-        if (!sel || !dDate) return;
-        
-        const res = await fetch('/api/summary?dateStr=' + dDate);
-        const data = await res.json();
-        const dayRecords = data.records || [];
-
-        sel.innerHTML = '<option value="">None</option>';
-        dayRecords.filter(function(r) { return r.meal === dMeal; }).forEach(function(r) {
-            const opt = document.createElement('option');
-            opt.value = r.id;
-            opt.textContent = r.id;
-            sel.appendChild(opt);
-        });
     }
 
     function renderSummary(dateStr, records, openMeal) {
@@ -414,4 +381,13 @@
 
         if (!show) {
             el.classList.add('show');
-            const activeSpan = doc
+            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + m + '\')"] span:last-child'); // Fixed selector
+            if (activeSpan) {
+                const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
+                activeSpan.innerText = totalText + ' ▲';
+            }
+        }
+    }
+</script>
+</body>
+</html>
