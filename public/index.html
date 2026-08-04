@@ -6,7 +6,7 @@
 <style>
 body{font-family:sans-serif;margin:0;padding:2px;font-size:15px;background:#f8fafc;color:#0f172a}
 div{box-sizing:border-box}
-.card{border:1px solid #cbd5e1;border-radius:10px;padding:8px;margin-bottom:6px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+.card{border:1px solid #cbd5e1;border-radius:12px;padding:8px;margin-bottom:6px;background:#fff}
 h2{font-size:15px;margin:0 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;display:flex;justify-content:space-between;color:#1e293b}
 label{display:block;font-size:13px;font-weight:bold;margin:4px 0 2px;color:#334155}
 input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;background:#fff;color:#0f172a}
@@ -91,7 +91,7 @@ input:focus,select:focus{outline:none;border-color:#0284c7}
 <label class="chk"><input type="checkbox" id="d-multi"> Multiple Days Range</label>
 <div class="row">
 <div><label id="d-ldt">Start Date</label><input type="date" id="d-start" required></div>
-<div id="d-ew" style="display:none"><label>End Date</label><input type="date" id="d-end"></div>
+<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="d-end"></div>
 </div>
 <label>Meal</label>
 <select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select>
@@ -119,7 +119,7 @@ const sid = localStorage.getItem('ccr_id') || '';
     if(f) localStorage.setItem('ccr_id', f);
 }));
 
-[['e-multi','e-ew','e-ldt','e-start','e-end'], ['d-multi','d-ew','d-ldt','d-start','d-end']].forEach(x => {
+[['e-multi','e-ew','e-ldt','e-start','e-end'], ['d-multi','e-ew2','d-ldt','d-start','d-end']].forEach(x => {
     document.getElementById(x[0]).addEventListener('change', e => {
         const m = e.target.checked;
         document.getElementById(x[1]).style.display = m ? 'block' : 'none';
@@ -346,7 +346,7 @@ document.getElementById('f-del').addEventListener('submit', async e => {
     loadSum(mealVal);
 });
 
-document.getElementById('s-date').addEventListener('change', () => loadSum());
+document.getElementById('s-date').addEventListener('change', () => loadStr => loadSum());
 loadSum();
 </script>
 </body>
