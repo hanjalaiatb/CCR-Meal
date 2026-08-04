@@ -22,6 +22,7 @@ input:focus,select:focus{outline:none;border-color:#0284c7}
 .rl.active{background:#0284c7;color:#fff}
 .rl.dis{opacity:0.3;pointer-events:none;background:#e2e8f0}
 .btn{width:100%;height:42px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;background:#0284c7;color:#fff;margin-top:8px}
+.btn-save{background:#556B2F;color:#fff}
 .btn-del{background:#e11d48}
 .btn-g{background:#059669;color:#fff;border:none;border-radius:8px;height:36px;padding:0 8px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:4px}
 .tabs{display:flex;gap:3px;margin-top:6px}
@@ -75,7 +76,7 @@ input:focus,select:focus{outline:none;border-color:#0284c7}
 <div class="seg"><label class="rl dis" id="l-mut"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label></div>
 </div>
 
-<button type="submit" class="btn">Save Meal Entry</button>
+<button type="submit" class="btn btn-save">Save</button>
 </form>
 </div>
 
@@ -227,7 +228,6 @@ async function loadSum(pref) {
             const tw = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
             let wa = `${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে。\n`;
             
-            // Clean ID list for WhatsApp copy (no badges like F, P, M)
             const cleanIds = mRecs.map(r => r.id).join(', ');
             wa += `ID: ${cleanIds}\n`;
             
