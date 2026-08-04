@@ -27,8 +27,9 @@
         .acc-body { display: none; padding: 4px; border-top: 1px solid #cbd5e1; font-size: 0.65rem; }
         .acc-body.show { display: block; }
         .shift-blk { margin-top: 2px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; margin-top: 2px; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; word-break: break-all; margin-top: 2px; }
         .field-group { margin-bottom: 3px; }
+        .err-msg { background: #fee2e2; color: #991b1b; padding: 4px; border-radius: 4px; font-size: 0.65rem; margin-bottom: 3px; display: none; }
     </style>
 </head>
 <body>
@@ -36,10 +37,15 @@
 <div class="box">
     <div class="card">
         <h2>Meal Entry</h2>
+        <div id="e-err" class="err-msg"></div>
         <form id="f-meal">
             <div class="row">
-                <div><label>Employee ID</label><input type="text" id="e-id" required></div>
-                <div><label>Date</label><input type="date" id="e-date" required></div>
+                <div><label>Employee ID(s) [e.g. 235,236]</label><input type="text" id="e-id" required></div>
+                <div><label>Start Date</label><input type="date" id="e-date" required></div>
+            </div>
+            <div class="row">
+                <div><label>Number of Days</label><input type="number" id="e-days" value="1" min="1" max="30" required></div>
+                <div></div>
             </div>
             <div class="field-group"><label>Shift</label>
                 <div class="grid-3" id="g-shift">
@@ -121,10 +127,39 @@
         });
     });
 
-    async function loadSummary(openMeal = 'Breakfast') {
+    function checkDeadline(meal, targetDateStr) {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const dhakaTime = new Date(utc + (3600000 * 6));
+        
+        const currentY = dhakaTime.getFullYear();
+        const currentM = String(dhakaTime.getMonth() + 1).padStart(2, '0');
+        const currentD = String(dhakaTime.getDate()).padStart(2, '0');
+        const todayDhakaStr = `${currentY}-${currentM}-${currentD}`;
+
+        if (targetDateStr !== todayDhakaStr) return null;
+
+        const currentHours = dhakaTime.getHours();
+        const currentMinutes = dhakaTime.getMinutes();
+        const totalMinutes = currentHours * 60 + currentMinutes;
+
+        if (meal === 'Breakfast') {
+            if (totalMinutes > 435) return "Breakfast entry is closed after 7:15 AM for today.";
+        } else if (meal === 'Lunch') {
+            if (totalMinutes > 660) return "Lunch entry is closed after 11:00 AM for today.";
+        } else if (meal === 'Dinner') {
+            if (totalMinutes > 1140) return "Dinner entry is closed after 7:00 PM for today.";
+        }
+        return null;
+    }
+
+    async function loadSummary(openMeal = null) {
         const dateInput = document.getElementById('s-date');
         const dateStr = dateInput ? dateInput.value : today;
         if (!dateStr) return;
+        
+        const [pYear, pMonth, pDay] = dateStr.split('-');
+        const formattedWaDate = `${parseInt(pMonth)}/${parseInt(pDay)}/${pYear}`;
         
         try {
             const res = await fetch(`/api/summary?dateStr=${dateStr}`);
@@ -149,16 +184,16 @@
                             }).join('') +
                             (() => {
                                 let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                                let waText = `${dateStr}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(',')}`;
+                                let waText = `${formattedWaDate}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
                                 
                                 const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                                if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(',')})`;
+                                if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(', ')})`;
                                 
                                 const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                                if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(',')})`;
+                                if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(', ')})`;
                                 
                                 const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
-                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(',')})`;
+                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(', ')})`;
 
                                 return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
                                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
@@ -181,18 +216,52 @@
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
-        const payload = {
-            dateStr: document.getElementById('e-date').value,
-            id: document.getElementById('e-id').value.trim(),
-            shift: document.querySelector('input[name="shift"]:checked').value,
-            meal: document.querySelector('input[name="meal"]:checked').value,
-            menuOption: document.querySelector('input[name="menuOption"]:checked').value
-        };
-        const res = await fetch('/api/submit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        if ((await res.json()).success) {
-            document.getElementById('e-id').value = '';
-            loadSummary(payload.meal);
+        const errDiv = document.getElementById('e-err');
+        errDiv.style.display = 'none';
+
+        const startDateStr = document.getElementById('e-date').value;
+        const mealType = document.querySelector('input[name="meal"]:checked').value;
+        const daysCount = parseInt(document.getElementById('e-days').value) || 1;
+
+        const deadlineError = checkDeadline(mealType, startDateStr);
+        if (deadlineError) {
+            errDiv.innerText = deadlineError;
+            errDiv.style.display = 'block';
+            return;
         }
+
+        const rawIds = document.getElementById('e-id').value.split(',');
+        const ids = rawIds.map(i => i.trim()).filter(i => i.length > 0);
+        if (ids.length === 0) return;
+
+        const shiftVal = document.querySelector('input[name="shift"]:checked').value;
+        const menuVal = document.querySelector('input[name="menuOption"]:checked').value;
+
+        const baseDate = new Date(startDateStr);
+
+        for (let d = 0; d < daysCount; d++) {
+            const currDate = new Date(baseDate);
+            currDate.setDate(baseDate.getDate() + d);
+            const dateStr = currDate.toISOString().split('T')[0];
+
+            for (let id of ids) {
+                await fetch('/api/submit', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({
+                        dateStr: dateStr,
+                        id: id,
+                        shift: shiftVal,
+                        meal: mealType,
+                        menuOption: menuVal
+                    }) 
+                });
+            }
+        }
+
+        document.getElementById('e-id').value = '';
+        document.getElementById('s-date').value = startDateStr;
+        loadSummary(mealType);
     });
 
     document.getElementById('f-del').addEventListener('submit', async e => {
@@ -203,7 +272,8 @@
         });
         if ((await res.json()).success) {
             document.getElementById('d-id').value = '';
-            loadSummary();
+            document.getElementById('s-date').value = document.getElementById('d-date').value;
+            loadSummary(document.getElementById('d-meal').value);
         }
     });
 
@@ -214,7 +284,7 @@
     });
     document.getElementById('s-date').addEventListener('input', () => loadSummary());
 
-    loadSummary('Breakfast');
+    loadSummary();
 </script>
 </body>
 </html>
