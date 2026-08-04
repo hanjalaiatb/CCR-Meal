@@ -8,7 +8,11 @@
         body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; font-size: 1rem; }
         .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
         .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; }
+        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .card-body { display: none; }
+        .card.expanded .card-body { display: block; }
+        .toggle-icon { font-size: 0.9rem; font-weight: normal; color: #64748b; }
+        
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
         input, select { width: 100%; height: 38px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; background: #f8fafc; box-sizing: border-box; }
@@ -31,7 +35,7 @@
         .panel.show { display: block; }
 
         .shift-blk { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; white-space: pre-wrap; word-break: break-all; margin-top: 8px; line-height: 1.4; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; margin-top: 8px; line-height: 1.5; }
         .field-group { margin-bottom: 6px; }
         .msg-box { padding: 8px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
@@ -41,62 +45,71 @@
 <body>
 
 <div class="box">
-    <div class="card">
-        <h2>Meal Entry</h2>
-        <div id="e-msg" class="msg-box"></div>
-        <form id="f-meal">
-            <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
-            <div class="row">
-                <div><label>Start Date</label><input type="text" id="e-start-date" required></div>
-                <div><label>End Date</label><input type="text" id="e-end-date" required></div>
-            </div>
-            <div class="field-group"><label>Shift</label>
-                <div class="grid-3" id="g-shift">
-                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
+    <!-- Meal Entry Card (Collapsed by default if ID exists) -->
+    <div class="card" id="card-entry">
+        <h2 onclick="toggleCard('card-entry')"><span>Meal Entry</span><span class="toggle-icon" id="icon-entry">▼</span></h2>
+        <div class="card-body">
+            <div id="e-msg" class="msg-box"></div>
+            <form id="f-meal">
+                <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
+                <div class="row">
+                    <div><label>Start Date</label><input type="text" id="e-start-date" required></div>
+                    <div><label>End Date</label><input type="text" id="e-end-date" required></div>
                 </div>
-            </div>
-            <div class="field-group"><label>Meal Type</label>
-                <div class="grid-3" id="g-meal">
-                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
+                <div class="field-group"><label>Shift</label>
+                    <div class="grid-3" id="g-shift">
+                        <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
+                        <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
+                        <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
+                    </div>
                 </div>
-            </div>
-            <div class="field-group"><label>Menu Option</label>
-                <div class="grid-4" id="g-menu">
-                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
-                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
-                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
+                <div class="field-group"><label>Meal Type</label>
+                    <div class="grid-3" id="g-meal">
+                        <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
+                        <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
+                        <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
+                    </div>
                 </div>
-            </div>
-            <button type="submit" class="btn-blue">Save Entry</button>
-        </form>
+                <div class="field-group"><label>Menu Option</label>
+                    <div class="grid-4" id="g-menu">
+                        <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                        <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
+                        <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
+                        <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-blue">Save Entry</button>
+            </form>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div style="max-width:160px; margin-bottom:6px;"><label>Select Date</label><input type="text" id="s-date"></div>
-        <div class="tab-row" id="tab-row"></div>
-        <div class="panel show" id="panel-Breakfast"></div>
-        <div class="panel" id="panel-Lunch"></div>
-        <div class="panel" id="panel-Dinner"></div>
+    <!-- Summary Output Card (Always Expanded) -->
+    <div class="card expanded" id="card-summary">
+        <h2 onclick="toggleCard('card-summary')"><span>Summary Output</span><span class="toggle-icon" id="icon-summary">▲</span></h2>
+        <div class="card-body" style="display: block;">
+            <div style="max-width:160px; margin-bottom:6px;"><label>Select Date</label><input type="text" id="s-date"></div>
+            <div class="tab-row" id="tab-row"></div>
+            <div class="panel show" id="panel-Breakfast"></div>
+            <div class="panel" id="panel-Lunch"></div>
+            <div class="panel" id="panel-Dinner"></div>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>Delete Record</h2>
-        <div id="d-msg" class="msg-box"></div>
-        <form id="f-del">
-            <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
-            <div class="row">
-                <div><label>Start Date</label><input type="text" id="d-start-date" required></div>
-                <div><label>End Date</label><input type="text" id="d-end-date" required></div>
-            </div>
-            <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
-            <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
-        </form>
+    <!-- Delete Record Card (Collapsed by default) -->
+    <div class="card" id="card-del">
+        <h2 onclick="toggleCard('card-del')"><span>Delete Record</span><span class="toggle-icon" id="icon-del">▼</span></h2>
+        <div class="card-body">
+            <div id="d-msg" class="msg-box"></div>
+            <form id="f-del">
+                <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
+                <div class="row">
+                    <div><label>Start Date</label><input type="text" id="d-start-date" required></div>
+                    <div><label>End Date</label><input type="text" id="d-end-date" required></div>
+                </div>
+                <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
+                <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -114,8 +127,39 @@
     }
 
     const todayStr = fmt(new Date());
-    ['e-start-date', 'e-end-date', 's-date', 'd-start-date', 'd-end-date'].forEach(id => {
+    ['s-date', 'd-start-date', 'd-end-date', 'e-start-date', 'e-end-date'].forEach(id => {
         document.getElementById(id).value = todayStr;
+    });
+
+    // Auto-load saved ID from localStorage
+    const savedId = localStorage.getItem('ccr_emp_id') || '';
+    ['e-id', 'd-id'].forEach(id => {
+        document.getElementById(id).value = savedId;
+    });
+
+    // If ID already exists on device, keep Meal Entry collapsed, otherwise expand it
+    if (savedId) {
+        document.getElementById('card-entry').classList.remove('expanded');
+        document.getElementById('icon-entry').innerText = '▼';
+    } else {
+        document.getElementById('card-entry').classList.add('expanded');
+        document.getElementById('icon-entry').innerText = '▲';
+    }
+
+    function toggleCard(cardId) {
+        const card = document.getElementById(cardId);
+        const isExp = card.classList.toggle('expanded');
+        const iconId = cardId === 'card-entry' ? 'icon-entry' : (cardId === 'card-summary' ? 'icon-summary' : 'icon-del');
+        document.getElementById(iconId).innerText = isExp ? '▲' : '▼';
+    }
+
+    ['e-id', 'd-id'].forEach(idInput => {
+        document.getElementById(idInput).addEventListener('input', e => {
+            const firstId = e.target.value.split(',')[0].trim();
+            if (firstId) {
+                localStorage.setItem('ccr_emp_id', firstId);
+            }
+        });
     });
 
     let activeMeal = 'Breakfast';
@@ -203,14 +247,14 @@
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার\nCCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
                 
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা (${fr.map(r => r.id).join(', ')})`;
+                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা\n(${fr.map(r => r.id).join(', ')})`;
                 const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা (${po.map(r => r.id).join(', ')})`;
+                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা\n(${po.map(r => r.id).join(', ')})`;
                 const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
+                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা\n(${mt.map(r => r.id).join(', ')})`;
 
                 bodyHtml += `<div class="txt-pre" id="wa-${m}">${waText}</div>
                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">Copy WhatsApp Format</button>`;
@@ -233,8 +277,13 @@
         if (!startISO || !endISO) return showMsg('e-msg', 'Invalid date format.', 'error');
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
-        const ids = document.getElementById('e-id').value.split(',').map(i => i.trim()).filter(Boolean);
+        const rawIdVal = document.getElementById('e-id').value;
+        const ids = rawIdVal.split(',').map(i => i.trim()).filter(Boolean);
         if (!ids.length) return;
+
+        if (ids[0]) {
+            localStorage.setItem('ccr_emp_id', ids[0]);
+        }
 
         let curr = new Date(startISO), end = new Date(endISO);
         while (curr <= end) {
@@ -252,7 +301,6 @@
             }
             curr.setDate(curr.getDate() + 1);
         }
-        document.getElementById('e-id').value = '';
         document.getElementById('s-date').value = document.getElementById('e-start-date').value;
         showMsg('e-msg', 'Saved successfully!', 'success');
         loadSummary(mealType);
@@ -264,8 +312,13 @@
         const endISO = parseIso(document.getElementById('d-end-date').value);
         if (!startISO || !endISO) return showMsg('d-msg', 'Invalid date format.', 'error');
 
-        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
+        const rawDelId = document.getElementById('d-id').value;
+        const ids = rawDelId.split(',').map(i => i.trim()).filter(Boolean);
         const mealVal = document.getElementById('d-meal').value;
+
+        if (ids[0]) {
+            localStorage.setItem('ccr_emp_id', ids[0]);
+        }
 
         let curr = new Date(startISO), end = new Date(endISO);
         while (curr <= end) {
@@ -278,7 +331,6 @@
             }
             curr.setDate(curr.getDate() + 1);
         }
-        document.getElementById('d-id').value = '';
         document.getElementById('s-date').value = document.getElementById('d-start-date').value;
         showMsg('d-msg', 'Deleted successfully!', 'success');
         loadSummary(mealVal);
