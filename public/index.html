@@ -8,12 +8,10 @@
         body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
         .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
         .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        .card-danger { background: #fff5f5; border-color: #fca5a5; }
         h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
         .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
         
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        .row-3 { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: end; }
         .group { margin-bottom: 6px; }
         label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748b; margin-bottom: 2px; text-transform: uppercase; }
         
@@ -36,7 +34,6 @@
 
         button { width: 100%; height: 30px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; box-sizing: border-box; }
         .btn-blue { background: #2563eb; color: #fff; }
-        .btn-red { background: #ef4444; color: #fff; }
         .btn-green { background: #059669; color: #fff; height: 26px; padding: 0 8px; font-size: 0.7rem; width: auto; margin-top: 4px; display: inline-block; border-radius: 4px; }
 
         .msg { padding: 5px; border-radius: 6px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
@@ -110,44 +107,6 @@
         </div>
         <div id="summary-box"></div>
     </div>
-
-    <!-- 3. DELETE RECORD -->
-    <div class="card">
-        <h2>Delete Specific Record</h2>
-        <div class="sub">Remove entry by Date, Meal, and ID</div>
-        <div id="d-msg" class="msg"></div>
-        <form id="f-del">
-            <div class="row-3">
-                <div class="group" style="margin-bottom:0;">
-                    <label>Select ID</label>
-                    <select id="d-id-select" required>
-                        <option value="">None</option>
-                    </select>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Date</label>
-                    <input type="date" id="d-date" required>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Meal Type</label>
-                    <select id="d-meal" required>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn-red" style="margin-top:6px;">Delete Record</button>
-        </form>
-    </div>
-
-    <!-- 4. DELETE ALL DATA -->
-    <div class="card card-danger">
-        <h2 style="color: #991b1b;">Danger Zone</h2>
-        <div class="sub">Permanently clear all database records</div>
-        <div id="da-msg" class="msg"></div>
-        <button type="button" class="btn-red" id="btn-delete-all">Delete All Data</button>
-    </div>
 </div>
 
 <script>
@@ -181,11 +140,6 @@
         const sDateInput = document.getElementById('s-date');
         if (sDateInput) {
             sDateInput.value = localDateStr;
-        }
-
-        const dDateInput = document.getElementById('d-date');
-        if (dDateInput) {
-            dDateInput.value = localDateStr;
         }
 
         bindRadios('g-shift');
@@ -222,42 +176,17 @@
         });
 
         loadSummaryData('Breakfast');
-        updateDelDropdown();
 
         if (eDateInput) {
             eDateInput.addEventListener('input', function(e) {
                 document.getElementById('s-date').value = e.target.value;
-                document.getElementById('d-date').value = e.target.value;
                 loadSummaryData();
-                updateDelDropdown();
             });
         }
         
         if (sDateInput) {
             sDateInput.addEventListener('input', function() { loadSummaryData(); });
         }
-        
-        if (dDateInput) {
-            dDateInput.addEventListener('input', function() { updateDelDropdown(); });
-        }
-        
-        const dMealInput = document.getElementById('d-meal');
-        if (dMealInput) {
-            dMealInput.addEventListener('change', function() { updateDelDropdown(); });
-        }
-
-        document.getElementById('btn-delete-all').addEventListener('click', async function() {
-            if (!confirm('Are you sure you want to delete ALL data?')) return;
-            const res = await fetch('/api/delete-all', { method: 'POST' });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                showMsg('da-msg', 'All data deleted successfully!', true);
-                loadSummaryData();
-                updateDelDropdown();
-            } else {
-                showMsg('da-msg', 'Failed to delete all data', false);
-            }
-        });
     });
 
     function showMsg(id, text, ok) {
@@ -298,31 +227,8 @@
             showMsg('s-msg', msgText, true);
             document.getElementById('e-id').value = '';
             loadSummaryData(payload.meal);
-            updateDelDropdown();
         } else {
             showMsg('s-msg', data.error || 'Error', false);
-        }
-    });
-
-    document.getElementById('f-del').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const id = document.getElementById('d-id-select').value;
-        const dateStr = document.getElementById('d-date').value;
-        const meal = document.getElementById('d-meal').value;
-
-        if (!id) return;
-        const res = await fetch('/api/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id, dateStr: dateStr, meal: meal })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-            showMsg('d-msg', 'Deleted ID ' + id, true);
-            loadSummaryData();
-            updateDelDropdown();
-        } else {
-            showMsg('d-msg', 'Delete failed', false);
         }
     });
 
@@ -333,25 +239,6 @@
         const res = await fetch('/api/summary?dateStr=' + dateStr);
         const data = await res.json();
         renderSummary(dateStr, data.records || [], openMeal);
-    }
-
-    async function updateDelDropdown() {
-        const dDate = document.getElementById('d-date').value;
-        const dMeal = document.getElementById('d-meal').value;
-        const sel = document.getElementById('d-id-select');
-        if (!sel || !dDate) return;
-        
-        const res = await fetch('/api/summary?dateStr=' + dDate);
-        const data = await res.json();
-        const dayRecords = data.records || [];
-
-        sel.innerHTML = '<option value="">None</option>';
-        dayRecords.filter(function(r) { return r.meal === dMeal; }).forEach(function(r) {
-            const opt = document.createElement('option');
-            opt.value = r.id;
-            opt.textContent = r.id;
-            sel.appendChild(opt);
-        });
     }
 
     function renderSummary(dateStr, records, openMeal) {
@@ -412,4 +299,37 @@
                 html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">' +
                         '<div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>' +
                         '<div class="txt-pre" id="wa-' + meal + '">' + wa + '</div>' +
-                        '<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementB
+                        '<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById(\'wa-' + meal + '\').innerText).then(function(){showMsg(\'s-msg\',\'Copied to clipboard!\',true);})">Copy WhatsApp Format</button>' +
+                        '</div>';
+            }
+            html += '</div></div>';
+        });
+        box.innerHTML = html;
+    }
+
+    function toggleAcc(meal) {
+        const el = document.getElementById('acc-' + meal);
+        if (!el) return;
+        const show = el.classList.contains('show');
+        document.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('show'); });
+        
+        ['Breakfast', 'Lunch', 'Dinner'].forEach(function(m) {
+            const btnSpan = document.querySelector('button[onclick="toggleAcc(\'' + m + '\')"] span:last-child');
+            if (btnSpan) {
+                const totalText = btnSpan.innerText.replace(/[▲▼]/g, '').trim();
+                btnSpan.innerText = totalText + ' ▼';
+            }
+        });
+
+        if (!show) {
+            el.classList.add('show');
+            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + meal + '\')"] span:last-child');
+            if (activeSpan) {
+                const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
+                activeSpan.innerText = totalText + ' ▲';
+            }
+        }
+    }
+</script>
+</body>
+</html>
