@@ -40,24 +40,24 @@
         <div id="s-msg" class="msg"></div>
         <form id="f-meal">
             <div class="row">
-                <div><label>Employee ID</label><input type="text" id="e-id" required></div>
-                <div><label>Date</label><input type="date" id="e-date" required></div>
+                <div><label>EMPLOYEE ID</label><input type="text" id="e-id" required></div>
+                <div><label>DATE</label><input type="date" id="e-date" required></div>
             </div>
-            <div><label>Shift</label>
+            <div><label>SHIFT</label>
                 <div class="grid-3" id="g-shift">
                     <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>MORNING</label>
                     <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">AFTERNOON</label>
                     <label class="radio-lbl"><input type="radio" name="shift" value="Night">NIGHT</label>
                 </div>
             </div>
-            <div><label>Meal Type</label>
+            <div><label>MEAL TYPE</label>
                 <div class="grid-3" id="g-meal">
                     <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>BREAKFAST</label>
                     <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">LUNCH</label>
                     <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">DINNER</label>
                 </div>
             </div>
-            <div><label>Menu Option</label>
+            <div><label>MENU OPTION</label>
                 <div class="grid-4" id="g-menu">
                     <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>REG</label>
                     <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>FRIED</label>
@@ -71,7 +71,7 @@
 
     <div class="card">
         <h2>Summary Output</h2>
-        <div style="max-width:120px; margin-bottom:4px;"><label>Select Date</label><input type="date" id="s-date"></div>
+        <div style="max-width:120px; margin-bottom:4px;"><label>SELECT DATE</label><input type="date" id="s-date"></div>
         <div id="summary-box"></div>
     </div>
 
@@ -80,9 +80,9 @@
         <div id="d-msg" class="msg"></div>
         <form id="f-del">
             <div style="display:grid; grid-template-columns: 70px 1fr 1fr; gap:4px; align-items:end;">
-                <div><label>Employee ID</label><input type="text" id="d-id" required></div>
-                <div><label>Date</label><input type="date" id="d-date" required></div>
-                <div><label>Meal Type</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
+                <div><label>EMPLOYEE ID</label><input type="text" id="d-id" required></div>
+                <div><label>DATE</label><input type="date" id="d-date" required></div>
+                <div><label>MEAL TYPE</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             </div>
             <button type="submit" class="btn-red" style="margin-top:4px;">Delete Record</button>
         </form>
@@ -135,15 +135,29 @@
             return `<div class="acc">
                 <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')"><span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span></button>
                 <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
-                    ${mRecs.length === 0 ? '<div>No entries found.</div>' : 
+                    ${mRecs.length === 0 ? '<div>No entries found.</div>` : 
                         ['Morning', 'Afternoon', 'Night'].map(shift => {
                             const sRecs = mRecs.filter(r => r.shift === shift);
                             if (!sRecs.length) return '';
                             const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
                             return `<div class="shift-blk"><div style="font-weight:700">${shift} shift</div><div>Meal ID: ${ids}</div></div>`;
                         }).join('') +
-                        `<div class="txt-pre" id="wa-${meal}">${dateStr}\n${meal === 'Breakfast' ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে')} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(',')}</div>
-                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`
+                        (() => {
+                            let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
+                            let waText = `${dateStr}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(',')}`;
+                            
+                            const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
+                            if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(',')})`;
+                            
+                            const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
+                            if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(',')})`;
+                            
+                            const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
+                            if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(',')})`;
+
+                            return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
+                            <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
+                        })()
                     }
                 </div></div>`;
         }).join('');
