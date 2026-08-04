@@ -23,7 +23,7 @@ const mealSchema = new mongoose.Schema({
 });
 
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
-mealSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 }); // Auto-delete after 48h
+mealSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 });
 
 const Meal = mongoose.model('Meal', mealSchema);
 
