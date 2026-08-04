@@ -23,14 +23,17 @@
         .btn-red { background: #ef4444; color: #fff; }
         .btn-green { background: #059669; color: #fff; height: 32px; padding: 0 10px; font-size: 0.8rem; width: auto; margin-top: 6px; display: inline-block; }
         
-        /* Side-by-side layout for meal summaries */
-        .summary-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px; }
-        .meal-col { border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; display: flex; flex-direction: column; overflow: hidden; }
-        .meal-col-header { background: #dbeafe; color: #1e40af; font-weight: 700; font-size: 0.8rem; padding: 6px 2px; text-align: center; border-bottom: 1px solid #cbd5e1; }
-        .meal-col-body { padding: 6px; font-size: 0.75rem; flex-grow: 1; background: #ffffff; word-break: break-all; }
+        /* Summary Grid Layout */
+        .summary-wrapper { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+        .summary-header-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .meal-tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.8rem; padding: 8px 2px; text-align: center; border-radius: 6px; cursor: pointer; }
+        .meal-tab-btn.active { background: #dbeafe; border-color: #2563eb; }
         
+        .meal-details-panel { border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; padding: 10px; font-size: 0.8rem; display: none; }
+        .meal-details-panel.show { display: block; }
+
         .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; white-space: pre-wrap; word-break: break-all; margin-top: 6px; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; white-space: pre-wrap; word-break: break-all; margin-top: 6px; }
         .field-group { margin-bottom: 6px; }
         .msg-box { padding: 8px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
@@ -78,7 +81,7 @@
     <div class="card">
         <h2>Summary Output</h2>
         <div style="max-width:160px; margin-bottom:6px;"><label>Select Date (DD/MM/YYYY)</label><input type="text" id="s-date" placeholder="DD/MM/YYYY"></div>
-        <div class="summary-container" id="summary-box"></div>
+        <div class="summary-wrapper" id="summary-box"></div>
     </div>
 
     <div class="card">
@@ -125,6 +128,9 @@
         const el = document.getElementById(id);
         if(el) el.value = todayDMY;
     });
+
+    let currentActiveMeal = 'Breakfast';
+    let cachedRecords = {};
 
     let msgTimeouts = {};
     function showMessage(elementId, text, type) {
@@ -204,6 +210,10 @@
         const dateStr = parseDMYToISO(dateDMY);
         if (!dateStr) return;
         
+        if (preferredMeal) {
+            currentActiveMeal = preferredMeal;
+        }
+
         try {
             const res = await fetch(`/api/summary?dateStr=${dateStr}`);
             const data = await res.json();
@@ -212,52 +222,74 @@
             const box = document.getElementById('summary-box');
             if(!box) return;
 
-            box.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(meal => {
+            const meals = ['Breakfast', 'Lunch', 'Dinner'];
+
+            let html = `<div class="summary-header-row">`;
+            meals.forEach(meal => {
                 const mRecs = records.filter(r => r.meal === meal);
-                return `<div class="meal-col">
-                    <div class="meal-col-header">${meal} (${mRecs.length})</div>
-                    <div class="meal-col-body">
-                        ${mRecs.length === 0 ? '<div style="color:#64748b; text-align:center;">No entries</div>' : 
-                            ['Morning', 'Afternoon', 'Night'].map(shift => {
-                                const sRecs = mRecs.filter(r => r.shift === shift);
-                                if (!sRecs.length) return '';
-                                const fCount = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
-                                const pCount = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
-                                const mCount = sRecs.filter(r => r.menuOption === 'Mutton').length;
-                                
-                                let countsStr = `Tot:${sRecs.length}`;
-                                if (fCount > 0) countsStr += `, F-${fCount}`;
-                                if (pCount > 0) countsStr += `, P-${pCount}`;
-                                if (mCount > 0) countsStr += `, M-${mCount}`;
+                const isActive = (meal === currentActiveMeal);
+                html += `<button type="button" class="meal-tab-btn ${isActive ? 'active' : ''}" onclick="switchMealTab('${meal}')">${meal} (${mRecs.length})</button>`;
+            });
+            html += `</div>`;
 
-                                const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                                return `<div class="shift-blk"><div style="font-weight:700">${shift} (${countsStr})</div><div>ID: ${ids}</div></div>`;
-                            }).join('') +
-                            (() => {
-                                let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                                const totalBen = toBengaliNum(mRecs.length);
-                                let waText = `${dateDMY}\n${timeWord} মোট ${totalBen} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
-                                
-                                const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                                if (fried.length > 0) waText += `\nডিম ভাজি: ${toBengaliNum(fried.length)} টা (${fried.map(r => r.id).join(', ')})`;
-                                
-                                const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                                if (poached.length > 0) waText += `\nডিম পোচ: ${toBengaliNum(poached.length)} টা (${poached.map(r => r.id).join(', ')})`;
-                                
-                                const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
-                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${toBengaliNum(mutton.length)} টা (${mutton.map(r => r.id).join(', ')})`;
+            meals.forEach(meal => {
+                const mRecs = records.filter(r => r.meal === meal);
+                const isActive = (meal === currentActiveMeal);
+                html += `<div class="meal-details-panel ${isActive ? 'show' : ''}" id="panel-${meal}">`;
+                
+                if (mRecs.length === 0) {
+                    html += `<div style="color:#64748b; text-align:center;">No entries found.</div>`;
+                } else {
+                    ['Morning', 'Afternoon', 'Night'].forEach(shift => {
+                        const sRecs = mRecs.filter(r => r.shift === shift);
+                        if (!sRecs.length) return;
+                        const fCount = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
+                        const pCount = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
+                        const mCount = sRecs.filter(r => r.menuOption === 'Mutton').length;
+                        
+                        let countsStr = `Tot:${sRecs.length}`;
+                        if (fCount > 0) countsStr += `, F-${fCount}`;
+                        if (pCount > 0) countsStr += `, P-${pCount}`;
+                        if (mCount > 0) countsStr += `, M-${mCount}`;
 
-                                return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
-                                <button type="button" class="btn-green" style="font-size:0.65rem; padding:0 4px; height:26px;" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WA</button>`;
-                            })()
-                        }
-                    </div>
-                </div>`;
-            }).join('');
+                        const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
+                        html += `<div class="shift-blk"><div style="font-weight:700">${shift} (${countsStr})</div><div>ID: ${ids}</div></div>`;
+                    });
+
+                    let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
+                    const totalBen = toBengaliNum(mRecs.length);
+                    let waText = `${dateDMY}\n${timeWord} মোট ${totalBen} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                    
+                    const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
+                    if (fried.length > 0) waText += `\nডিম ভাজি: ${toBengaliNum(fried.length)} টা (${fried.map(r => r.id).join(', ')})`;
+                    
+                    const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
+                    if (poached.length > 0) waText += `\nডিম পোচ: ${toBengaliNum(poached.length)} টা (${poached.map(r => r.id).join(', ')})`;
+                    
+                    const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
+                    if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${toBengaliNum(mutton.length)} টা (${mutton.map(r => r.id).join(', ')})`;
+
+                    html += `<div class="txt-pre" id="wa-${meal}">${waText}</div>
+                    <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
+                }
+                html += `</div>`;
+            });
+
+            box.innerHTML = html;
         } catch (err) {
             console.error(err);
         }
     }
+
+    window.switchMealTab = function(meal) {
+        currentActiveMeal = meal;
+        document.querySelectorAll('.meal-tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent.startsWith(meal));
+        });
+        document.querySelectorAll('.meal-details-panel').forEach(panel => {
+            panel.classList.toggle('show', panel.id === `panel-${meal}`);
+        });
+    };
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
@@ -329,7 +361,7 @@
         const startDMY = document.getElementById('d-start-date').value;
         const endDMY = document.getElementById('d-end-date').value;
         const startISO = parseDMYToISO(startDMY);
-        const endISO = parseDMYToISO(endDMY);
+        const endISO = parseDMYToISO(endISO);
 
         if (!startISO || !endISO) {
             showMessage('d-msg', 'Invalid date format. Use DD/MM/YYYY.', 'error');
@@ -372,12 +404,4 @@
     });
 
     document.getElementById('e-start-date').addEventListener('input', e => {
-        document.getElementById('s-date').value = e.target.value;
-        loadSummary();
-    });
-    document.getElementById('s-date').addEventListener('input', () => loadSummary());
-
-    loadSummary();
-</script>
-</body>
-</html>
+        document.getEleme
