@@ -67,5 +67,19 @@ app.get('/api/summary', async (req, res) => {
     }
 });
 
+app.post('/api/delete', async (req, res) => {
+    try {
+        const { id, dateStr, meal } = req.body;
+        if (!id || !dateStr || !meal) return res.status(400).json({ success: false, error: 'Missing parameters' });
+
+        const result = await Meal.findOneAndDelete({ id, dateStr, meal });
+        if (!result) return res.status(404).json({ success: false, error: 'Not found' });
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
