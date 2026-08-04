@@ -109,269 +109,234 @@ input:focus,select:focus{outline:none;border-color:#16a34a}
 </div>
 
 <script>
-const cache = {};
-const getBDT = () => {
-    const d = new Date();
-    const b = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + 21600000);
-    return `${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;
-};
-const today = getBDT();
-const fmt = s => s ? s.split('-').reverse().join('/') : '';
-const bn = n => String(n).replace(/\d/g, d => ['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
+const cache={},gB=()=>{const d=new Date(),b=new Date(d.getTime()+(d.getTimezoneOffset()*60000)+21600000);return`${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;},today=gB();
+const fmt=s=>s?s.split('-').reverse().join('/'):'',bn=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
 
-['s-date', 'e-start', 'e-end', 'd-start', 'd-end'].forEach(id => document.getElementById(id).value = today);
-const sid = localStorage.getItem('ccr_id') || '';
-['e-id', 'd-id'].forEach(id => document.getElementById(id).value = sid);
+['s-date','e-start','e-end','d-start','d-end'].forEach(id=>document.getElementById(id).value=today);
+const sid=localStorage.getItem('ccr_id')||'';
+['e-id','d-id'].forEach(id=>document.getElementById(id).value=sid);
 
-['e-id', 'd-id'].forEach(id => document.getElementById(id).addEventListener('input', e => {
-    const f = e.target.value.split(',')[0].trim();
-    if(f) localStorage.setItem('ccr_id', f);
-}));
+['e-id','d-id'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const f=e.target.value.split(',')[0].trim();if(f)localStorage.setItem('ccr_id',f);}));
 
-[['e-multi','e-ew','e-ldt','e-start','e-end'], ['d-multi','e-ew2','d-ldt','d-start','d-end']].forEach(x => {
-    document.getElementById(x[0]).addEventListener('change', e => {
-        const m = e.target.checked;
-        document.getElementById(x[1]).style.display = m ? 'block' : 'none';
-        document.getElementById(x[2]).innerText = m ? 'Start Date' : 'Date';
-        if(!m) document.getElementById(x[4]).value = document.getElementById(x[3]).value;
+[['e-multi','e-ew','e-ldt','e-start','e-end'],['d-multi','e-ew2','d-ldt','d-start','d-end']].forEach(x=>{
+    document.getElementById(x[0]).addEventListener('change',e=>{
+        const m=e.target.checked;
+        document.getElementById(x[1]).style.display=m?'block':'none';
+        document.getElementById(x[2]).innerText=m?'Start Date':'Date';
+        if(!m)document.getElementById(x[4]).value=document.getElementById(x[3]).value;
     });
 });
 
-document.getElementById('e-start').addEventListener('change', e => {
-    if(!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
-    document.getElementById('s-date').value = e.target.value;
+document.getElementById('e-start').addEventListener('change',e=>{
+    if(!document.getElementById('e-multi').checked)document.getElementById('e-end').value=e.target.value;
+    document.getElementById('s-date').value=e.target.value;
     loadSum();
 });
-document.getElementById('d-start').addEventListener('change', e => {
-    if(!document.getElementById('d-multi').checked) document.getElementById('d-end').value = e.target.value;
-});
+document.getElementById('d-start').addEventListener('change',e=>{if(!document.getElementById('d-multi').checked)document.getElementById('d-end').value=e.target.value;});
 
-let actM = 'Breakfast';
-function msg(id, txt, t) {
-    const el = document.getElementById(id);
-    el.className = 'msg ' + (t === 's' ? 'suc' : 'err');
-    el.innerText = txt;
-    el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 4000);
+let actM='Breakfast';
+function msg(id,txt,t){
+    const el=document.getElementById(id);
+    el.className='msg '+(t==='s'?'suc':'err');
+    el.innerText=txt;
+    el.style.display='block';
+    setTimeout(()=>el.style.display='none',4000);
 }
 
-document.getElementById('g-shift').addEventListener('change', e => {
-    if(e.target.disabled) return;
-    document.querySelectorAll('#g-shift .rl').forEach(l => l.classList.remove('active-shift'));
-    e.target.closest('.rl').classList.add('active-shift');
-});
+document.getElementById('g-shift').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-shift .rl').forEach(l=>l.classList.remove('active-shift'));e.target.closest('.rl').classList.add('active-shift');}});
+document.getElementById('g-meal').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-meal .rl').forEach(l=>l.classList.remove('active-meal'));e.target.closest('.rl').classList.add('active-meal');}});
+document.getElementById('g-menu').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-menu .rl').forEach(l=>l.classList.remove('active-menu'));e.target.closest('.rl').classList.add('active-menu');}});
 
-document.getElementById('g-meal').addEventListener('change', e => {
-    if(e.target.disabled) return;
-    document.querySelectorAll('#g-meal .rl').forEach(l => l.classList.remove('active-meal'));
-    e.target.closest('.rl').classList.add('active-meal');
-});
-
-document.getElementById('g-menu').addEventListener('change', e => {
-    if(e.target.disabled) return;
-    document.querySelectorAll('#g-menu .rl').forEach(l => l.classList.remove('active-menu'));
-    e.target.closest('.rl').classList.add('active-menu');
-});
-
-document.querySelectorAll('input[name="meal"]').forEach(inp => {
-    inp.addEventListener('change', e => {
-        const isB = e.target.value === 'Breakfast';
-        ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(v => {
-            const el = document.querySelector(`input[value="${v}"]`);
-            if(el) { el.disabled = isB; el.closest('.rl').classList.toggle('dis', isB); }
+document.querySelectorAll('input[name="meal"]').forEach(inp=>{
+    inp.addEventListener('change',e=>{
+        const isB=e.target.value==='Breakfast';
+        ['Fried Egg','Poached Egg','Mutton'].forEach(v=>{
+            const el=document.querySelector(`input[value="${v}"]`);
+            if(el){el.disabled=isB;el.closest('.rl').classList.toggle('dis',isB);}
         });
-        if(isB) {
-            document.querySelector('input[value="Regular"]').checked = true;
-            document.querySelectorAll('#g-menu .rl').forEach(l => l.classList.remove('active-menu'));
+        if(isB){
+            document.querySelector('input[value="Regular"]').checked=true;
+            document.querySelectorAll('#g-menu .rl').forEach(l=>l.classList.remove('active-menu'));
             document.getElementById('l-reg').classList.add('active-menu');
         }
     });
 });
 
-async function loadSum(pref) {
-    if(pref) actM = pref;
-    const dt = document.getElementById('s-date').value;
-    if(!dt) return;
-    document.getElementById('s-lbl').innerText = (dt === today) ? '(Today)' : '';
+async function loadSum(pref){
+    if(pref)actM=pref;
+    const dt=document.getElementById('s-date').value;
+    if(!dt)return;
+    document.getElementById('s-lbl').innerText=(dt===today)?'(Today)':"";
 
-    try {
-        let recs = cache[dt];
-        if(!recs) {
-            const res = await fetch('/api/summary?dateStr=' + dt);
-            const data = await res.json();
-            recs = data.records || [];
-            cache[dt] = recs;
+    try{
+        let recs=cache[dt];
+        if(!recs){
+            const res=await fetch('/api/summary?dateStr='+dt);
+            const data=await res.json();
+            recs=data.records||[];
+            cache[dt]=recs;
         }
 
-        const meals = ['Breakfast', 'Lunch', 'Dinner'];
-        let tHtml = '';
-        meals.forEach(m => {
-            const cnt = recs.filter(r => r.meal === m).length;
-            tHtml += `<button type="button" class="tbtn ${m === actM ? 'active' : ''}" onclick="swT('${m}')">${m} (${cnt})</button>`;
+        const meals=['Breakfast','Lunch','Dinner'];
+        let tHtml='';
+        meals.forEach(m=>{
+            const cnt=recs.filter(r=>r.meal===m).length;
+            tHtml+=`<button type="button" class="tbtn ${m===actM?'active':''}" onclick="swT('${m}')">${m} (${cnt})</button>`;
         });
-        document.getElementById('tab-row').innerHTML = tHtml;
+        document.getElementById('tab-row').innerHTML=tHtml;
 
-        meals.forEach(m => {
-            const panel = document.getElementById('p-' + m);
-            panel.classList.toggle('show', m === actM);
-            const mRecs = recs.filter(r => r.meal === m);
+        meals.forEach(m=>{
+            const panel=document.getElementById('p-'+m);
+            panel.classList.toggle('show',m===actM);
+            const mRecs=recs.filter(r=>r.meal===m);
 
-            if(!mRecs.length) {
-                panel.innerHTML = '<div style="text-align:center;padding:8px;font-weight:bold;font-size:15px;color:#64748b">No entries found</div>';
+            if(!mRecs.length){
+                panel.innerHTML='<div style="text-align:center;padding:8px;font-weight:bold;font-size:15px;color:#64748b">No entries found</div>';
                 return;
             }
 
-            let body = '';
-            ['Morning', 'Afternoon', 'Night'].forEach(sh => {
-                const sRecs = mRecs.filter(r => r.shift === sh);
-                if(!sRecs.length) return;
-                const f = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
-                const p = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
-                const mu = sRecs.filter(r => r.menuOption === 'Mutton').length;
-                let cStr = 'Total:' + sRecs.length;
-                if(f) cStr += ', F-' + f;
-                if(p) cStr += ', P-' + p;
-                if(mu) cStr += ', M-' + mu;
-                const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                body += `<div class="sblk"><div style="font-weight:bold;font-size:15px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:15px;color:#475569">ID: ${ids}</div></div>`;
+            let body='';
+            ['Morning','Afternoon','Night'].forEach(sh=>{
+                const sRecs=mRecs.filter(r=>r.shift===sh);
+                if(!sRecs.length)return;
+                const f=sRecs.filter(r=>r.menuOption==='Fried Egg').length;
+                const p=sRecs.filter(r=>r.menuOption==='Poached Egg').length;
+                const mu=sRecs.filter(r=>r.menuOption==='Mutton').length;
+                let cStr='Total:'+sRecs.length;
+                if(f)cStr+=', F-'+f;
+                if(p)cStr+=', P-'+p;
+                if(mu)cStr+=', M-'+mu;
+                const ids=sRecs.map(r=>r.id+(r.menuOption==='Poached Egg'?'(P)':r.menuOption==='Fried Egg'?'(F)':r.menuOption==='Mutton'?'(M)':'')).join(', ');
+                body+=`<div class="sblk"><div style="font-weight:bold;font-size:15px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:15px;color:#475569">ID: ${ids}</div></div>`;
             });
 
-            const tw = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-            let wa = `${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
+            const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
+            let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
+            wa+=`ID: ${mRecs.map(r=>r.id).join(', ')}\n`;
             
-            const cleanIds = mRecs.map(r => r.id).join(', ');
-            wa += `ID: ${cleanIds}\n`;
-            
-            const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-            if(fr.length) wa += `ডিম ভাজি: ${bn(fr.length)} টা (` + fr.map(r => r.id).join(', ') + `)\n`;
-            
-            const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-            if(po.length) wa += `ডিম পোচ: ${bn(po.length)} টা (` + po.map(r => r.id).join(', ') + `)\n`;
-            
-            const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-            if(mt.length) wa += `খাসি (নন-মুসলিম): ${bn(mt.length)} টা (` + mt.map(r => r.id).join(', ') + `)\n`;
+            ['Fried Egg','Poached Egg','Mutton'].forEach(opt=>{
+                const sub=mRecs.filter(r=>r.menuOption===opt);
+                if(sub.length){
+                    const lbl=opt==='Fried Egg'?'ডিম ভাজি':(opt==='Poached Egg'?'ডিম পোচ':'খাসি (নন-মুসলিম)');
+                    wa+=`${lbl}: ${bn(sub.length)} টা (${sub.map(r=>r.id).join(', ')})\n`;
+                }
+            });
 
-            wa = wa.trimEnd();
+            wa=wa.trimEnd().replace(/\.\s*$/g,'।').replace(/\.$/g,'।');
 
-            body += `<div class="tpre" id="wa-${m}">${wa}</div>` +
+            body+=`<div class="tpre" id="wa-${m}">${wa}</div>`+
                     `<button type="button" class="btn-g" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
-            panel.innerHTML = body;
+            panel.innerHTML=body;
         });
-    } catch(e) { console.error(e); }
+    }catch(e){console.error(e);}
 }
 
-window.swT = function(m) {
-    actM = m;
-    document.querySelectorAll('.tbtn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(m)));
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === 'p-' + m));
+window.swT=function(m){
+    actM=m;
+    document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active',b.textContent.startsWith(m)));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('show',p.id==='p-'+m));
 };
 
-document.getElementById('f-meal').addEventListener('submit', async e => {
+document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
-    const start = document.getElementById('e-start').value;
-    const end = document.getElementById('e-multi').checked ? document.getElementById('e-end').value : start;
-    if(!start || !end) return msg('e-msg', 'Error: Invalid date range.', 'e');
+    const start=document.getElementById('e-start').value,end=document.getElementById('e-multi').checked?document.getElementById('e-end').value:start;
+    if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
-    const mealType = document.querySelector('input[name="meal"]:checked').value;
-    const shift = document.querySelector('input[name="shift"]:checked').value;
-    const menuOpt = document.querySelector('input[name="menuOption"]:checked').value;
-    const ids = document.getElementById('e-id').value.split(',').map(i => i.trim()).filter(Boolean);
-    if(!ids.length) return msg('e-msg', 'Error: Enter at least one Employee ID.', 'e');
+    const mealType=document.querySelector('input[name="meal"]:checked').value;
+    const shift=document.querySelector('input[name="shift"]:checked').value;
+    const menuOpt=document.querySelector('input[name="menuOption"]:checked').value;
+    const ids=document.getElementById('e-id').value.split(',').map(i=>i.trim()).filter(Boolean);
+    if(!ids.length)return msg('e-msg','Error: Enter at least one Employee ID.','e');
 
-    const dNow = new Date();
-    const bdtNow = new Date(dNow.getTime() + (dNow.getTimezoneOffset() * 60000) + 21600000);
-    const todayIso = `${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
-    const timeMin = bdtNow.getHours() * 60 + bdtNow.getMinutes();
+    const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
+    const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
+    const timeMin=bdtNow.getHours()*60+bdtNow.getMinutes();
 
-    let curr = new Date(start), last = new Date(end);
-    while(curr <= last) {
-        const dtStr = curr.toISOString().split('T')[0];
-        const diffH = (bdtNow - new Date(dtStr)) / 3600000;
-        if(diffH > 48) return msg('e-msg', `Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`, 'e');
-        if(dtStr === todayIso) {
-            if(mealType === 'Breakfast' && timeMin > 435) return msg('e-msg', 'Cutoff: Breakfast entry closed after 7:15 AM today!', 'e');
-            if(mealType === 'Lunch' && timeMin > 660) return msg('e-msg', 'Cutoff: Lunch entry closed after 11:00 AM today!', 'e');
-            if(mealType === 'Dinner' && timeMin > 1140) return msg('e-msg', 'Cutoff: Dinner entry closed after 7:00 PM today!', 'e');
+    let curr=new Date(start),last=new Date(end);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
+        if(dtStr<todayIso)return msg('e-msg',`Rejected: Cannot add records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('e-msg',`Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`,'e');
+        if(dtStr===todayIso){
+            if(mealType==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast entry closed after 7:15 AM today!','e');
+            if(mealType==='Lunch'&&timeMin>660)return msg('e-msg','Cutoff: Lunch entry closed after 11:00 AM today!','e');
+            if(mealType==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner entry closed after 7:00 PM today!','e');
         }
-        curr.setDate(curr.getDate() + 1);
+        curr.setDate(curr.getDate()+1);
     }
 
-    if(ids[0]) localStorage.setItem('ccr_id', ids[0]);
-    let mod = 0, exist = 0, added = 0;
-    curr = new Date(start);
-    while(curr <= last) {
-        const dtStr = curr.toISOString().split('T')[0];
+    if(ids[0])localStorage.setItem('ccr_id',ids[0]);
+    let mod=0,exist=0,added=0;
+    curr=new Date(start);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
         delete cache[dtStr];
-        const res = await fetch('/api/summary?dateStr=' + dtStr);
-        const data = await res.json();
-        const dayRecs = data.records || [];
+        const res=await fetch('/api/summary?dateStr='+dtStr);
+        const data=await res.json();
+        const dayRecs=data.records||[];
 
-        for(let i = 0; i < ids.length; i++) {
-            const id = ids[i];
-            const ex = dayRecs.find(r => r.id === id && r.meal === mealType);
-            if(ex) {
-                if(ex.shift === shift && ex.menuOption === menuOpt) exist++;
-                else mod++;
-            } else added++;
+        for(let i=0;i<ids.length;i++){
+            const id=ids[i],ex=dayRecs.find(r=>r.id===id&&r.meal===mealType);
+            if(ex){if(ex.shift===shift&&ex.menuOption===menuOpt)exist++;else mod++;}else added++;
 
-            await fetch('/api/submit', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ dateStr: dtStr, id, shift, meal: mealType, menuOption: menuOpt })
+            await fetch('/api/submit',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({dateStr:dtStr,id,shift,meal:mealType,menuOption:menuOpt})
             });
         }
-        curr.setDate(curr.getDate() + 1);
+        curr.setDate(curr.getDate()+1);
     }
 
-    document.getElementById('s-date').value = start;
-    let parts = [];
-    if(added) parts.push(added + ' added');
-    if(mod) parts.push(mod + ' modified');
-    if(exist) parts.push(exist + ' already existed');
-    msg('e-msg', 'Success: ' + parts.join(' | ') + '.', (mod || added) ? 's' : 'e');
+    document.getElementById('s-date').value=start;
+    let parts=[];
+    if(added)parts.push(added+' added');
+    if(mod)parts.push(mod+' modified');
+    if(exist)parts.push(exist+' already existed');
+    msg('e-msg','Success: '+parts.join(' | ')+'.',(mod||added)?'س':'e');
     loadSum(mealType);
 });
 
-document.getElementById('f-del').addEventListener('submit', async e => {
+document.getElementById('f-del').addEventListener('submit',async e=>{
     e.preventDefault();
-    const start = document.getElementById('d-start').value;
-    const end = document.getElementById('d-multi').checked ? document.getElementById('d-end').value : start;
-    if(!start || !end) return msg('d-msg', 'Error: Invalid date range.', 'e');
+    const start=document.getElementById('d-start').value,end=document.getElementById('d-multi').checked?document.getElementById('d-end').value:start;
+    if(!start||!end)return msg('d-msg','Error: Invalid date range.','e');
 
-    const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
-    const mealVal = document.getElementById('d-meal').value;
-    if(!ids.length) return msg('d-msg', 'Error: Enter at least one ID.', 'e');
+    const ids=document.getElementById('d-id').value.split(',').map(i=>i.trim()).filter(Boolean);
+    const mealVal=document.getElementById('d-meal').value;
+    if(!ids.length)return msg('d-msg','Error: Enter at least one ID.','e');
 
-    const dNow = new Date();
-    const bdtNow = new Date(dNow.getTime() + (dNow.getTimezoneOffset() * 60000) + 21600000);
+    const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
+    const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
 
-    let curr = new Date(start), last = new Date(end);
-    while(curr <= last) {
-        const dtStr = curr.toISOString().split('T')[0];
-        if((bdtNow - new Date(dtStr)) / 3600000 > 48) return msg('d-msg', `Rejected: Cannot delete records for ${dtStr} past 48 hours!`, 'e');
-        curr.setDate(curr.getDate() + 1);
+    let curr=new Date(start),last=new Date(end);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
+        if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('d-msg',`Rejected: Cannot delete records for ${dtStr} past 48 hours!`,'e');
+        curr.setDate(curr.getDate()+1);
     }
 
-    if(ids[0]) localStorage.setItem('ccr_id', ids[0]);
-    curr = new Date(start);
-    while(curr <= last) {
-        const dtStr = curr.toISOString().split('T')[0];
+    if(ids[0])localStorage.setItem('ccr_id',ids[0]);
+    curr=new Date(start);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
         delete cache[dtStr];
-        for(let i = 0; i < ids.length; i++) {
-            await fetch('/api/delete', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ id: ids[i], dateStr: dtStr, meal: mealVal })
+        for(let i=0;i<ids.length;i++){
+            await fetch('/api/delete',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
             });
         }
-        curr.setDate(curr.getDate() + 1);
+        curr.setDate(curr.getDate()+1);
     }
-    document.getElementById('s-date').value = start;
-    msg('d-msg', 'Success: Record(s) deleted successfully!', 's');
+    document.getElementById('s-date').value=start;
+    msg('d-msg','Success: Record(s) deleted successfully!','s');
     loadSum(mealVal);
 });
 
-document.getElementById('s-date').addEventListener('change', () => loadSum());
+document.getElementById('s-date').addEventListener('change',()=>loadSum());
 loadSum();
 </script>
 </body>
