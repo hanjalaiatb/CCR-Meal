@@ -349,7 +349,7 @@ document.getElementById('f-del').addEventListener('submit', async e => {
             await fetch('/api/delete', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ codeId: ids[i], dateStr: dtStr, meal: mealVal })
+                body: JSON.stringify({ id: ids[i], dateStr: dtStr, meal: mealVal })
             });
         }
         curr.setDate(curr.getDate() + 1);
@@ -359,6 +359,7 @@ document.getElementById('f-del').addEventListener('submit', async e => {
     loadSum(mealVal);
 });
 
+document.getElementById('s-date').parameter = 'change';
 document.getElementById('s-date').addEventListener('change', () => loadSum());
 loadSum();
 </script>
