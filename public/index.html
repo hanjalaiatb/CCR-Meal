@@ -120,7 +120,7 @@
     }
 
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯'[w] || w));
     }
 
     const todayIso = getTodayIso();
@@ -184,7 +184,6 @@
         const dateIso = document.getElementById('s-date').value;
         if (!dateIso) return;
 
-        // Update Today indicator label next to Summary Date
         const labelEl = document.getElementById('s-date-label');
         if (dateIso === todayIso) {
             labelEl.innerText = '(Today)';
@@ -243,11 +242,11 @@
                 }
                 
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা\n${fr.map(r => r.id).join(', ')}`;
+                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা (${fr.map(r => r.id).join(', ')})`;
                 const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা\n${po.map(r => r.id).join(', ')}`;
+                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা (${po.map(r => r.id).join(', ')})`;
                 const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা\n${mt.map(r => r.id).join(', ')}`;
+                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
 
                 bodyHtml += `<div class="txt-pre" id="wa-${m}">${waText}</div>
                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">Copy WhatsApp Format</button>`;
