@@ -120,7 +120,7 @@
     }
 
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯'[w] || w));
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
     }
 
     const todayIso = getTodayIso();
@@ -234,11 +234,11 @@
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID:`;
+                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID: `;
                 
                 const regularRecs = mRecs.filter(r => r.menuOption === 'Regular');
                 if (regularRecs.length) {
-                    waText += `\n${regularRecs.map(r => r.id).join(', ')}`;
+                    waText += regularRecs.map(r => r.id).join(', ');
                 }
                 
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
