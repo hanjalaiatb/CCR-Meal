@@ -10,7 +10,7 @@ body{font-family:sans-serif;margin:0;padding:4px;font-size:16px;background:#f8fa
 h2{font-size:17px;margin:0 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;display:flex;justify-content:space-between;color:#1e293b}
 label{display:block;font-size:14px;font-weight:bold;margin:4px 0 2px;color:#334155}
 input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a}
-input[type="date"]{font-size:13px;padding:0 2px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center}
+input[type="date"]{font-size:16px;font-weight:bold;padding:0 4px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>') no-repeat right 8px center}
 input:focus,select:focus{outline:none;border-color:#d97706}
 .row{display:flex;gap:4px;width:100%}
 .row>div{flex:1;min-width:0}
@@ -302,7 +302,7 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     const start=document.getElementById('d-start').value,end=document.getElementById('d-multi').checked?document.getElementById('d-end').value:start;
     if(!start||!end)return msg('d-msg','Error: Invalid date range.','e');
 
-    const ids=document.getElementById('d-id').value.split(',').map(i=>i.trim()).filter(Boolean);
+    const ids=document.getElementById('d-id').value.split(',').map(i=>(i||'').trim()).filter(Boolean);
     const mealVal=document.getElementById('d-meal').value;
     if(!ids.length)return msg('d-msg','Error: Enter at least one ID.','e');
 
