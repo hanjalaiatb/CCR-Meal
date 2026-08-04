@@ -128,7 +128,6 @@
         setTimeout(() => el.style.display = 'none', 8000);
     }
 
-    // Radio handling
     ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
         document.getElementById(gid).addEventListener('change', e => {
             if (e.target.disabled) return;
@@ -169,7 +168,6 @@
 
             const meals = ['Breakfast', 'Lunch', 'Dinner'];
             
-            // Render 3 tabs in a single row
             let tabHtml = '';
             meals.forEach(m => {
                 const count = records.filter(r => r.meal === m).length;
@@ -177,7 +175,6 @@
             });
             document.getElementById('tab-row').innerHTML = tabHtml;
 
-            // Render panel contents natively
             meals.forEach(m => {
                 const panel = document.getElementById(`panel-${m}`);
                 panel.classList.toggle('show', m === activeMeal);
@@ -196,13 +193,13 @@
                     const p = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
                     const mu = sRecs.filter(r => r.menuOption === 'Mutton').length;
 
-                    let cStr = `Tot:${sRecs.length}`;
+                    let cStr = `Total:${sRecs.length}`;
                     if (f) cStr += `, F-${f}`;
                     if (p) cStr += `, P-${p}`;
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700">${shift} (${cStr})</div><div>ID: ${ids}</div></div>`;
+                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700">${shift} Shift (${cStr})</div><div>ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
