@@ -49,8 +49,8 @@
         <form id="f-meal">
             <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
             <div class="row">
-                <div><label>Start Date</label><select id="e-start-date"></select></div>
-                <div><label>End Date</label><select id="e-end-date"></select></div>
+                <div><label>Start Date</label><input type="date" id="e-start-date" required></div>
+                <div><label>End Date</label><input type="date" id="e-end-date" required></div>
             </div>
             <div class="field-group"><label>Shift</label>
                 <div class="grid-3" id="g-shift">
@@ -81,7 +81,10 @@
     <!-- Summary Output Card (Always Expanded) -->
     <div class="card">
         <h2>Summary Output</h2>
-        <div style="margin-bottom:6px;"><label>Select Summary Date</label><select id="s-date"></select></div>
+        <div style="margin-bottom:6px;">
+            <label>Select Summary Date <span id="s-date-label" style="font-weight:normal; text-transform:none; color:#2563eb;"></span></label>
+            <input type="date" id="s-date" required>
+        </div>
         <div class="tab-row" id="tab-row"></div>
         <div class="panel show" id="panel-Breakfast"></div>
         <div class="panel" id="panel-Lunch"></div>
@@ -95,8 +98,8 @@
         <form id="f-del">
             <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
             <div class="row">
-                <div><label>Start Date</label><select id="d-start-date"></select></div>
-                <div><label>End Date</label><select id="d-end-date"></select></div>
+                <div><label>Start Date</label><input type="date" id="d-start-date" required></div>
+                <div><label>End Date</label><input type="date" id="d-end-date" required></div>
             </div>
             <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
@@ -105,40 +108,25 @@
 </div>
 
 <script>
-    function fmt(d) {
-        return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+    function getTodayIso() {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
-    function parseIso(str) {
-        if (!str || !str.includes('/')) return '';
-        const p = str.trim().split('/');
-        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : '';
+
+    function formatDMY(isoStr) {
+        if (!isoStr || !isoStr.includes('-')) return '';
+        const p = isoStr.split('-');
+        return `${p[2]}/${p[1]}/${p[0]}`;
     }
+
     function benNum(n) {
         return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
     }
 
-    function populateDateDropdowns() {
-        const selects = ['s-date', 'e-start-date', 'e-end-date', 'd-start-date', 'd-end-date'];
-        const today = new Date();
-        let optionsHtml = '';
-        
-        for (let i = -5; i <= 15; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() + i);
-            const val = fmt(d);
-            optionsHtml += `<option value="${val}">${val}${i === 0 ? ' (Today)' : ''}</option>`;
-        }
-
-        selects.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerHTML = optionsHtml;
-                el.value = fmt(today);
-            }
-        });
-    }
-
-    populateDateDropdowns();
+    const todayIso = getTodayIso();
+    ['s-date', 'e-start-date', 'e-end-date', 'd-start-date', 'd-end-date'].forEach(id => {
+        document.getElementById(id).value = todayIso;
+    });
 
     const savedId = localStorage.getItem('ccr_emp_id') || '';
     ['e-id', 'd-id'].forEach(id => {
@@ -193,14 +181,22 @@
 
     async function loadSummary(prefMeal) {
         if (prefMeal) activeMeal = prefMeal;
-        const dateIso = parseIso(document.getElementById('s-date').value);
+        const dateIso = document.getElementById('s-date').value;
         if (!dateIso) return;
+
+        // Update Today indicator label next to Summary Date
+        const labelEl = document.getElementById('s-date-label');
+        if (dateIso === todayIso) {
+            labelEl.innerText = '(Today)';
+        } else {
+            labelEl.innerText = '';
+        }
 
         try {
             const res = await fetch(`/api/summary?dateStr=${dateIso}`);
             const data = await res.json();
             const records = data.records || [];
-            const dateDMY = document.getElementById('s-date').value;
+            const dateDMY = formatDMY(dateIso);
 
             const meals = ['Breakfast', 'Lunch', 'Dinner'];
             
@@ -269,8 +265,8 @@
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
-        const startISO = parseIso(document.getElementById('e-start-date').value);
-        const endISO = parseIso(document.getElementById('e-end-date').value);
+        const startISO = document.getElementById('e-start-date').value;
+        const endISO = document.getElementById('e-end-date').value;
         if (!startISO || !endISO) return showMsg('e-msg', 'Invalid date format.', 'error');
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
@@ -305,8 +301,8 @@
 
     document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
-        const startISO = parseIso(document.getElementById('d-start-date').value);
-        const endISO = parseIso(document.getElementById('d-end-date').value);
+        const startISO = document.getElementById('d-start-date').value;
+        const endISO = document.getElementById('d-end-date').value;
         if (!startISO || !endISO) return showMsg('d-msg', 'Invalid date format.', 'error');
 
         const rawDelId = document.getElementById('d-id').value;
