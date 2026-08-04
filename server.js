@@ -23,8 +23,7 @@ const mealSchema = new mongoose.Schema({
 });
 
 mealSchema.index({ dateStr: 1, id: 1, meal: 1 }, { unique: true });
-// Automatically delete documents 48 hours (172800 seconds) after creation time
-mealSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 });
+mealSchema.index({ createdAt: 1 }, { expireAfterSeconds: 172800 }); // Auto-delete after 48h
 
 const Meal = mongoose.model('Meal', mealSchema);
 
@@ -72,8 +71,8 @@ app.post('/api/delete', async (req, res) => {
         const { id, dateStr, meal } = req.body;
         if (!id || !dateStr || !meal) return res.status(400).json({ success: false, error: 'Missing parameters' });
 
-        const result = await Meal.findOneAndDelete({ id, dateStr, meal });
-        if (!result) return res.status(404).json({ success: false, error: 'Not found' });
+        const result = await Meal.findOneAndDelete({ id: id.trim(), dateStr, meal });
+        if (!result) return res.status(404).json({ success: false, error: 'Record not found' });
 
         res.status(200).json({ success: true });
     } catch (err) {
