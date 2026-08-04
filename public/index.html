@@ -5,90 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
-        .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
-        
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        .row-3 { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: end; }
-        .group { margin-bottom: 6px; }
-        label { display: block; font-size: 0.65rem; font-weight: 600; color: #64748b; margin-bottom: 2px; text-transform: uppercase; }
-        
-        input, select { width: 100%; height: 30px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; background: #f8fafc; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #2563eb; background: #fff; outline: none; }
-        
-        .date-short { max-width: 130px; }
-
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-        
-        .radio-lbl {
-            display: flex; align-items: center; justify-content: center; height: 30px; padding: 0 2px;
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 600; cursor: pointer; color: #64748b; text-align: center; box-sizing: border-box;
-        }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 6px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; }
+        h2 { font-size: 0.9rem; font-weight: 700; margin: 0 0 2px 0; }
+        .sub { font-size: 0.65rem; color: #64748b; margin-bottom: 4px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 4px; }
+        label { display: block; font-size: 0.6rem; font-weight: 600; color: #64748b; margin-bottom: 1px; text-transform: uppercase; }
+        input, select { width: 100%; height: 28px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; background: #f8fafc; box-sizing: border-box; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 28px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.65rem; font-weight: 600; cursor: pointer; color: #64748b; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
-        .radio-lbl.disabled { opacity: 0.3; cursor: not-allowed; background: #f1f5f9; }
-
-        button { width: 100%; height: 30px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 3px; box-sizing: border-box; }
+        .radio-lbl.disabled { opacity: 0.3; background: #f1f5f9; pointer-events: none; }
+        button { width: 100%; height: 28px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; margin-top: 2px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 26px; padding: 0 8px; font-size: 0.7rem; width: auto; margin-top: 4px; display: inline-block; border-radius: 4px; }
-
-        .msg { padding: 5px; border-radius: 6px; margin-bottom: 6px; display: none; font-size: 0.75rem; }
+        .btn-green { background: #059669; color: #fff; height: 24px; padding: 0 6px; font-size: 0.65rem; width: auto; margin-top: 3px; display: inline-block; }
+        .msg { padding: 4px; border-radius: 4px; margin-bottom: 4px; display: none; font-size: 0.7rem; }
         .msg-ok { background: #dcfce7; color: #15803d; }
         .msg-err { background: #fee2e2; color: #991b1b; }
-
-        .acc { border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 5px; overflow: hidden; background: #fff; }
-        .acc-btn { width: 100%; padding: 7px 8px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.8rem; cursor: pointer; text-align: left; align-items: center; }
-        .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.75rem; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 4px; overflow: hidden; }
+        .acc-btn { width: 100%; padding: 6px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.75rem; cursor: pointer; }
+        .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.7rem; }
         .acc-body.show { display: block; }
-
-        .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dashed #cbd5e1; }
-        .shift-title { font-weight: 700; font-size: 0.73rem; text-transform: uppercase; margin-bottom: 1px; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
+        .shift-blk { margin-top: 3px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.65rem; white-space: pre-wrap; margin-top: 2px; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <!-- 1. MEAL ENTRY -->
     <div class="card">
         <h2>Meal Entry</h2>
-        <div class="sub">Log daily meal counts</div>
         <div id="s-msg" class="msg"></div>
         <form id="f-meal">
-            <div class="row-2">
-                <div class="group" style="margin-bottom:0;">
-                    <label>Employee ID</label>
-                    <input type="text" id="e-id" required>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Date</label>
-                    <input type="date" id="e-date" required>
-                </div>
+            <div class="row">
+                <div><label>ID</label><input type="text" id="e-id" required></div>
+                <div><label>Date</label><input type="date" id="e-date" required></div>
             </div>
-            <div class="group" style="margin-top:6px;">
-                <label>Shift</label>
+            <div><label>Shift</label>
                 <div class="grid-3" id="g-shift">
                     <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
                     <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
                     <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
             </div>
-            <div class="group">
-                <label>Meal Type</label>
+            <div><label>Meal Type</label>
                 <div class="grid-3" id="g-meal">
                     <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
                     <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
                     <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
                 </div>
             </div>
-            <div class="group">
-                <label>Menu Option</label>
+            <div><label>Menu Option</label>
                 <div class="grid-4" id="g-menu">
                     <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
                     <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
@@ -96,145 +67,98 @@
                     <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
-            <button type="submit" class="btn-blue" id="btn-save">Save Entry</button>
+            <button type="submit" class="btn-blue">Save Entry</button>
         </form>
     </div>
 
-    <!-- 2. SUMMARY -->
     <div class="card">
-        <h2>Summary Output</h2>
-        <div class="group date-short" style="margin-top:5px;">
-            <label>Select Date</label>
-            <input type="date" id="s-date">
-        </div>
+        <h2>Summary</h2>
+        <div style="max-width:120px; margin-bottom:4px;"><label>Date</label><input type="date" id="s-date"></div>
         <div id="summary-box"></div>
     </div>
 
-    <!-- 3. DELETE RECORD -->
     <div class="card">
-        <h2>Delete Specific Record</h2>
-        <div class="sub">Remove entry by Date, Meal, and ID</div>
+        <h2>Delete Record</h2>
         <div id="d-msg" class="msg"></div>
         <form id="f-del">
-            <div class="row-3">
-                <div class="group" style="margin-bottom:0;">
-                    <label>Employee ID</label>
-                    <input type="text" id="d-id" required placeholder="Enter ID">
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Date</label>
-                    <input type="date" id="d-date" required>
-                </div>
-                <div class="group" style="margin-bottom:0;">
-                    <label>Meal Type</label>
-                    <select id="d-meal" required>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                    </select>
-                </div>
+            <div style="display:grid; grid-template-columns: 70px 1fr 1fr; gap:4px; align-items:end;">
+                <div><label>ID</label><input type="text" id="d-id" required></div>
+                <div><label>Date</label><input type="date" id="d-date" required></div>
+                <div><label>Meal</label><select id="d-meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div>
             </div>
-            <button type="submit" class="btn-red" style="margin-top:6px;">Delete Record</button>
+            <button type="submit" class="btn-red" style="margin-top:4px;">Delete</button>
         </form>
     </div>
 </div>
 
 <script>
-    function bindRadios(groupId) {
-        const c = document.getElementById(groupId);
-        if(!c) return;
-        c.querySelectorAll('input').forEach(function(inp) {
-            inp.addEventListener('change', function(e) {
-                if (e.target.disabled) return;
-                c.querySelectorAll('.radio-lbl').forEach(function(l) { l.classList.remove('active'); });
-                e.target.closest('.radio-lbl').classList.add('active');
-            });
+    const today = new Date().toISOString().split('T')[0];
+    ['e-date', 's-date', 'd-date'].forEach(id => document.getElementById(id).value = today);
+
+    function setupRadios(id) {
+        const container = document.getElementById(id);
+        container.addEventListener('change', e => {
+            if (e.target.disabled) return;
+            container.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
+            e.target.closest('.radio-lbl').classList.add('active');
         });
     }
+    setupRadios('g-shift'); setupRadios('g-meal'); setupRadios('g-menu');
 
-    window.addEventListener('DOMContentLoaded', function() {
-        const d = new Date();
-        const localDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-
-        const maxDateObj = new Date();
-        maxDateObj.setDate(maxDateObj.getDate() + 4);
-        const maxDateStr = maxDateObj.getFullYear() + '-' + String(maxDateObj.getMonth() + 1).padStart(2, '0') + '-' + String(maxDateObj.getDate()).padStart(2, '0');
-
-        const eDateInput = document.getElementById('e-date');
-        if (eDateInput) {
-            eDateInput.value = localDateStr;
-            eDateInput.min = localDateStr;
-            eDateInput.max = maxDateStr;
-        }
-
-        const sDateInput = document.getElementById('s-date');
-        if (sDateInput) {
-            sDateInput.value = localDateStr;
-        }
-
-        const dDateInput = document.getElementById('d-date');
-        if (dDateInput) {
-            dDateInput.value = localDateStr;
-        }
-
-        bindRadios('g-shift');
-        bindRadios('g-meal');
-        bindRadios('g-menu');
-
-        document.querySelectorAll('input[name="meal"]').forEach(function(inp) {
-            inp.addEventListener('change', function(e) {
-                const isBreakfast = e.target.value === 'Breakfast';
-                const friedInp = document.querySelector('input[value="Fried Egg"]');
-                const poachedInp = document.querySelector('input[value="Poached Egg"]');
-                const muttonInp = document.querySelector('input[value="Mutton"]');
-                const regInp = document.querySelector('input[value="Regular"]');
-
-                [friedInp, poachedInp, muttonInp].forEach(function(el) {
-                    if (!el) return;
-                    el.disabled = isBreakfast;
-                    const lbl = el.closest('.radio-lbl');
-                    if (isBreakfast) {
-                        lbl.classList.add('disabled');
-                        lbl.classList.remove('active');
-                    } else {
-                        lbl.classList.remove('disabled');
-                    }
-                });
-
-                if (isBreakfast && regInp) {
-                    regInp.checked = true;
-                    document.querySelectorAll('#g-menu .radio-lbl').forEach(function(l) { l.classList.remove('active'); });
-                    const lblReg = document.getElementById('lbl-reg');
-                    if (lblReg) lblReg.classList.add('active');
+    document.querySelectorAll('input[name="meal"]').forEach(inp => {
+        inp.addEventListener('change', e => {
+            const isB = e.target.value === 'Breakfast';
+            ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(val => {
+                const el = document.querySelector(`input[value="${val}"]`);
+                if (el) {
+                    el.disabled = isB;
+                    el.closest('.radio-lbl').classList.toggle('disabled', isB);
                 }
             });
+            if (isB) {
+                document.querySelector('input[value="Regular"]').checked = true;
+                document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
+                document.getElementById('lbl-reg').classList.add('active');
+            }
         });
-
-        loadSummaryData('Breakfast');
-
-        if (eDateInput) {
-            eDateInput.addEventListener('input', function(e) {
-                document.getElementById('s-date').value = e.target.value;
-                document.getElementById('d-date').value = e.target.value;
-                loadSummaryData();
-            });
-        }
-        
-        if (sDateInput) {
-            sDateInput.addEventListener('input', function() { loadSummaryData(); });
-        }
     });
 
-    function showMsg(id, text, ok) {
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.innerText = text;
-        el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
-        el.style.display = 'block';
-        setTimeout(function() { el.style.display = 'none'; }, 3000);
+    async function loadSummary(openMeal = 'Breakfast') {
+        const dateStr = document.getElementById('s-date').value;
+        if (!dateStr) return;
+        const res = await fetch(`/api/summary?dateStr=${dateStr}`);
+        const data = await res.json();
+        const records = (data.records || []).sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+        
+        const box = document.getElementById('summary-box');
+        box.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(meal => {
+            const mRecs = records.filter(r => r.meal === meal);
+            const isOpen = meal === openMeal;
+            return `<div class="acc">
+                <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')"><span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span></button>
+                <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
+                    ${mRecs.length === 0 ? '<div>No entries found.</div>' : 
+                        ['Morning', 'Afternoon', 'Night'].map(shift => {
+                            const sRecs = mRecs.filter(r => r.shift === shift);
+                            if (!sRecs.length) return '';
+                            const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
+                            return `<div class="shift-blk"><div style="font-weight:700">${shift}</div><div>ID: ${ids}</div></div>`;
+                        }).join('') +
+                        `<div class="txt-pre" id="wa-${meal}">${dateStr}\n${meal}: ${mRecs.length} meals.\nIDs: ${mRecs.map(r => r.id).join(',')}</div>
+                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp</button>`
+                    }
+                </div></div>`;
+        }).join('');
     }
 
-    document.getElementById('f-meal').addEventListener('submit', async function(e) {
+    function toggleAcc(meal) {
+        const el = document.getElementById(`acc-${meal}`);
+        const wasOpen = el.classList.contains('show');
+        document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
+        if (!wasOpen) el.classList.add('show');
+    }
+
+    document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
         const payload = {
             dateStr: document.getElementById('e-date').value,
@@ -243,166 +167,33 @@
             meal: document.querySelector('input[name="meal"]:checked').value,
             menuOption: document.querySelector('input[name="menuOption"]:checked').value
         };
-
-        const res = await fetch('/api/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-            let msgText = '';
-            if (data.status === 'added') {
-                msgText = 'Added successfully!';
-            } else if (data.status === 'modified') {
-                msgText = 'Modified successfully!';
-            } else {
-                msgText = 'Already recorded!';
-            }
-
-            showMsg('s-msg', msgText, true);
+        const res = await fetch('/api/submit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+        if ((await res.json()).success) {
             document.getElementById('e-id').value = '';
-            loadSummaryData(payload.meal);
-        } else {
-            showMsg('s-msg', data.error || 'Error', false);
+            loadSummary(payload.meal);
         }
     });
 
-    document.getElementById('f-del').addEventListener('submit', async function(e) {
+    document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
-        const id = document.getElementById('d-id').value.trim();
-        const dateStr = document.getElementById('d-date').value;
-        const meal = document.getElementById('d-meal').value;
-
-        if (!id) return;
         const res = await fetch('/api/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id, dateStr: dateStr, meal: meal })
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id: document.getElementById('d-id').value.trim(), dateStr: document.getElementById('d-date').value, meal: document.getElementById('d-meal').value })
         });
-        const data = await res.json();
-        if (res.ok && data.success) {
-            showMsg('d-msg', 'Deleted ID ' + id, true);
+        if ((await res.json()).success) {
             document.getElementById('d-id').value = '';
-            loadSummaryData();
-        } else {
-            showMsg('d-msg', data.error || 'Delete failed', false);
+            loadSummary();
         }
     });
 
-    async function loadSummaryData(openMeal) {
-        if (openMeal === undefined) openMeal = null;
-        const dateStr = document.getElementById('s-date').value;
-        if (!dateStr) return;
-        const res = await fetch('/api/summary?dateStr=' + dateStr);
-        const data = await res.json();
-        
-        let records = data.records || [];
-        records.sort(function(a, b) {
-            return (Number(a.id) || 0) - (Number(b.id) || 0);
-        });
+    document.getElementById('e-date').addEventListener('input', e => {
+        document.getElementById('s-date').value = e.target.value;
+        document.getElementById('d-date').value = e.target.value;
+        loadSummary();
+    });
+    document.getElementById('s-date').addEventListener('input', () => loadSummary());
 
-        renderSummary(dateStr, records, openMeal);
-    }
-
-    function renderSummary(dateStr, records, openMeal) {
-        const box = document.getElementById('summary-box');
-        if (!box) return;
-        let html = '';
-
-        const dateParts = dateStr.split('-');
-        const formattedDate = dateParts.length === 3 ? Number(dateParts[2]) + '/' + Number(dateParts[1]) + '/' + dateParts[0] : dateStr;
-
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(function(meal) {
-            const mRecs = records.filter(function(r) { return r.meal === meal; });
-            const isOpen = (meal === openMeal);
-
-            html += '<div class="acc">' +
-                    '<button type="button" class="acc-btn" onclick="toggleAcc(\'' + meal + '\')">' +
-                    '<span>' + meal + '</span><span id="arrow-' + meal + '">Total: ' + mRecs.length + ' ' + (isOpen ? '▲' : '▼') + '</span>' +
-                    '</button>' +
-                    '<div class="acc-body ' + (isOpen ? 'show' : '') + '" id="acc-' + meal + '">';
-
-            if (mRecs.length === 0) {
-                html += '<div>No entries found.</div>';
-            } else {
-                ['Morning', 'Afternoon', 'Night'].forEach(function(shift) {
-                    const sRecs = mRecs.filter(function(r) { return r.shift === shift; });
-                    if (sRecs.length > 0) {
-                        const idsShort = sRecs.map(function(r) {
-                            if (r.menuOption === 'Poached Egg') return r.id + '(P)';
-                            if (r.menuOption === 'Fried Egg') return r.id + '(F)';
-                            if (r.menuOption === 'Mutton') return r.id + '(M)';
-                            return r.id;
-                        }).join(', ');
-
-                        const counts = {};
-                        sRecs.forEach(function(r) {
-                            if (r.menuOption === 'Poached Egg') counts['P'] = (counts['P'] || 0) + 1;
-                            else if (r.menuOption === 'Fried Egg') counts['F'] = (counts['F'] || 0) + 1;
-                            else if (r.menuOption === 'Mutton') counts['M'] = (counts['M'] || 0) + 1;
-                        });
-                        
-                        let countParts = Object.keys(counts).map(function(k) { return k + '-' + counts[k]; });
-                        countParts.push('Total-' + sRecs.length);
-                        const countStr = countParts.join(', ');
-
-                        html += '<div class="shift-blk">' +
-                                '<div class="shift-title">' + shift + ' shift</div>' +
-                                '<div>Meal ID: ' + idsShort + '</div>' +
-                                '<div>Meal count: ' + countStr + '</div>' +
-                                '</div>';
-                    }
-                });
-
-                let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waIds = mRecs.map(function(r) { return r.id; }).join(',');
-                
-                let wa = formattedDate + '\n' + timeWord + ' মোট ' + mRecs.length + ' জনের খাবার CCR এ আসবে।' + '\nID: ' + waIds;
-                
-                const friedRecs = mRecs.filter(function(r) { return r.menuOption === 'Fried Egg'; });
-                if (friedRecs.length > 0) {
-                    wa += '\nডিম ভাজি: ' + friedRecs.length + ' টা (' + friedRecs.map(function(r) { return r.id; }).join(',') + ')';
-                }
-
-                const poachedRecs = mRecs.filter(function(r) { return r.menuOption === 'Poached Egg'; });
-                if (poachedRecs.length > 0) {
-                    wa += '\nডিম পোচ: ' + poachedRecs.length + ' টা (' + poachedRecs.map(function(r) { return r.id; }).join(',') + ')';
-                }
-
-                const muttonRecs = mRecs.filter(function(r) { return r.menuOption === 'Mutton'; });
-                if (muttonRecs.length > 0) {
-                    wa += '\nখাসি (নন-মুসলিম): ' + muttonRecs.length + ' টা (' + muttonRecs.map(function(r) { return r.id; }).join(',') + ')';
-                }
-
-                html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">' +
-                        '<div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>' +
-                        '<div class="txt-pre" id="wa-' + meal + '">' + wa + '</div>' +
-                        '<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById(\'wa-' + meal + '\').innerText).then(function(){showMsg(\'s-msg\',\'Copied to clipboard!\',true);})">Copy WhatsApp Format</button>' +
-                        '</div>';
-            }
-            html += '</div></div>';
-        });
-        box.innerHTML = html;
-    }
-
-    function toggleAcc(meal) {
-        const el = document.getElementById('acc-' + meal);
-        if (!el) return;
-        const show = el.classList.contains('show');
-        
-        document.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('show'); });
-        
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(function(m) {
-            const btnSpan = document.querySelector('button[onclick="toggleAcc(\'' + m + '\')"] span:last-child');
-            if (btnSpan) {
-                const totalText = btnSpan.innerText.replace(/[▲▼]/g, '').trim();
-                btnSpan.innerText = totalText + ' ▼';
-            }
-        });
-
-        if (!show) {
-            el.classList.add('show');
-            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + meal + '\')"] span:last-child');
-            if (activeSpan) {
-                const tota
+    loadSummary('Breakfast');
+</script>
+</body>
+</html>
