@@ -37,21 +37,29 @@
         .msg-box { padding: 8px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
         .suc-msg { background: #d1fae5; color: #065f46; }
+        .checkbox-container { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: #475569; cursor: pointer; }
+        .checkbox-container input { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <!-- Meal Entry Card (Always Expanded) -->
+    <!-- Meal Entry Card -->
     <div class="card">
         <h2>Meal Entry</h2>
         <div id="e-msg" class="msg-box"></div>
         <form id="f-meal">
             <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
+            
+            <label class="checkbox-container">
+                <input type="checkbox" id="e-multi-toggle"> Order for Multiple Days
+            </label>
+
             <div class="row">
-                <div><label>Start Date</label><input type="date" id="e-start-date" required></div>
-                <div><label>End Date</label><input type="date" id="e-end-date" required></div>
+                <div><label id="e-start-label">Date</label><input type="date" id="e-start-date" required></div>
+                <div id="e-end-date-wrapper" style="display: none;"><label>End Date</label><input type="date" id="e-end-date"></div>
             </div>
+
             <div class="field-group"><label>Shift</label>
                 <div class="grid-3" id="g-shift">
                     <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
@@ -78,7 +86,7 @@
         </form>
     </div>
 
-    <!-- Summary Output Card (Always Expanded) -->
+    <!-- Summary Output Card -->
     <div class="card">
         <h2>Summary Output</h2>
         <div style="margin-bottom:6px;">
@@ -91,16 +99,22 @@
         <div class="panel" id="panel-Dinner"></div>
     </div>
 
-    <!-- Delete Record Card (Always Expanded) -->
+    <!-- Delete Record Card -->
     <div class="card">
         <h2>Delete Record</h2>
         <div id="d-msg" class="msg-box"></div>
         <form id="f-del">
             <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
+            
+            <label class="checkbox-container">
+                <input type="checkbox" id="d-multi-toggle"> Delete for Multiple Days
+            </label>
+
             <div class="row">
-                <div><label>Start Date</label><input type="date" id="d-start-date" required></div>
-                <div><label>End Date</label><input type="date" id="d-end-date" required></div>
+                <div><label id="d-start-label">Date</label><input type="date" id="d-start-date" required></div>
+                <div id="d-end-date-wrapper" style="display: none;"><label>End Date</label><input type="date" id="d-end-date"></div>
             </div>
+
             <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
         </form>
@@ -140,6 +154,41 @@
                 localStorage.setItem('ccr_emp_id', firstId);
             }
         });
+    });
+
+    // Toggle Multi-day for Entry
+    document.getElementById('e-multi-toggle').addEventListener('change', e => {
+        const isMulti = e.target.checked;
+        document.getElementById('e-end-date-wrapper').style.display = isMulti ? 'block' : 'none';
+        document.getElementById('e-start-label').innerText = isMulti ? 'Start Date' : 'Date';
+        if (!isMulti) {
+            document.getElementById('e-end-date').value = document.getElementById('e-start-date').value;
+        }
+    });
+
+    // Toggle Multi-day for Delete
+    document.getElementById('d-multi-toggle').addEventListener('change', e => {
+        const isMulti = e.target.checked;
+        document.getElementById('d-end-date-wrapper').style.display = isMulti ? 'block' : 'none';
+        document.getElementById('d-start-label').innerText = isMulti ? 'Start Date' : 'Date';
+        if (!isMulti) {
+            document.getElementById('d-end-date').value = document.getElementById('d-start-date').value;
+        }
+    });
+
+    // Keep end date in sync if multi-day is unchecked
+    document.getElementById('e-start-date').addEventListener('change', e => {
+        if (!document.getElementById('e-multi-toggle').checked) {
+            document.getElementById('e-end-date').value = e.target.value;
+        }
+        document.getElementById('s-date').value = e.target.value;
+        loadSummary();
+    });
+
+    document.getElementById('d-start-date').addEventListener('change', e => {
+        if (!document.getElementById('d-multi-toggle').checked) {
+            document.getElementById('d-end-date').value = e.target.value;
+        }
     });
 
     let activeMeal = 'Breakfast';
@@ -265,7 +314,9 @@
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
         const startISO = document.getElementById('e-start-date').value;
-        const endISO = document.getElementById('e-end-date').value;
+        const isMulti = document.getElementById('e-multi-toggle').checked;
+        const endISO = isMulti ? document.getElementById('e-end-date').value : startISO;
+        
         if (!startISO || !endISO) return showMsg('e-msg', 'Invalid date format.', 'error');
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
@@ -309,7 +360,6 @@
         while (currLoop <= endLoop) {
             const dateStr = currLoop.toISOString().split('T')[0];
             
-            // Fetch existing records for this date to check status
             const checkRes = await fetch(`/api/summary?dateStr=${dateStr}`);
             const checkData = await checkRes.json();
             const dayRecords = checkData.records || [];
@@ -337,58 +387,4 @@
                         menuOption: menuOptVal
                     })
                 });
-            }
-            currLoop.setDate(currLoop.getDate() + 1);
-        }
-
-        document.getElementById('s-date').value = document.getElementById('e-start-date').value;
-        
-        let msgParts = [];
-        if (addedCount > 0) msgParts.push(`${addedCount} saved`);
-        if (modifiedCount > 0) msgParts.push(`${modifiedCount} modified`);
-        if (existingCount > 0) msgParts.push(`${existingCount} already exists`);
-        
-        showMsg('e-msg', msgParts.join(', ') + '!', modifiedCount > 0 ? 'success' : (addedCount > 0 ? 'success' : 'error'));
-        loadSummary(mealType);
-    });
-
-    document.getElementById('f-del').addEventListener('submit', async e => {
-        e.preventDefault();
-        const startISO = document.getElementById('d-start-date').value;
-        const endISO = document.getElementById('d-end-date').value;
-        if (!startISO || !endISO) return showMsg('d-msg', 'Invalid date format.', 'error');
-
-        const rawDelId = document.getElementById('d-id').value;
-        const ids = rawDelId.split(',').map(i => i.trim()).filter(Boolean);
-        const mealVal = document.getElementById('d-meal').value;
-
-        if (ids[0]) {
-            localStorage.setItem('ccr_emp_id', ids[0]);
-        }
-
-        let curr = new Date(startISO), end = new Date(endISO);
-        while (curr <= end) {
-            const dateStr = curr.toISOString().split('T')[0];
-            for (let id of ids) {
-                await fetch('/api/delete', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ id, dateStr, meal: mealVal })
-                });
-            }
-            curr.setDate(curr.getDate() + 1);
-        }
-        document.getElementById('s-date').value = document.getElementById('d-start-date').value;
-        showMsg('d-msg', 'Deleted successfully!', 'success');
-        loadSummary(mealVal);
-    });
-
-    document.getElementById('e-start-date').addEventListener('change', e => {
-        document.getElementById('s-date').value = e.target.value;
-        loadSummary();
-    });
-    document.getElementById('s-date').addEventListener('change', () => loadSummary());
-
-    loadSummary();
-</script>
-</body>
-</html>
+           
