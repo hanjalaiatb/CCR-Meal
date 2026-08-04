@@ -5,32 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 4px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 4px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; }
-        h2 { font-size: 0.8rem; font-weight: 700; margin: 0 0 2px 0; color: #1e293b; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 3px; }
-        label { display: block; font-size: 0.55rem; font-weight: 600; color: #64748b; margin-bottom: 1px; text-transform: uppercase; }
-        input, select { width: 100%; height: 26px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; background: #f8fafc; box-sizing: border-box; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
-        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 26px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; font-weight: 600; cursor: pointer; color: #64748b; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
+        h2 { font-size: 1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; height: 36px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; background: #f8fafc; box-sizing: border-box; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 36px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #475569; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
         .radio-lbl.disabled { opacity: 0.3; background: #f1f5f9; pointer-events: none; }
-        button { width: 100%; height: 26px; border: none; border-radius: 4px; font-size: 0.7rem; font-weight: 600; cursor: pointer; margin-top: 2px; }
+        button { width: 100%; height: 38px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 22px; padding: 0 6px; font-size: 0.6rem; width: auto; margin-top: 2px; display: inline-block; }
-        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 3px; overflow: hidden; }
-        .acc-btn { width: 100%; padding: 4px 6px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.7rem; cursor: pointer; }
-        .acc.open .acc-btn { background: #eff6ff; color: #1d4ed8; }
-        .acc-body { display: none; padding: 4px; border-top: 1px solid #cbd5e1; font-size: 0.65rem; background: #ffffff; }
+        .btn-green { background: #059669; color: #fff; height: 32px; padding: 0 10px; font-size: 0.8rem; width: auto; margin-top: 6px; display: inline-block; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 6px; overflow: hidden; }
+        .acc-btn { width: 100%; padding: 10px 12px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #1d4ed8; font-size: 0.95rem; cursor: pointer; }
+        .acc.open .acc-btn { background: #dbeafe; color: #1e40af; }
+        .acc-body { display: none; padding: 10px; border-top: 1px solid #cbd5e1; font-size: 0.85rem; background: #ffffff; }
         .acc-body.show { display: block; }
-        .shift-blk { margin-top: 2px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; word-break: break-all; margin-top: 2px; }
-        .field-group { margin-bottom: 3px; }
-        .msg-box { padding: 4px; border-radius: 4px; font-size: 0.65rem; margin-bottom: 3px; display: none; }
+        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; white-space: pre-wrap; word-break: break-all; margin-top: 6px; }
+        .field-group { margin-bottom: 6px; }
+        .msg-box { padding: 8px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
         .suc-msg { background: #d1fae5; color: #065f46; }
     </style>
@@ -75,7 +75,7 @@
 
     <div class="card">
         <h2>Summary Output</h2>
-        <div style="max-width:130px; margin-bottom:3px;"><label>Select Date (DD/MM/YYYY)</label><input type="text" id="s-date" placeholder="DD/MM/YYYY"></div>
+        <div style="max-width:160px; margin-bottom:6px;"><label>Select Date (DD/MM/YYYY)</label><input type="text" id="s-date" placeholder="DD/MM/YYYY"></div>
         <div id="summary-box"></div>
     </div>
 
@@ -89,7 +89,7 @@
                 <div><label>End Date (DD/MM/YYYY)</label><input type="text" id="d-end-date" placeholder="DD/MM/YYYY" required></div>
             </div>
             <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
-            <button type="submit" class="btn-red" style="margin-top:3px;">Delete</button>
+            <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
         </form>
     </div>
 </div>
