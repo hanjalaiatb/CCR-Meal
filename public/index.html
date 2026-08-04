@@ -24,7 +24,8 @@
         .btn-green { background: #059669; color: #fff; height: 22px; padding: 0 6px; font-size: 0.6rem; width: auto; margin-top: 2px; display: inline-block; }
         .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 3px; overflow: hidden; }
         .acc-btn { width: 100%; padding: 4px 6px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.7rem; cursor: pointer; }
-        .acc-body { display: none; padding: 4px; border-top: 1px solid #cbd5e1; font-size: 0.65rem; }
+        .acc.open .acc-btn { background: #eff6ff; color: #1d4ed8; }
+        .acc-body { display: none; padding: 4px; border-top: 1px solid #cbd5e1; font-size: 0.65rem; background: #ffffff; }
         .acc-body.show { display: block; }
         .shift-blk { margin-top: 2px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
         .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; word-break: break-all; margin-top: 2px; }
@@ -212,7 +213,7 @@
             box.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(meal => {
                 const mRecs = records.filter(r => r.meal === meal);
                 const isOpen = meal === openMeal;
-                return `<div class="acc">
+                return `<div class="acc ${isOpen ? 'open' : ''}">
                     <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')"><span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span></button>
                     <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
                         ${mRecs.length === 0 ? '<div>No entries found.</div>' : 
@@ -259,9 +260,16 @@
     window.toggleAcc = function(meal) {
         const el = document.getElementById(`acc-${meal}`);
         if(!el) return;
+        const parentAcc = el.closest('.acc');
         const wasOpen = el.classList.contains('show');
+        
         document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
-        if (!wasOpen) el.classList.add('show');
+        document.querySelectorAll('.acc').forEach(a => a.classList.remove('open'));
+        
+        if (!wasOpen) {
+            el.classList.add('show');
+            parentAcc.classList.add('open');
+        }
     };
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
