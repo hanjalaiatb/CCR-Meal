@@ -6,51 +6,46 @@
     <title>CCR Meal</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #1e293b; margin: 0; padding: 6px; font-size: 13px; }
-        .box { max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        h2 { font-size: 13px; margin: 0 0 8px 0; font-weight: 700; color: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
-        label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 3px; color: #475569; }
-        input, select { width: 100%; height: 34px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: #fff; color: #1e293b; outline: none; }
-        input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
-        .field-group { margin-bottom: 8px; }
-        .row { display: flex; gap: 6px; margin-bottom: 8px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fff; color: #0f172a; margin: 0; padding: 4px; font-size: 15px; }
+        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
+        .card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; background: #fff; }
+        h2 { font-size: 14px; margin: 0 0 6px 0; font-weight: 700; color: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 2px; color: #334155; }
+        input, select { width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; background: #fff; color: #0f172a; outline: none; }
+        input:focus, select:focus { border-color: #2563eb; }
+        .field-group { margin-bottom: 6px; }
+        .row { display: flex; gap: 6px; margin-bottom: 6px; }
         .row > div { flex: 1; }
         
-        /* Clean segmented toggles */
         .segmented { display: flex; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #f8fafc; }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 30px; font-size: 11px; font-weight: 600; cursor: pointer; background: #f8fafc; color: #475569; border-right: 1px solid #cbd5e1; transition: all 0.15s ease; }
+        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 34px; font-size: 12px; font-weight: 600; cursor: pointer; background: #f8fafc; color: #475569; border-right: 1px solid #cbd5e1; }
         .radio-lbl:last-child { border-right: none; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #2563eb; color: #fff; }
         .radio-lbl.disabled { opacity: 0.3; pointer-events: none; background: #e2e8f0; }
 
-        /* Distinct Entry Save Button */
-        .btn-entry { width: 100%; height: 38px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #4f46e5, #4338ca); color: #fff; margin-top: 4px; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25); transition: opacity 0.15s; }
-        .btn-entry:active { opacity: 0.9; transform: translateY(1px); }
-
-        /* Standard buttons */
-        .btn-main { width: 100%; height: 34px; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 4px; color: #fff; }
+        .btn-entry { width: 100%; height: 40px; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; background: #2563eb; color: #fff; margin-top: 4px; }
+        .btn-main { width: 100%; height: 36px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 4px; color: #fff; }
         .btn-del { background: #dc2626; }
-        .btn-green { background: #16a34a; color: #fff; border: none; border-radius: 6px; height: 28px; padding: 0 10px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-green { background: #16a34a; color: #fff; border: none; border-radius: 6px; height: 30px; padding: 0 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
         
         .tab-row { display: flex; gap: 4px; margin-top: 6px; }
-        .tab-btn { flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: 600; font-size: 11px; padding: 6px 2px; text-align: center; border-radius: 6px; cursor: pointer; color: #475569; }
+        .tab-btn { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; font-weight: 600; font-size: 12px; padding: 6px 2px; text-align: center; border-radius: 6px; cursor: pointer; color: #475569; }
         .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
         
         .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; padding: 8px; display: none; background: #fff; }
         .panel.show { display: block; }
         
-        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; font-size: 11px; }
+        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; font-size: 12px; }
         .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 10px; white-space: pre-wrap; margin-top: 4px; color: #334155; line-height: 1.3; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; white-space: pre-wrap; margin-top: 4px; color: #1e293b; line-height: 1.3; }
         
-        .msg-box { padding: 6px 8px; font-size: 11px; margin-bottom: 8px; border-radius: 6px; display: none; font-weight: 600; }
+        .msg-box { padding: 6px 8px; font-size: 12px; margin-bottom: 6px; border-radius: 6px; display: none; font-weight: 600; }
         .err-msg { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .suc-msg { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         
-        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 11px; font-weight: 600; cursor: pointer; color: #475569; }
-        .chk-row input { width: 14px; height: 14px; accent-color: #2563eb; border: 1px solid #cbd5e1; }
+        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #334155; }
+        .chk-row input { width: 15px; height: 15px; accent-color: #2563eb; }
     </style>
 </head>
 <body>
@@ -63,7 +58,7 @@
         <form id="f-meal">
             <div class="field-group">
                 <label>Employee ID(s)</label>
-                <input type="text" id="e-id" placeholder="e.g. 116, 117" required>
+                <input type="text" id="e-id" required>
             </div>
             
             <label class="chk-row">
@@ -108,7 +103,7 @@
 
     <!-- Summary Output Card -->
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px; color:#2563eb; font-weight:600;"></span></h2>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:12px; color:#2563eb; font-weight:600;"></span></h2>
         <div class="field-group">
             <label>Select Date</label>
             <input type="date" id="s-date" required>
@@ -126,7 +121,7 @@
         <form id="f-del">
             <div class="field-group">
                 <label>ID(s)</label>
-                <input type="text" id="d-id" placeholder="e.g. 116, 117" required>
+                <input type="text" id="d-id" required>
             </div>
             
             <label class="chk-row">
@@ -293,7 +288,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#475569;">ID: ${ids}</div></div>`;
+                    body += `<div class="shift-blk"><div style="font-weight:700; color:#0f172a;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#334155;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -392,4 +387,15 @@
         if (exist) parts.push(`${exist} exists`);
         
         showMsg('e-msg', parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
-        loadSum(mealTy
+        loadSum(mealType);
+    });
+
+    document.getElementById('f-del').addEventListener('submit', async e => {
+        e.preventDefault();
+        const start = document.getElementById('d-start').value;
+        const isMulti = document.getElementById('d-multi').checked;
+        const end = isMulti ? document.getElementById('d-end').value : start;
+
+        if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
+
+        const ids = document.getElementById('d-id').value.split(',').map(i => i.t
