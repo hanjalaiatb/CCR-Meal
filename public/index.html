@@ -41,13 +41,10 @@
         <h2>Meal Entry</h2>
         <div id="e-msg" class="msg-box"></div>
         <form id="f-meal">
+            <div class="field-group"><label>Employee ID(s) [e.g. 235,236]</label><input type="text" id="e-id" required></div>
             <div class="row">
-                <div><label>Employee ID(s) [e.g. 235,236]</label><input type="text" id="e-id" required></div>
-                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="e-date" placeholder="DD/MM/YYYY" required></div>
-            </div>
-            <div class="row">
-                <div><label>Number of Days</label><input type="number" id="e-days" value="1" min="1" max="30" required></div>
-                <div></div>
+                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="e-start-date" placeholder="DD/MM/YYYY" required></div>
+                <div><label>End Date (DD/MM/YYYY)</label><input type="text" id="e-end-date" placeholder="DD/MM/YYYY" required></div>
             </div>
             <div class="field-group"><label>Shift</label>
                 <div class="grid-3" id="g-shift">
@@ -85,14 +82,12 @@
         <h2>Delete Record</h2>
         <div id="d-msg" class="msg-box"></div>
         <form id="f-del">
+            <div class="field-group"><label>ID(s) [e.g. 235,236]</label><input type="text" id="d-id" required></div>
             <div class="row">
-                <div><label>ID(s) [e.g. 235,236]</label><input type="text" id="d-id" required></div>
-                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="d-date" placeholder="DD/MM/YYYY" required></div>
+                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="d-start-date" placeholder="DD/MM/YYYY" required></div>
+                <div><label>End Date (DD/MM/YYYY)</label><input type="text" id="d-end-date" placeholder="DD/MM/YYYY" required></div>
             </div>
-            <div class="row">
-                <div><label>Number of Days</label><input type="number" id="d-days" value="1" min="1" max="30" required></div>
-                <div><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
-            </div>
+            <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             <button type="submit" class="btn-red" style="margin-top:3px;">Delete</button>
         </form>
     </div>
@@ -115,10 +110,15 @@
         return `${y}-${m}-${d}`;
     }
 
+    function toBengaliNum(num) {
+        const engToBen = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+        return String(num).replace(/[0-9]/g, w => engToBen[w]);
+    }
+
     const todayObj = new Date();
     const todayDMY = formatDateToDMY(todayObj);
 
-    ['e-date', 's-date', 'd-date'].forEach(id => {
+    ['e-start-date', 'e-end-date', 's-date', 'd-start-date', 'd-end-date'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = todayDMY;
     });
@@ -233,16 +233,17 @@
                             }).join('') +
                             (() => {
                                 let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                                let waText = `${dateDMY}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                                const totalBen = toBengaliNum(mRecs.length);
+                                let waText = `${dateDMY}\n${timeWord} মোট ${totalBen} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
                                 
                                 const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                                if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(', ')})`;
+                                if (fried.length > 0) waText += `\nডিম ভাজি: ${toBengaliNum(fried.length)} টা (${fried.map(r => r.id).join(', ')})`;
                                 
                                 const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                                if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(', ')})`;
+                                if (poached.length > 0) waText += `\nডিম পোচ: ${toBengaliNum(poached.length)} টা (${poached.map(r => r.id).join(', ')})`;
                                 
                                 const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
-                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(', ')})`;
+                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${toBengaliNum(mutton.length)} টা (${mutton.map(r => r.id).join(', ')})`;
 
                                 return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
                                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
@@ -266,17 +267,27 @@
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
 
-        const startDateDMY = document.getElementById('e-date').value;
-        const startDateStr = parseDMYToISO(startDateDMY);
-        if (!startDateStr) {
-            showMessage('e-msg', 'Invalid start date format. Use DD/MM/YYYY.', 'error');
+        const startDMY = document.getElementById('e-start-date').value;
+        const endDMY = document.getElementById('e-end-date').value;
+        const startISO = parseDMYToISO(startDMY);
+        const endISO = parseDMYToISO(endDMY);
+
+        if (!startISO || !endISO) {
+            showMessage('e-msg', 'Invalid date format. Use DD/MM/YYYY.', 'error');
+            return;
+        }
+
+        const startDate = new Date(startISO);
+        const endDate = new Date(endISO);
+
+        if (startDate > endDate) {
+            showMessage('e-msg', 'Start date cannot be after end date.', 'error');
             return;
         }
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
-        const daysCount = parseInt(document.getElementById('e-days').value) || 1;
 
-        const deadlineError = checkDeadline(mealType, startDateStr);
+        const deadlineError = checkDeadline(mealType, startISO);
         if (deadlineError) {
             showMessage('e-msg', deadlineError, 'error');
             return;
@@ -289,11 +300,8 @@
         const shiftVal = document.querySelector('input[name="shift"]:checked').value;
         const menuVal = document.querySelector('input[name="menuOption"]:checked').value;
 
-        const baseDate = new Date(startDateStr);
-
-        for (let d = 0; d < daysCount; d++) {
-            const currDate = new Date(baseDate);
-            currDate.setDate(baseDate.getDate() + d);
+        let currDate = new Date(startDate);
+        while (currDate <= endDate) {
             const dateStr = currDate.toISOString().split('T')[0];
 
             for (let id of ids) {
@@ -309,12 +317,13 @@
                     }) 
                 });
             }
+            currDate.setDate(currDate.getDate() + 1);
         }
 
         document.getElementById('e-id').value = '';
-        document.getElementById('s-date').value = startDateDMY;
+        document.getElementById('s-date').value = startDMY;
         
-        showMessage('e-msg', `Successfully registered meal entries for ID(s): ${ids.join(', ')} (${daysCount} day(s))`, 'success');
+        showMessage('e-msg', `Successfully registered meal entries for ID(s): ${ids.join(', ')} from ${startDMY} to ${endDMY}`, 'success');
 
         loadSummary(mealType);
     });
@@ -322,10 +331,21 @@
     document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
 
-        const startDateDMY = document.getElementById('d-date').value;
-        const startDateStr = parseDMYToISO(startDateDMY);
-        if (!startDateStr) {
+        const startDMY = document.getElementById('d-start-date').value;
+        const endDMY = document.getElementById('d-end-date').value;
+        const startISO = parseDMYToISO(startDMY);
+        const endISO = parseDMYToISO(endDMY);
+
+        if (!startISO || !endISO) {
             showMessage('d-msg', 'Invalid date format. Use DD/MM/YYYY.', 'error');
+            return;
+        }
+
+        const startDate = new Date(startISO);
+        const endDate = new Date(endISO);
+
+        if (startDate > endDate) {
+            showMessage('d-msg', 'Start date cannot be after end date.', 'error');
             return;
         }
 
@@ -333,13 +353,10 @@
         const ids = rawIds.map(i => i.trim()).filter(i => i.length > 0);
         if (ids.length === 0) return;
 
-        const daysCount = parseInt(document.getElementById('d-days').value) || 1;
         const mealVal = document.getElementById('d-meal').value;
-        const baseDate = new Date(startDateStr);
 
-        for (let d = 0; d < daysCount; d++) {
-            const currDate = new Date(baseDate);
-            currDate.setDate(baseDate.getDate() + d);
+        let currDate = new Date(startDate);
+        while (currDate <= endDate) {
             const dateStr = currDate.toISOString().split('T')[0];
 
             for (let id of ids) {
@@ -348,19 +365,19 @@
                     body: JSON.stringify({ id: id, dateStr: dateStr, meal: mealVal })
                 });
             }
+            currDate.setDate(currDate.getDate() + 1);
         }
 
         document.getElementById('d-id').value = '';
-        document.getElementById('s-date').value = startDateDMY;
+        document.getElementById('s-date').value = startDMY;
 
-        showMessage('d-msg', `Successfully deleted records for ID(s): ${ids.join(', ')} (${daysCount} day(s))`, 'success');
+        showMessage('d-msg', `Successfully deleted records for ID(s): ${ids.join(', ')} from ${startDMY} to ${endDMY}`, 'success');
 
         loadSummary(mealVal);
     });
 
-    document.getElementById('e-date').addEventListener('input', e => {
+    document.getElementById('e-start-date').addEventListener('input', e => {
         document.getElementById('s-date').value = e.target.value;
-        document.getElementById('d-date').value = e.target.value;
         loadSummary();
     });
     document.getElementById('s-date').addEventListener('input', () => loadSummary());
