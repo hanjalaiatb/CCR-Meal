@@ -269,32 +269,86 @@
         if (!startISO || !endISO) return showMsg('e-msg', 'Invalid date format.', 'error');
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
+        const shiftVal = document.querySelector('input[name="shift"]:checked').value;
+        const menuOptVal = document.querySelector('input[name="menuOption"]:checked').value;
         const rawIdVal = document.getElementById('e-id').value;
         const ids = rawIdVal.split(',').map(i => i.trim()).filter(Boolean);
         if (!ids.length) return;
+
+        // Time restriction checks for today's date
+        const now = new Date();
+        const currentIsoToday = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+
+        let curr = new Date(startISO), end = new Date(endISO);
+        while (curr <= end) {
+            const dateStr = curr.toISOString().split('T')[0];
+            if (dateStr === currentIsoToday) {
+                if (mealType === 'Breakfast' && currentTimeMinutes > (7 * 60 + 15)) {
+                    return showMsg('e-msg', 'Cannot order Breakfast after 7:15 AM for today!', 'error');
+                }
+                if (mealType === 'Lunch' && currentTimeMinutes > (11 * 60 + 0)) {
+                    return showMsg('e-msg', 'Cannot order Lunch after 11:00 AM for today!', 'error');
+                }
+                if (mealType === 'Dinner' && currentTimeMinutes > (19 * 60 + 0)) {
+                    return showMsg('e-msg', 'Cannot order Dinner after 7:00 PM for today!', 'error');
+                }
+            }
+            curr.setDate(curr.getDate() + 1);
+        }
 
         if (ids[0]) {
             localStorage.setItem('ccr_emp_id', ids[0]);
         }
 
-        let curr = new Date(startISO), end = new Date(endISO);
-        while (curr <= end) {
-            const dateStr = curr.toISOString().split('T')[0];
+        let modifiedCount = 0;
+        let existingCount = 0;
+        let addedCount = 0;
+
+        let currLoop = new Date(startISO), endLoop = new Date(endISO);
+        while (currLoop <= endLoop) {
+            const dateStr = currLoop.toISOString().split('T')[0];
+            
+            // Fetch existing records for this date to check status
+            const checkRes = await fetch(`/api/summary?dateStr=${dateStr}`);
+            const checkData = await checkRes.json();
+            const dayRecords = checkData.records || [];
+
             for (let id of ids) {
+                const existingRec = dayRecords.find(r => r.id === id && r.meal === mealType);
+
+                if (existingRec) {
+                    if (existingRec.shift === shiftVal && existingRec.menuOption === menuOptVal) {
+                        existingCount++;
+                        continue;
+                    } else {
+                        modifiedCount++;
+                    }
+                } else {
+                    addedCount++;
+                }
+
                 await fetch('/api/submit', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         dateStr, id, 
-                        shift: document.querySelector('input[name="shift"]:checked').value,
+                        shift: shiftVal,
                         meal: mealType,
-                        menuOption: document.querySelector('input[name="menuOption"]:checked').value
+                        menuOption: menuOptVal
                     })
                 });
             }
-            curr.setDate(curr.getDate() + 1);
+            currLoop.setDate(currLoop.getDate() + 1);
         }
+
         document.getElementById('s-date').value = document.getElementById('e-start-date').value;
-        showMsg('e-msg', 'Saved successfully!', 'success');
+        
+        let msgParts = [];
+        if (addedCount > 0) msgParts.push(`${addedCount} saved`);
+        if (modifiedCount > 0) msgParts.push(`${modifiedCount} modified`);
+        if (existingCount > 0) msgParts.push(`${existingCount} already exists`);
+        
+        showMsg('e-msg', msgParts.join(', ') + '!', modifiedCount > 0 ? 'success' : (addedCount > 0 ? 'success' : 'error'));
         loadSummary(mealType);
     });
 
