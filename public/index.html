@@ -8,6 +8,7 @@
         body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 8px; display: flex; justify-content: center; }
         .box { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
         .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
+        .card-danger { background: #fff5f5; border-color: #fca5a5; }
         h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
         .sub { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; }
         
@@ -50,7 +51,6 @@
         .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dashed #cbd5e1; }
         .shift-title { font-weight: 700; font-size: 0.73rem; text-transform: uppercase; margin-bottom: 1px; }
         .txt-pre { font-family: monospace; background: #f8fafc; padding: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.7rem; white-space: pre-wrap; line-height: 1.3; margin-top: 3px; }
-        .log-row { font-size: 0.68rem; padding: 2px 0; border-bottom: 1px solid #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
@@ -141,49 +141,71 @@
         </form>
     </div>
 
-    <!-- 4. AUDIT LOG -->
-    <div class="card">
-        <h2>Activity Audit Log</h2>
-        <div class="sub">Tracks updates & deletions</div>
-        <div id="log-box" style="max-height:110px; overflow-y:auto;">
-            <div style="font-size:0.7rem; color:#64748b;">No actions recorded yet.</div>
-        </div>
+    <!-- 4. DELETE ALL DATA -->
+    <div class="card card-danger">
+        <h2 style="color: #991b1b;">Danger Zone</h2>
+        <div class="sub">Permanently clear all database records</div>
+        <div id="da-msg" class="msg"></div>
+        <button type="button" class="btn-red" id="btn-delete-all">Delete All Data</button>
     </div>
 </div>
 
 <script>
-    let logs = [];
+    (function() {
+        const d = new Date();
+        const localDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+        const maxDateObj = new Date();
+        maxDateObj.setDate(maxDateObj.getDate() + 4);
+        const maxDateStr = maxDateObj.getFullYear() + '-' + String(maxDateObj.getMonth() + 1).padStart(2, '0') + '-' + String(maxDateObj.getDate()).padStart(2, '0');
+
+        ['e-date', 's-date', 'd-date'].forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = localDateStr;
+                if (id === 'e-date') {
+                    el.min = localDateStr;
+                    el.max = maxDateStr;
+                }
+            }
+        });
+    })();
 
     function bindRadios(groupId) {
         const c = document.getElementById(groupId);
-        c.querySelectorAll('input').forEach(inp => {
-            inp.addEventListener('change', e => {
+        if(!c) return;
+        c.querySelectorAll('input').forEach(function(inp) {
+            inp.addEventListener('change', function(e) {
                 if (e.target.disabled) return;
-                c.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
+                c.querySelectorAll('.radio-lbl').forEach(function(l) { l.classList.remove('active'); });
                 e.target.closest('.radio-lbl').classList.add('active');
             });
         });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('e-date').value = today;
-        document.getElementById('s-date').value = today;
-        document.getElementById('d-date').value = today;
+    window.addEventListener('DOMContentLoaded', function() {
+        const d = new Date();
+        const localDateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        
+        ['e-date', 's-date', 'd-date'].forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el && !el.value) el.value = localDateStr;
+        });
 
         bindRadios('g-shift');
         bindRadios('g-meal');
         bindRadios('g-menu');
 
-        document.querySelectorAll('input[name="meal"]').forEach(inp => {
-            inp.addEventListener('change', e => {
+        document.querySelectorAll('input[name="meal"]').forEach(function(inp) {
+            inp.addEventListener('change', function(e) {
                 const isBreakfast = e.target.value === 'Breakfast';
                 const friedInp = document.querySelector('input[value="Fried Egg"]');
                 const poachedInp = document.querySelector('input[value="Poached Egg"]');
                 const muttonInp = document.querySelector('input[value="Mutton"]');
                 const regInp = document.querySelector('input[value="Regular"]');
 
-                [friedInp, poachedInp, muttonInp].forEach(el => {
+                [friedInp, poachedInp, muttonInp].forEach(function(el) {
+                    if (!el) return;
                     el.disabled = isBreakfast;
                     const lbl = el.closest('.radio-lbl');
                     if (isBreakfast) {
@@ -194,10 +216,11 @@
                     }
                 });
 
-                if (isBreakfast) {
+                if (isBreakfast && regInp) {
                     regInp.checked = true;
-                    document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
-                    document.getElementById('lbl-reg').classList.add('active');
+                    document.querySelectorAll('#g-menu .radio-lbl').forEach(function(l) { l.classList.remove('active'); });
+                    const lblReg = document.getElementById('lbl-reg');
+                    if (lblReg) lblReg.classList.add('active');
                 }
             });
         });
@@ -205,27 +228,49 @@
         loadSummaryData('Breakfast');
         updateDelDropdown();
 
-        document.getElementById('e-date').addEventListener('input', e => {
-            document.getElementById('s-date').value = e.target.value;
-            document.getElementById('d-date').value = e.target.value;
-            loadSummaryData();
-            updateDelDropdown();
-        });
+        const eDateInput = document.getElementById('e-date');
+        if (eDateInput) {
+            eDateInput.addEventListener('input', function(e) {
+                document.getElementById('s-date').value = e.target.value;
+                document.getElementById('d-date').value = e.target.value;
+                loadSummaryData();
+                updateDelDropdown();
+            });
+        }
         
-        document.getElementById('s-date').addEventListener('input', () => loadSummaryData());
-        document.getElementById('d-date').addEventListener('input', () => updateDelDropdown());
-        document.getElementById('d-meal').addEventListener('change', () => updateDelDropdown());
+        const sDateInput = document.getElementById('s-date');
+        if (sDateInput) sDateInput.addEventListener('input', function() { loadSummaryData(); });
+        
+        const dDateInput = document.getElementById('d-date');
+        if (dDateInput) dDateInput.addEventListener('input', function() { updateDelDropdown(); });
+        
+        const dMealInput = document.getElementById('d-meal');
+        if (dMealInput) dMealInput.addEventListener('change', function() { updateDelDropdown(); });
+
+        document.getElementById('btn-delete-all').addEventListener('click', async function() {
+            if (!confirm('Are you sure you want to delete ALL data?')) return;
+            const res = await fetch('/api/delete-all', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showMsg('da-msg', 'All data deleted successfully!', true);
+                loadSummaryData();
+                updateDelDropdown();
+            } else {
+                showMsg('da-msg', 'Failed to delete all data', false);
+            }
+        });
     });
 
     function showMsg(id, text, ok) {
         const el = document.getElementById(id);
+        if(!el) return;
         el.innerText = text;
         el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 3000);
+        setTimeout(function() { el.style.display = 'none'; }, 3000);
     }
 
-    document.getElementById('f-meal').addEventListener('submit', async e => {
+    document.getElementById('f-meal').addEventListener('submit', async function(e) {
         e.preventDefault();
         const payload = {
             dateStr: document.getElementById('e-date').value,
@@ -243,23 +288,16 @@
         const data = await res.json();
         if (res.ok && data.success) {
             let msgText = '';
-            let logText = '';
             if (data.status === 'added') {
                 msgText = 'Added successfully!';
-                logText = `Added: ID ${payload.id} (${payload.meal})`;
             } else if (data.status === 'modified') {
                 msgText = 'Modified successfully!';
-                logText = `Modified: ID ${payload.id} (${payload.meal})`;
             } else {
                 msgText = 'Already recorded!';
-                logText = `Checked (No change): ID ${payload.id} (${payload.meal})`;
             }
 
             showMsg('s-msg', msgText, true);
-            addLog(logText);
             document.getElementById('e-id').value = '';
-            document.getElementById('s-date').value = payload.dateStr;
-            document.getElementById('d-date').value = payload.dateStr;
             loadSummaryData(payload.meal);
             updateDelDropdown();
         } else {
@@ -267,7 +305,7 @@
         }
     });
 
-    document.getElementById('f-del').addEventListener('submit', async e => {
+    document.getElementById('f-del').addEventListener('submit', async function(e) {
         e.preventDefault();
         const id = document.getElementById('d-id-select').value;
         const dateStr = document.getElementById('d-date').value;
@@ -277,12 +315,11 @@
         const res = await fetch('/api/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, dateStr, meal })
+            body: JSON.stringify({ id: id, dateStr: dateStr, meal: meal })
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            showMsg('d-msg', `Deleted ID ${id}`, true);
-            addLog(`Deleted: ID ${id} (${meal})`);
+            showMsg('d-msg', 'Deleted ID ' + id, true);
             loadSummaryData();
             updateDelDropdown();
         } else {
@@ -290,9 +327,11 @@
         }
     });
 
-    async function loadSummaryData(openMeal = null) {
+    async function loadSummaryData(openMeal) {
+        if (openMeal === undefined) openMeal = null;
         const dateStr = document.getElementById('s-date').value;
-        const res = await fetch(`/api/summary?dateStr=${dateStr}`);
+        if (!dateStr) return;
+        const res = await fetch('/api/summary?dateStr=' + dateStr);
         const data = await res.json();
         renderSummary(dateStr, data.records || [], openMeal);
     }
@@ -301,13 +340,14 @@
         const dDate = document.getElementById('d-date').value;
         const dMeal = document.getElementById('d-meal').value;
         const sel = document.getElementById('d-id-select');
+        if (!sel || !dDate) return;
         
-        const res = await fetch(`/api/summary?dateStr=${dDate}`);
+        const res = await fetch('/api/summary?dateStr=' + dDate);
         const data = await res.json();
         const dayRecords = data.records || [];
 
         sel.innerHTML = '<option value="">None</option>';
-        dayRecords.filter(r => r.meal === dMeal).forEach(r => {
+        dayRecords.filter(function(r) { return r.meal === dMeal; }).forEach(function(r) {
             const opt = document.createElement('option');
             opt.value = r.id;
             opt.textContent = r.id;
@@ -317,104 +357,57 @@
 
     function renderSummary(dateStr, records, openMeal) {
         const box = document.getElementById('summary-box');
+        if (!box) return;
         let html = '';
 
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(meal => {
-            const mRecs = records.filter(r => r.meal === meal);
+        ['Breakfast', 'Lunch', 'Dinner'].forEach(function(meal) {
+            const mRecs = records.filter(function(r) { return r.meal === meal; });
             const isOpen = (meal === openMeal);
 
-            html += `
-                <div class="acc">
-                    <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')">
-                        <span>${meal}</span><span id="arrow-${meal}">Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span>
-                    </button>
-                    <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
-            `;
+            html += '<div class="acc">' +
+                    '<button type="button" class="acc-btn" onclick="toggleAcc(\'' + meal + '\')">' +
+                    '<span>' + meal + '</span><span id="arrow-' + meal + '">Total: ' + mRecs.length + ' ' + (isOpen ? '▲' : '▼') + '</span>' +
+                    '</button>' +
+                    '<div class="acc-body ' + (isOpen ? 'show' : '') + '" id="acc-' + meal + '">';
 
             if (mRecs.length === 0) {
-                html += `<div>No entries found.</div>`;
+                html += '<div>No entries found.</div>';
             } else {
-                ['Morning', 'Afternoon', 'Night'].forEach(shift => {
-                    const sRecs = mRecs.filter(r => r.shift === shift);
+                ['Morning', 'Afternoon', 'Night'].forEach(function(shift) {
+                    const sRecs = mRecs.filter(function(r) { return r.shift === shift; });
                     if (sRecs.length > 0) {
-                        const idsShort = sRecs.map(r => {
-                            if (r.menuOption === 'Poached Egg') return `${r.id}(P)`;
-                            if (r.menuOption === 'Fried Egg') return `${r.id}(F)`;
-                            if (r.menuOption === 'Mutton') return `${r.id}(M)`;
+                        const idsShort = sRecs.map(function(r) {
+                            if (r.menuOption === 'Poached Egg') return r.id + '(P)';
+                            if (r.menuOption === 'Fried Egg') return r.id + '(F)';
+                            if (r.menuOption === 'Mutton') return r.id + '(M)';
                             return r.id;
                         }).join(', ');
 
                         const counts = {};
-                        sRecs.forEach(r => {
+                        sRecs.forEach(function(r) {
                             if (r.menuOption === 'Poached Egg') counts['P'] = (counts['P'] || 0) + 1;
                             else if (r.menuOption === 'Fried Egg') counts['F'] = (counts['F'] || 0) + 1;
                             else if (r.menuOption === 'Mutton') counts['M'] = (counts['M'] || 0) + 1;
                         });
                         
-                        let countParts = Object.entries(counts).map(([k,v]) => `${k}-${v}`);
-                        countParts.push(`Total-${sRecs.length}`);
+                        let countParts = Object.keys(counts).map(function(k) { return k + '-' + counts[k]; });
+                        countParts.push('Total-' + sRecs.length);
                         const countStr = countParts.join(', ');
 
-                        html += `
-                            <div class="shift-blk">
-                                <div class="shift-title">${shift} shift</div>
-                                <div>Meal ID: ${idsShort}</div>
-                                <div>Meal count: ${countStr}</div>
-                            </div>
-                        `;
+                        html += '<div class="shift-blk">' +
+                                '<div class="shift-title">' + shift + ' shift</div>' +
+                                '<div>Meal ID: ' + idsShort + '</div>' +
+                                '<div>Meal count: ' + countStr + '</div>' +
+                                '</div>';
                     }
                 });
 
-                let waIds = mRecs.map(r => r.id).join(', ');
-                let wa = `${meal} Meal from CCR on ${dateStr}\nID: ${waIds}\nTotal Meal Count: ${mRecs.length}`;
+                let waIds = mRecs.map(function(r) { return r.id; }).join(', ');
+                let wa = meal + ' Meal from CCR on ' + dateStr + '\nID: ' + waIds + '\nTotal Meal Count: ' + mRecs.length;
                 
-                ['Poached Egg', 'Fried Egg', 'Mutton'].forEach(opt => {
-                    const sub = mRecs.filter(r => r.menuOption === opt);
-                    if (sub.length > 0) wa += `\n${opt}: ${sub.length} (${sub.map(r => r.id).join(', ')})`;
+                ['Poached Egg', 'Fried Egg', 'Mutton'].forEach(function(opt) {
+                    const sub = mRecs.filter(function(r) { return r.menuOption === opt; });
+                    if (sub.length > 0) wa += '\n' + opt + ': ' + sub.length + ' (' + sub.map(function(r) { return r.id; }).join(', ') + ')';
                 });
 
-                html += `
-                    <div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">
-                        <div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>
-                        <div class="txt-pre" id="wa-${meal}">${wa}</div>
-                        <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText).then(()=>{showMsg('s-msg','Copied to clipboard!',true);})">Copy WhatsApp Format</button>
-                    </div>
-                `;
-            }
-            html += `</div></div>`;
-        });
-        box.innerHTML = html;
-    }
-
-    function toggleAcc(meal) {
-        const el = document.getElementById(`acc-${meal}`);
-        const show = el.classList.contains('show');
-        document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
-        
-        ['Breakfast', 'Lunch', 'Dinner'].forEach(m => {
-            const btnSpan = document.querySelector(`button[onclick="toggleAcc('${m}')"] span:last-child`);
-            if (btnSpan) {
-                const totalText = btnSpan.innerText.replace(/[▲▼]/g, '').trim();
-                btnSpan.innerText = totalText + ' ▼';
-            }
-        });
-
-        if (!show) {
-            el.classList.add('show');
-            const activeSpan = document.querySelector(`button[onclick="toggleAcc('${meal}')"] span:last-child`);
-            if (activeSpan) {
-                const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
-                activeSpan.innerText = totalText + ' ▲';
-            }
-        }
-    }
-
-    function addLog(text) {
-        const time = new Date().toLocaleTimeString();
-        logs.unshift(`[${time}] ${text}`);
-        if (logs.length > 15) logs.pop();
-        document.getElementById('log-box').innerHTML = logs.map(l => `<div class="log-row">${l}</div>`).join('');
-    }
-</script>
-</body>
-</html>
+                html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:
