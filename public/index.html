@@ -6,46 +6,46 @@
     <title>CCR</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: sans-serif; background: #fff; color: #111; margin: 0; padding: 2px; font-size: 15px; }
-        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 4px; }
-        .card { border: 1px solid #ccc; border-radius: 4px; padding: 6px; background: #fff; }
-        h2 { font-size: 14px; margin: 0 0 4px 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 2px; color: #333; }
-        input, select { width: 100%; height: 36px; padding: 0 6px; border: 1px solid #aaa; border-radius: 4px; font-size: 15px; background: #fff; color: #111; outline: none; }
-        input:focus, select:focus { border-color: #000; }
-        .field-group { margin-bottom: 4px; }
-        .row { display: flex; gap: 4px; margin-bottom: 4px; }
+        body { font-family: sans-serif; background: #f1f5f9; color: #334155; margin: 0; padding: 4px; font-size: 16px; }
+        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+        .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h2 { font-size: 16px; margin: 0 0 8px 0; font-weight: 700; color: #1e293b; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
+        label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #475569; }
+        input, select { width: 100%; height: 44px; padding: 0 10px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 16px; background: #fff; color: #1e293b; outline: none; }
+        input:focus, select:focus { border-color: #0284c7; box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15); }
+        .field-group { margin-bottom: 8px; }
+        .row { display: flex; gap: 8px; margin-bottom: 8px; }
         .row > div { flex: 1; }
         
-        .segmented { display: flex; border: 1px solid #aaa; border-radius: 4px; overflow: hidden; background: #f5f5f5; }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 34px; font-size: 12px; font-weight: bold; cursor: pointer; color: #333; border-right: 1px solid #aaa; }
+        .segmented { display: flex; border: 1px solid #94a3b8; border-radius: 6px; overflow: hidden; background: #f8fafc; }
+        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 40px; font-size: 14px; font-weight: 700; cursor: pointer; color: #475569; border-right: 1px solid #94a3b8; }
         .radio-lbl:last-child { border-right: none; }
         .radio-lbl input { display: none; }
-        .radio-lbl.active { background: #000; color: #fff; }
-        .radio-lbl.disabled { opacity: 0.3; pointer-events: none; background: #ddd; }
+        .radio-lbl.active { background: #0284c7; color: #ffffff; }
+        .radio-lbl.disabled { opacity: 0.3; pointer-events: none; background: #e2e8f0; }
 
-        .btn-entry { width: 100%; height: 38px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; background: #000; color: #fff; margin-top: 2px; }
-        .btn-main { width: 100%; height: 34px; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 2px; color: #fff; }
-        .btn-del { background: #c00; }
-        .btn-green { background: #080; color: #fff; border: none; border-radius: 4px; height: 28px; padding: 0 6px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-entry { width: 100%; height: 44px; border: none; border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer; background: #0284c7; color: #ffffff; margin-top: 4px; }
+        .btn-main { width: 100%; height: 42px; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 4px; color: #ffffff; }
+        .btn-del { background: #e11d48; }
+        .btn-green { background: #059669; color: #ffffff; border: none; border-radius: 6px; height: 32px; padding: 0 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
         
-        .tab-row { display: flex; gap: 2px; margin-top: 4px; }
-        .tab-btn { flex: 1; background: #eee; border: 1px solid #aaa; font-weight: bold; font-size: 12px; padding: 4px 2px; text-align: center; border-radius: 4px; cursor: pointer; color: #333; }
-        .tab-btn.active { background: #000; color: #fff; border-color: #000; }
+        .tab-row { display: flex; gap: 4px; margin-top: 6px; }
+        .tab-btn { flex: 1; background: #f8fafc; border: 1px solid #94a3b8; font-weight: 700; font-size: 13px; padding: 8px 4px; text-align: center; border-radius: 6px; cursor: pointer; color: #475569; }
+        .tab-btn.active { background: #0284c7; color: #ffffff; border-color: #0284c7; }
         
-        .panel { border: 1px solid #aaa; border-top: none; border-radius: 0 0 4px 4px; padding: 6px; display: none; background: #fff; }
+        .panel { border: 1px solid #94a3b8; border-top: none; border-radius: 0 0 6px 6px; padding: 8px; display: none; background: #ffffff; }
         .panel.show { display: block; }
         
-        .shift-blk { margin-top: 4px; padding-top: 4px; border-top: 1px dotted #ccc; font-size: 12px; }
+        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 14px; }
         .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f9f9f9; padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; white-space: pre-wrap; margin-top: 2px; color: #111; line-height: 1.2; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; white-space: pre-wrap; margin-top: 4px; color: #1e293b; line-height: 1.4; }
         
-        .msg-box { padding: 4px 6px; font-size: 12px; margin-bottom: 4px; border-radius: 4px; display: none; font-weight: bold; }
-        .err-msg { background: #fcc; color: #900; border: 1px solid #faa; }
-        .suc-msg { background: #cfc; color: #060; border: 1px solid #afa; }
+        .msg-box { padding: 8px; font-size: 14px; margin-bottom: 6px; border-radius: 6px; display: none; font-weight: 700; }
+        .err-msg { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+        .suc-msg { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         
-        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 12px; font-weight: bold; cursor: pointer; color: #333; }
-        .chk-row input { width: 14px; height: 14px; }
+        .chk-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 14px; font-weight: 700; cursor: pointer; color: #475569; }
+        .chk-row input { width: 18px; height: 18px; accent-color: #0284c7; }
     </style>
 </head>
 <body>
@@ -103,7 +103,7 @@
 
     <!-- Summary Output Card -->
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:12px; color:#000; font-weight:bold;"></span></h2>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:13px; color:#0284c7; font-weight:700;"></span></h2>
         <div class="field-group">
             <label>Select Date</label>
             <input type="date" id="s-date" required>
@@ -270,7 +270,7 @@
 
                 const mRecs = recs.filter(r => r.meal === m);
                 if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; color:#666; padding:6px; font-weight:bold;">No entries found</div>`;
+                    panel.innerHTML = `<div style="text-align:center; color:#64748b; padding:8px; font-weight:700;">No entries found</div>`;
                     return;
                 }
 
@@ -288,7 +288,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:bold; color:#111;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#333;">ID: ${ids}</div></div>`;
+                    body += `<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#475569;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -398,10 +398,4 @@
 
         if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
 
-        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        const mealVal = document.getElementById('d-meal').value;
-
-        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
-
-        let curr = new Date(start), last = new Date(end);
-    
+        const ids = document.getElementById('d-id').v
