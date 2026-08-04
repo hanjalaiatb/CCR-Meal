@@ -156,49 +156,57 @@
     function fmtDMY(s) {
         if (!s || !s.includes('-')) return '';
         const p = s.split('-');
-        return `${p[2]}/${p[1]}/${p[0]}`;
+        return p[2] + '/' + p[1] + '/' + p[0];
     }
 
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
+        return String(n).replace(/[0-9]/g, function(w) {
+            return ('০১২৩৪৫৬৭৮৯')[w] || w;
+        });
     }
 
     const today = getToday();
-    ['s-date', 'e-start', 'e-end', 'd-start', 'd-end'].forEach(id => {
-        document.getElementById(id).value = today;
-    });
+    document.getElementById('s-date').value = today;
+    document.getElementById('e-start').value = today;
+    document.getElementById('e-end').value = today;
+    document.getElementById('d-start').value = today;
+    document.getElementById('d-end').value = today;
 
     const savedId = localStorage.getItem('ccr_id') || '';
-    ['e-id', 'd-id'].forEach(id => { document.getElementById(id).value = savedId; });
+    document.getElementById('e-id').value = savedId;
+    document.getElementById('d-id').value = savedId;
 
-    ['e-id', 'd-id'].forEach(idInput => {
-        document.getElementById(idInput).addEventListener('input', e => {
-            const first = e.target.value.split(',')[0].trim();
-            if (first) localStorage.setItem('ccr_id', first);
-        });
+    document.getElementById('e-id').addEventListener('input', function(e) {
+        const first = e.target.value.split(',')[0].trim();
+        if (first) localStorage.setItem('ccr_id', first);
     });
 
-    document.getElementById('e-multi').addEventListener('change', e => {
+    document.getElementById('d-id').addEventListener('input', function(e) {
+        const first = e.target.value.split(',')[0].trim();
+        if (first) localStorage.setItem('ccr_id', first);
+    });
+
+    document.getElementById('e-multi').addEventListener('change', function(e) {
         const m = e.target.checked;
         document.getElementById('e-end-wrap').style.display = m ? 'block' : 'none';
         document.getElementById('e-lbl-dt').innerText = m ? 'Start Date' : 'Date';
         if (!m) document.getElementById('e-end').value = document.getElementById('e-start').value;
     });
 
-    document.getElementById('d-multi').addEventListener('change', e => {
+    document.getElementById('d-multi').addEventListener('change', function(e) {
         const m = e.target.checked;
         document.getElementById('d-end-wrap').style.display = m ? 'block' : 'none';
         document.getElementById('d-lbl-dt').innerText = m ? 'Start Date' : 'Date';
         if (!m) document.getElementById('d-end').value = document.getElementById('d-start').value;
     });
 
-    document.getElementById('e-start').addEventListener('change', e => {
+    document.getElementById('e-start').addEventListener('change', function(e) {
         if (!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
         document.getElementById('s-date').value = e.target.value;
         loadSum();
     });
 
-    document.getElementById('d-start').addEventListener('change', e => {
+    document.getElementById('d-start').addEventListener('change', function(e) {
         if (!document.getElementById('d-multi').checked) document.getElementById('d-end').value = e.target.value;
     });
 
@@ -206,38 +214,46 @@
 
     function showMsg(id, txt, type) {
         const el = document.getElementById(id);
-        el.className = `msg-box ${type === 'success' ? 'suc-msg' : 'err-msg'}`;
+        el.className = 'msg-box ' + (type === 'success' ? 'suc-msg' : 'err-msg');
         el.innerText = txt;
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 3000);
+        setTimeout(function() { el.style.display = 'none'; }, 3000);
     }
 
-    ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
-        document.getElementById(gid).addEventListener('change', e => {
+    ['g-shift', 'g-meal', 'g-menu'].forEach(function(gid) {
+        document.getElementById(gid).addEventListener('change', function(e) {
             if (e.target.disabled) return;
             const c = document.getElementById(gid);
-            c.querySelectorAll('.radio-lbl').forEach(l => l.classList.remove('active'));
+            const lbls = c.querySelectorAll('.radio-lbl');
+            for (let i = 0; i < lbls.length; i++) {
+                lbls[i].classList.remove('active');
+            }
             e.target.closest('.radio-lbl').classList.add('active');
         });
     });
 
-    document.querySelectorAll('input[name="meal"]').forEach(inp => {
-        inp.addEventListener('change', e => {
+    const mealInps = document.querySelectorAll('input[name="meal"]');
+    for (let i = 0; i < mealInps.length; i++) {
+        mealInps[i].addEventListener('change', function(e) {
             const isB = e.target.value === 'Breakfast';
-            ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(val => {
-                const el = document.querySelector(`input[value="${val}"]`);
+            const arr = ['Fried Egg', 'Poached Egg', 'Mutton'];
+            for (let j = 0; j < arr.length; j++) {
+                const el = document.querySelector('input[value="' + arr[j] + '"]');
                 if (el) {
                     el.disabled = isB;
                     el.closest('.radio-lbl').classList.toggle('disabled', isB);
                 }
-            });
+            }
             if (isB) {
                 document.querySelector('input[value="Regular"]').checked = true;
-                document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
+                const menuLbls = document.querySelectorAll('#g-menu .radio-lbl');
+                for (let k = 0; k < menuLbls.length; k++) {
+                    menuLbls[k].classList.remove('active');
+                }
                 document.getElementById('l-reg').classList.add('active');
             }
         });
-    });
+    }
 
     async function loadSum(pref) {
         if (pref) activeMeal = pref;
@@ -249,7 +265,7 @@
         try {
             let recs = cache[dt];
             if (!recs) {
-                const res = await fetch(`/api/summary?dateStr=${dt}`);
+                const res = await fetch('/api/summary?dateStr=' + dt);
                 const data = await res.json();
                 recs = data.records || [];
                 cache[dt] = recs;
@@ -257,67 +273,84 @@
 
             const meals = ['Breakfast', 'Lunch', 'Dinner'];
             let tabHtml = '';
-            meals.forEach(m => {
-                const cnt = recs.filter(r => r.meal === m).length;
-                tabHtml += `<button type="button" class="tab-btn ${m === activeMeal ? 'active' : ''}" onclick="switchT('${m}')">${m} (${cnt})</button>`;
-            });
+            for (let i = 0; i < meals.length; i++) {
+                const m = meals[i];
+                const cnt = recs.filter(function(r) { return r.meal === m; }).length;
+                tabHtml += '<button type="button" class="tab-btn ' + (m === activeMeal ? 'active' : '') + '" onclick="switchT(\'' + m + '\')">' + m + ' (' + cnt + ')</button>';
+            }
             document.getElementById('tab-row').innerHTML = tabHtml;
 
-            meals.forEach(m => {
-                const panel = document.getElementById(`panel-${m}`);
+            for (let i = 0; i < meals.length; i++) {
+                const m = meals[i];
+                const panel = document.getElementById('panel-' + m);
                 panel.classList.toggle('show', m === activeMeal);
 
-                const mRecs = recs.filter(r => r.meal === m);
+                const mRecs = recs.filter(function(r) { return r.meal === m; });
                 if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; color:#64748b; padding:6px; font-weight:700;">No entries found</div>`;
-                    return;
+                    panel.innerHTML = '<div style="text-align:center; color:#64748b; padding:6px; font-weight:700;">No entries found</div>';
+                    continue;
                 }
 
                 let body = '';
-                ['Morning', 'Afternoon', 'Night'].forEach(sh => {
-                    const sRecs = mRecs.filter(r => r.shift === sh);
-                    if (!sRecs.length) return;
-                    const f = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
-                    const p = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
-                    const mu = sRecs.filter(r => r.menuOption === 'Mutton').length;
+                const shifts = ['Morning', 'Afternoon', 'Night'];
+                for (let s = 0; s < shifts.length; s++) {
+                    const sh = shifts[s];
+                    const sRecs = mRecs.filter(function(r) { return r.shift === sh; });
+                    if (!sRecs.length) continue;
+                    
+                    const f = sRecs.filter(function(r) { return r.menuOption === 'Fried Egg'; }).length;
+                    const p = sRecs.filter(function(r) { return r.menuOption === 'Poached Egg'; }).length;
+                    const mu = sRecs.filter(function(r) { return r.menuOption === 'Mutton'; }).length;
 
-                    let cStr = `Total:${sRecs.length}`;
-                    if (f) cStr += `, F-${f}`;
-                    if (p) cStr += `, P-${p}`;
-                    if (mu) cStr += `, M-${mu}`;
+                    let cStr = 'Total:' + sRecs.length;
+                    if (f) cStr += ', F-' + f;
+                    if (p) cStr += ', P-' + p;
+                    if (mu) cStr += ', M-' + mu;
 
-                    const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#475569;">ID: ${ids}</div></div>`;
-                });
+                    const ids = sRecs.map(function(r) {
+                        const suf = r.menuOption === 'Poached Egg' ? '(P)' : (r.menuOption === 'Fried Egg' ? '(F)' : (r.menuOption === 'Mutton' ? '(M)' : ''));
+                        return r.id + suf;
+                    }).join(', ');
+                    
+                    body += '<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">' + sh + ' Shift (' + cStr + ')</div><div style="margin-top:2px; color:#475569;">ID: ' + ids + '</div></div>';
+                }
 
-                let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let wa = `${fmtDMY(dt)}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID: `;
+                const timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
+                let wa = fmtDMY(dt) + '\n' + timeWord + ' মোট ' + benNum(mRecs.length) + ' জনের খাবার CCR এ আসবে。\nID: ';
                 
-                const reg = mRecs.filter(r => r.menuOption === 'Regular');
-                if (reg.length) wa += reg.map(r => r.id).join(', ');
+                const reg = mRecs.filter(function(r) { return r.menuOption === 'Regular'; });
+                if (reg.length) wa += reg.map(function(r) { return r.id; }).join(', ');
                 
-                const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) wa += `\nডিম ভাজি: ${benNum(fr.length)} টা (${fr.map(r => r.id).join(', ')})`;
-                const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) wa += `\nডিম পোচ: ${benNum(po.length)} টা (${po.map(r => r.id).join(', ')})`;
-                const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) wa += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
+                const fr = mRecs.filter(function(r) { return r.menuOption === 'Fried Egg'; });
+                if (fr.length) wa += '\nডিম ভাজি: ' + benNum(fr.length) + ' টা (' + fr.map(function(r) { return r.id; }).join(', ') + ')';
+                
+                const po = mRecs.filter(function(r) { return r.menuOption === 'Poached Egg'; });
+                if (po.length) wa += '\nডিম পোচ: ' + benNum(po.length) + ' টা (' + po.map(function(r) { return r.id; }).join(', ') + ')';
+                
+                const mt = mRecs.filter(function(r) { return r.menuOption === 'Mutton'; });
+                if (mt.length) wa += '\nখাসি (নন-মুসলিম): ' + benNum(mt.length) + ' টা (' + mt.map(function(r) { return r.id; }).join(', ') + ')';
 
-                body += `<div class="txt-pre" id="wa-${m}">${wa}</div>
-                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
+                body += '<div class="txt-pre" id="wa-' + m + '">' + wa + '</div>' +
+                        '<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById(\'wa-' + m + '\').innerText)">📋 Copy WhatsApp</button>';
 
                 panel.innerHTML = body;
-            });
+            }
         } catch (e) { console.error(e); }
     }
 
     window.switchT = function(m) {
         activeMeal = m;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(m)));
-        document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === `panel-${m}`));
+        const btns = document.querySelectorAll('.tab-btn');
+        for (let i = 0; i < btns.length; i++) {
+            btns[i].classList.toggle('active', btns[i].textContent.indexOf(m) === 0);
+        }
+        const panels = document.querySelectorAll('.panel');
+        for (let i = 0; i < panels.length; i++) {
+            panels[i].classList.toggle('show', panels[i].id === 'panel-' + m);
+        }
     };
 
-    document.getElementById('f-meal').addEventListener('submit', async e => {
+    document.getElementById('f-meal').addEventListener('submit', async function(e) {
         e.preventDefault();
         const start = document.getElementById('e-start').value;
         const isMulti = document.getElementById('e-multi').checked;
@@ -328,7 +361,7 @@
         const mealType = document.querySelector('input[name="meal"]:checked').value;
         const shift = document.querySelector('input[name="shift"]:checked').value;
         const menuOpt = document.querySelector('input[name="menuOption"]:checked').value;
-        const ids = document.getElementById('e-id').value.split(',').map(i => i.trim()).filter(Boolean);
+        const ids = document.getElementById('e-id').value.split(',').map(function(i) { return i.trim(); }).filter(Boolean);
         if (!ids.length) return;
 
         const now = new Date();
@@ -354,50 +387,8 @@
             const dtStr = curr.toISOString().split('T')[0];
             delete cache[dtStr];
 
-            const res = await fetch(`/api/summary?dateStr=${dtStr}`);
+            const res = await fetch('/api/summary?dateStr=' + dtStr);
             const data = await res.json();
             const dayRecs = data.records || [];
 
-            for (let id of ids) {
-                const ex = dayRecs.find(r => r.id === id && r.meal === mealType);
-                if (ex) {
-                    if (ex.shift === shift && ex.menuOption === menuOpt) {
-                        exist++;
-                        continue;
-                    } else {
-                        mod++;
-                    }
-                } else {
-                    added++;
-                }
-
-                await fetch('/api/submit', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ dateStr: dtStr, id, shift, meal: mealType, menuOption: menuOpt })
-                });
-            }
-            curr.setDate(curr.getDate() + 1);
-        }
-
-        document.getElementById('s-date').value = start;
-        let parts = [];
-        if (added) parts.push(`${added} new`);
-        if (mod) parts.push(`${mod} modified`);
-        if (exist) parts.push(`${exist} exists`);
-        
-        showMsg('e-msg', parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
-        loadSum(mealType);
-    });
-
-    document.getElementById('f-del').addEventListener('submit', async e => {
-        e.preventDefault();
-        const start = document.getElementById('d-start').value;
-        const isMulti = document.getElementById('d-multi').checked;
-        const end = isMulti ? document.getElementById('d-end').value : start;
-
-        if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
-
-        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        const mealVal = document.getElementById('d-meal').value;
-
-        if (ids[0]) localStorage.
+            for (let i = 0; i < ids.length; i++)
