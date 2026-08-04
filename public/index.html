@@ -123,6 +123,24 @@
         if(el) el.value = todayDMY;
     });
 
+    let msgTimeouts = {};
+    function showMessage(elementId, text, type) {
+        const msgDiv = document.getElementById(elementId);
+        if (!msgDiv) return;
+        
+        if (msgTimeouts[elementId]) {
+            clearTimeout(msgTimeouts[elementId]);
+        }
+
+        msgDiv.className = `msg-box ${type === 'success' ? 'suc-msg' : 'err-msg'}`;
+        msgDiv.innerText = text;
+        msgDiv.style.display = 'block';
+
+        msgTimeouts[elementId] = setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 10000);
+    }
+
     function setupRadios(id) {
         const container = document.getElementById(id);
         container.addEventListener('change', e => {
@@ -247,16 +265,11 @@
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
-        const msgDiv = document.getElementById('e-msg');
-        msgDiv.style.display = 'none';
-        msgDiv.className = 'msg-box';
 
         const startDateDMY = document.getElementById('e-date').value;
         const startDateStr = parseDMYToISO(startDateDMY);
         if (!startDateStr) {
-            msgDiv.className = 'msg-box err-msg';
-            msgDiv.innerText = 'Invalid start date format. Use DD/MM/YYYY.';
-            msgDiv.style.display = 'block';
+            showMessage('e-msg', 'Invalid start date format. Use DD/MM/YYYY.', 'error');
             return;
         }
 
@@ -265,9 +278,7 @@
 
         const deadlineError = checkDeadline(mealType, startDateStr);
         if (deadlineError) {
-            msgDiv.className = 'msg-box err-msg';
-            msgDiv.innerText = deadlineError;
-            msgDiv.style.display = 'block';
+            showMessage('e-msg', deadlineError, 'error');
             return;
         }
 
@@ -303,25 +314,18 @@
         document.getElementById('e-id').value = '';
         document.getElementById('s-date').value = startDateDMY;
         
-        msgDiv.className = 'msg-box suc-msg';
-        msgDiv.innerText = 'Entries successfully registered!';
-        msgDiv.style.display = 'block';
+        showMessage('e-msg', `Successfully registered meal entries for ID(s): ${ids.join(', ')} (${daysCount} day(s))`, 'success');
 
         loadSummary(mealType);
     });
 
     document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
-        const msgDiv = document.getElementById('d-msg');
-        msgDiv.style.display = 'none';
-        msgDiv.className = 'msg-box';
 
         const startDateDMY = document.getElementById('d-date').value;
         const startDateStr = parseDMYToISO(startDateDMY);
         if (!startDateStr) {
-            msgDiv.className = 'msg-box err-msg';
-            msgDiv.innerText = 'Invalid date format. Use DD/MM/YYYY.';
-            msgDiv.style.display = 'block';
+            showMessage('d-msg', 'Invalid date format. Use DD/MM/YYYY.', 'error');
             return;
         }
 
@@ -349,9 +353,7 @@
         document.getElementById('d-id').value = '';
         document.getElementById('s-date').value = startDateDMY;
 
-        msgDiv.className = 'msg-box suc-msg';
-        msgDiv.innerText = 'Records successfully deleted!';
-        msgDiv.style.display = 'block';
+        showMessage('d-msg', `Successfully deleted records for ID(s): ${ids.join(', ')} (${daysCount} day(s))`, 'success');
 
         loadSummary(mealVal);
     });
