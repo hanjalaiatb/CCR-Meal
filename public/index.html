@@ -42,16 +42,6 @@
 <body>
 
 <div class="box">
-    <!-- Summary Output Card (Always Expanded, Top) -->
-    <div class="card">
-        <h2>Summary Output</h2>
-        <div style="margin-bottom:6px;"><label>Select Summary Date</label><select id="s-date"></select></div>
-        <div class="tab-row" id="tab-row"></div>
-        <div class="panel show" id="panel-Breakfast"></div>
-        <div class="panel" id="panel-Lunch"></div>
-        <div class="panel" id="panel-Dinner"></div>
-    </div>
-
     <!-- Meal Entry Card (Always Expanded) -->
     <div class="card">
         <h2>Meal Entry</h2>
@@ -88,6 +78,16 @@
         </form>
     </div>
 
+    <!-- Summary Output Card (Always Expanded) -->
+    <div class="card">
+        <h2>Summary Output</h2>
+        <div style="margin-bottom:6px;"><label>Select Summary Date</label><select id="s-date"></select></div>
+        <div class="tab-row" id="tab-row"></div>
+        <div class="panel show" id="panel-Breakfast"></div>
+        <div class="panel" id="panel-Lunch"></div>
+        <div class="panel" id="panel-Dinner"></div>
+    </div>
+
     <!-- Delete Record Card (Always Expanded) -->
     <div class="card">
         <h2>Delete Record</h2>
@@ -117,7 +117,6 @@
         return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
     }
 
-    // Populate date select dropdowns dynamically for lightweight operation (past 5 days to next 15 days)
     function populateDateDropdowns() {
         const selects = ['s-date', 'e-start-date', 'e-end-date', 'd-start-date', 'd-end-date'];
         const today = new Date();
@@ -141,7 +140,6 @@
 
     populateDateDropdowns();
 
-    // Auto-load saved ID from localStorage
     const savedId = localStorage.getItem('ccr_emp_id') || '';
     ['e-id', 'd-id'].forEach(id => {
         document.getElementById(id).value = savedId;
@@ -241,7 +239,7 @@
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার\nCCR এ\nআসবে।\nID:`;
+                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID:`;
                 
                 const regularRecs = mRecs.filter(r => r.menuOption === 'Regular');
                 if (regularRecs.length) {
