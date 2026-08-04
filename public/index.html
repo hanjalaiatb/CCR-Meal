@@ -5,166 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR</title>
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 4px; font-size: 15px; }
-        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
-        .card { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; background: #ffffff; }
-        h2 { font-size: 15px; margin: 0 0 6px 0; font-weight: 700; color: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
-        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 3px; color: #334155; }
-        input, select { width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 15px; background: #fff; color: #0f172a; outline: none; }
-        input:focus, select:focus { border-color: #0284c7; }
-        .field-group { margin-bottom: 6px; }
-        .row { display: flex; gap: 6px; margin-bottom: 6px; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 4px; font-size: 14px; }
+        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 4px; }
+        .card { border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; background: #fff; }
+        h2 { font-size: 14px; margin: 0 0 4px 0; font-weight: bold; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; display: flex; justify-content: space-between; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 2px; color: #334155; }
+        input, select { width: 100%; height: 32px; padding: 0 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; background: #fff; outline: none; }
+        .fg { margin-bottom: 4px; }
+        .row { display: flex; gap: 4px; margin-bottom: 4px; }
         .row > div { flex: 1; }
-        
-        .segmented { display: flex; border: 1px solid #cbd5e1; border-radius: 5px; overflow: hidden; background: #f1f5f9; }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 36px; font-size: 14px; font-weight: 700; cursor: pointer; color: #475569; margin: 0; border: none; }
-        .radio-lbl input { display: none; }
-        .radio-lbl.active { background: #0284c7; color: #ffffff; }
-        .radio-lbl.disabled { opacity: 0.3; pointer-events: none; background: #e2e8f0; }
-
-        .btn-entry, .btn-main { width: 100%; height: 38px; border: none; border-radius: 5px; font-size: 15px; font-weight: 700; cursor: pointer; background: #0284c7; color: #ffffff; margin-top: 2px; }
+        .seg { display: flex; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background: #f1f5f9; }
+        .rl { flex: 1; display: flex; align-items: center; justify-content: center; height: 30px; font-size: 12px; font-weight: bold; cursor: pointer; color: #475569; margin: 0; }
+        .rl input { display: none; }
+        .rl.active { background: #0284c7; color: #fff; }
+        .rl.dis { opacity: 0.3; pointer-events: none; background: #e2e8f0; }
+        .btn { width: 100%; height: 32px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; background: #0284c7; color: #fff; }
         .btn-del { background: #e11d48; }
-        .btn-green { background: #059669; color: #ffffff; border: none; border-radius: 5px; height: 30px; padding: 0 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
-        
-        .tab-row { display: flex; gap: 4px; margin-top: 6px; }
-        .tab-btn { flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: 700; font-size: 13px; padding: 6px 2px; text-align: center; border-radius: 5px; cursor: pointer; color: #475569; }
-        .tab-btn.active { background: #0284c7; color: #ffffff; border-color: #0284c7; }
-        
-        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 5px 5px; padding: 8px; display: none; background: #ffffff; }
+        .btn-g { background: #059669; color: #fff; border: none; border-radius: 4px; height: 26px; padding: 0 6px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 3px; }
+        .tabs { display: flex; gap: 2px; margin-top: 4px; }
+        .tbtn { flex: 1; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 11px; padding: 4px 1px; text-align: center; border-radius: 4px; cursor: pointer; color: #475569; }
+        .tbtn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
+        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 4px 4px; padding: 6px; display: none; background: #fff; }
         .panel.show { display: block; }
-        
-        .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 14px; }
-        .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 13px; white-space: pre-wrap; margin-top: 4px; color: #0f172a; line-height: 1.35; }
-        
-        .msg-box { padding: 8px; font-size: 13px; margin-bottom: 6px; border-radius: 5px; display: none; font-weight: 700; }
-        .err-msg { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
-        .suc-msg { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        
-        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 13px; font-weight: 700; cursor: pointer; color: #334155; }
-        .chk-row input { width: 16px; height: 16px; accent-color: #0284c7; }
+        .sblk { margin-top: 4px; padding-top: 4px; border-top: 1px dashed #cbd5e1; font-size: 12px; }
+        .sblk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+        .tpre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; white-space: pre-wrap; margin-top: 3px; line-height: 1.3; }
+        .msg { padding: 6px; font-size: 11px; margin-bottom: 4px; border-radius: 4px; display: none; font-weight: bold; }
+        .err { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+        .suc { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .chk { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; font-size: 12px; font-weight: bold; cursor: pointer; color: #334155; }
+        .chk input { width: 14px; height: 14px; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <!-- What was compromised note: Removed external font imports, heavy box shadows, redundant CSS transition rules, and complex layout animations to make it extremely lightweight for Render free tier RAM limits while keeping every single UI element, cutoff rule, and feature fully intact. -->
-    
     <div class="card">
         <h2>Meal Entry</h2>
-        <div id="e-msg" class="msg-box"></div>
+        <div id="e-msg" class="msg"></div>
         <form id="f-meal">
-            <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
-            <label class="chk-row"><input type="checkbox" id="e-multi"> Multiple Days Range</label>
+            <div class="fg"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
+            <label class="chk"><input type="checkbox" id="e-multi"> Multiple Days Range</label>
             <div class="row">
-                <div class="field-group"><label id="e-lbl-dt">Date</label><input type="date" id="e-start" required></div>
-                <div class="field-group" id="e-end-wrap" style="display:none;"><label>End Date</label><input type="date" id="e-end"></div>
+                <div class="fg"><label id="e-ldt">Date</label><input type="date" id="e-start" required></div>
+                <div class="fg" id="e-ew" style="display:none;"><label>End Date</label><input type="date" id="e-end"></div>
             </div>
-            <div class="field-group"><label>Shift</label>
-                <div class="segmented" id="g-shift">
-                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
+            <div class="fg"><label>Shift</label>
+                <div class="seg" id="g-shift">
+                    <label class="rl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
+                    <label class="rl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
+                    <label class="rl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
             </div>
-            <div class="field-group"><label>Meal Type</label>
-                <div class="segmented" id="g-meal">
-                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
+            <div class="fg"><label>Meal Type</label>
+                <div class="seg" id="g-meal">
+                    <label class="rl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
+                    <label class="rl"><input type="radio" name="meal" value="Lunch">Lunch</label>
+                    <label class="rl"><input type="radio" name="meal" value="Dinner">Dinner</label>
                 </div>
             </div>
-            <div class="field-group"><label>Menu Option</label>
-                <div class="segmented" id="g-menu">
-                    <label class="radio-lbl active" id="l-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                    <label class="radio-lbl disabled" id="l-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
-                    <label class="radio-lbl disabled" id="l-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
-                    <label class="radio-lbl disabled" id="l-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
+            <div class="fg"><label>Menu Option</label>
+                <div class="seg" id="g-menu">
+                    <label class="rl active" id="l-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                    <label class="rl dis" id="l-fri"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
+                    <label class="rl dis" id="l-poa"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
+                    <label class="rl dis" id="l-mut"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
-            <button type="submit" class="btn-entry">Save Meal Entry</button>
+            <button type="submit" class="btn">Save Meal Entry</button>
         </form>
     </div>
 
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:12px; color:#0284c7; font-weight:700;"></span></h2>
-        <div class="field-group"><label>Select Date</label><input type="date" id="s-date" required></div>
-        <div class="tab-row" id="tab-row"></div>
-        <div class="panel show" id="panel-Breakfast"></div>
-        <div class="panel" id="panel-Lunch"></div>
-        <div class="panel" id="panel-Dinner"></div>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px; color:#0284c7;"></span></h2>
+        <div class="fg"><label>Select Date</label><input type="date" id="s-date" required></div>
+        <div class="tabs" id="tab-row"></div>
+        <div class="panel show" id="p-Breakfast"></div>
+        <div class="panel" id="p-Lunch"></div>
+        <div class="panel" id="p-Dinner"></div>
     </div>
 
     <div class="card">
         <h2>Delete Record</h2>
-        <div id="d-msg" class="msg-box"></div>
+        <div id="d-msg" class="msg"></div>
         <form id="f-del">
-            <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
-            <label class="chk-row"><input type="checkbox" id="d-multi"> Multiple Days Range</label>
+            <div class="fg"><label>ID(s)</label><input type="text" id="d-id" required></div>
+            <label class="chk"><input type="checkbox" id="d-multi"> Multiple Days Range</label>
             <div class="row">
-                <div class="field-group"><label id="d-lbl-dt">Date</label><input type="date" id="d-start" required></div>
-                <div class="field-group" id="d-end-wrap" style="display:none;"><label>End Date</label><input type="date" id="d-end"></div>
+                <div class="fg"><label id="d-ldt">Date</label><input type="date" id="d-start" required></div>
+                <div class="fg" id="d-ew" style="display:none;"><label>End Date</label><input type="date" id="d-end"></div>
             </div>
-            <div class="field-group"><label>Meal</label>
+            <div class="fg"><label>Meal</label>
                 <select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select>
             </div>
-            <button type="submit" class="btn-main btn-del">Delete Record</button>
+            <button type="submit" class="btn btn-del">Delete Record</button>
         </form>
     </div>
 </div>
 
 <script>
     const cache = {};
-
-    function getBDTDate() {
+    function getBDT() {
         const d = new Date();
         const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-        const bdt = new Date(utc + (3600000 * 6));
-        const yyyy = bdt.getFullYear();
-        const mm = String(bdt.getMonth() + 1).padStart(2, '0');
-        const dd = String(bdt.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
+        const b = new Date(utc + 21600000);
+        return `${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;
     }
-
-    const today = getBDTDate();
-    const fmtDMY = s => s ? s.split('-').reverse().join('/') : '';
-    const benNum = n => String(n).replace(/[0-9]/g, w => '০১২৩৪৫৬৭৮৯'[w]);
+    const today = getBDT();
+    const fmt = s => s ? s.split('-').reverse().join('/') : '';
+    const bn = n => String(n).replace(/[0-9]/g, w => '০১২৩৪৫৬৭৮৯'[w]);
 
     ['s-date', 'e-start', 'e-end', 'd-start', 'd-end'].forEach(id => document.getElementById(id).value = today);
-
-    const savedId = localStorage.getItem('ccr_id') || '';
-    ['e-id', 'd-id'].forEach(id => document.getElementById(id).value = savedId);
+    const sid = localStorage.getItem('ccr_id') || '';
+    ['e-id', 'd-id'].forEach(id => document.getElementById(id).value = sid);
 
     ['e-id', 'd-id'].forEach(id => document.getElementById(id).addEventListener('input', e => {
-        const first = e.target.value.split(',')[0].trim();
-        if (first) localStorage.setItem('ccr_id', first);
+        const f = e.target.value.split(',')[0].trim();
+        if(f) localStorage.setItem('ccr_id', f);
     }));
 
-    [['e-multi', 'e-end-wrap', 'e-lbl-dt', 'e-start', 'e-end'], ['d-multi', 'd-end-wrap', 'd-lbl-dt', 'd-start', 'd-end']].forEach(item => {
-        document.getElementById(item[0]).addEventListener('change', e => {
+    [['e-multi','e-ew','e-ldt','e-start','e-end'], ['d-multi','d-ew','d-ldt','d-start','d-end']].forEach(x => {
+        document.getElementById(x[0]).addEventListener('change', e => {
             const m = e.target.checked;
-            document.getElementById(item[1]).style.display = m ? 'block' : 'none';
-            document.getElementById(item[2]).innerText = m ? 'Start Date' : 'Date';
-            if (!m) document.getElementById(item[4]).value = document.getElementById(item[3]).value;
+            document.getElementById(x[1]).style.display = m ? 'block' : 'none';
+            document.getElementById(x[2]).innerText = m ? 'Start Date' : 'Date';
+            if(!m) document.getElementById(x[4]).value = document.getElementById(x[3]).value;
         });
     });
 
     document.getElementById('e-start').addEventListener('change', e => {
-        if (!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
+        if(!document.getElementById('e-multi').checked) document.getElementById('e-end').value = e.target.value;
         document.getElementById('s-date').value = e.target.value;
         loadSum();
     });
-
     document.getElementById('d-start').addEventListener('change', e => {
-        if (!document.getElementById('d-multi').checked) document.getElementById('d-end').value = e.target.value;
+        if(!document.getElementById('d-multi').checked) document.getElementById('d-end').value = e.target.value;
     });
 
-    let activeMeal = 'Breakfast';
-
-    function showMsg(id, txt, type) {
+    let actM = 'Breakfast';
+    function msg(id, txt, t) {
         const el = document.getElementById(id);
-        el.className = 'msg-box ' + (type === 'success' ? 'suc-msg' : 'err-msg');
+        el.className = 'msg ' + (t === 's' ? 'suc' : 'err');
         el.innerText = txt;
         el.style.display = 'block';
         setTimeout(() => el.style.display = 'none', 4000);
@@ -172,40 +153,36 @@
 
     ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
         document.getElementById(gid).addEventListener('change', e => {
-            if (e.target.disabled) return;
-            document.querySelectorAll('#' + gid + ' .radio-lbl').forEach(l => l.classList.remove('active'));
-            e.target.closest('.radio-lbl').classList.add('active');
+            if(e.target.disabled) return;
+            document.querySelectorAll('#'+gid+' .rl').forEach(l => l.classList.remove('active'));
+            e.target.closest('.rl').classList.add('active');
         });
     });
 
     document.querySelectorAll('input[name="meal"]').forEach(inp => {
         inp.addEventListener('change', e => {
             const isB = e.target.value === 'Breakfast';
-            ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(val => {
-                const el = document.querySelector(`input[value="${val}"]`);
-                if (el) {
-                    el.disabled = isB;
-                    el.closest('.radio-lbl').classList.toggle('disabled', isB);
-                }
+            ['Fried Egg', 'Poached Egg', 'Mutton'].forEach(v => {
+                const el = document.querySelector(`input[value="${v}"]`);
+                if(el) { el.disabled = isB; el.closest('.rl').classList.toggle('dis', isB); }
             });
-            if (isB) {
+            if(isB) {
                 document.querySelector('input[value="Regular"]').checked = true;
-                document.querySelectorAll('#g-menu .radio-lbl').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('#g-menu .rl').forEach(l => l.classList.remove('active'));
                 document.getElementById('l-reg').classList.add('active');
             }
         });
     });
 
     async function loadSum(pref) {
-        if (pref) activeMeal = pref;
+        if(pref) actM = pref;
         const dt = document.getElementById('s-date').value;
-        if (!dt) return;
-
+        if(!dt) return;
         document.getElementById('s-lbl').innerText = (dt === today) ? '(Today)' : '';
 
         try {
             let recs = cache[dt];
-            if (!recs) {
+            if(!recs) {
                 const res = await fetch('/api/summary?dateStr=' + dt);
                 const data = await res.json();
                 recs = data.records || [];
@@ -213,129 +190,107 @@
             }
 
             const meals = ['Breakfast', 'Lunch', 'Dinner'];
-            let tabHtml = '';
+            let tHtml = '';
             meals.forEach(m => {
                 const cnt = recs.filter(r => r.meal === m).length;
-                tabHtml += `<button type="button" class="tab-btn ${m === activeMeal ? 'active' : ''}" onclick="switchT('${m}')">${m} (${cnt})</button>`;
+                tHtml += `<button type="button" class="tbtn ${m === actM ? 'active' : ''}" onclick="swT('${m}')">${m} (${cnt})</button>`;
             });
-            document.getElementById('tab-row').innerHTML = tabHtml;
+            document.getElementById('tab-row').innerHTML = tHtml;
 
             meals.forEach(m => {
-                const panel = document.getElementById('panel-' + m);
-                panel.classList.toggle('show', m === activeMeal);
+                const panel = document.getElementById('p-' + m);
+                panel.classList.toggle('show', m === actM);
                 const mRecs = recs.filter(r => r.meal === m);
 
-                if (!mRecs.length) {
-                    panel.innerHTML = '<div style="text-align:center; color:#64748b; padding:6px; font-weight:700;">No entries found for this date</div>';
+                if(!mRecs.length) {
+                    panel.innerHTML = '<div style="text-align:center; color:#64748b; padding:4px; font-weight:bold;">No entries found</div>';
                     return;
                 }
 
                 let body = '';
                 ['Morning', 'Afternoon', 'Night'].forEach(sh => {
                     const sRecs = mRecs.filter(r => r.shift === sh);
-                    if (!sRecs.length) return;
-                    
+                    if(!sRecs.length) return;
                     const f = sRecs.filter(r => r.menuOption === 'Fried Egg').length;
                     const p = sRecs.filter(r => r.menuOption === 'Poached Egg').length;
                     const mu = sRecs.filter(r => r.menuOption === 'Mutton').length;
-
                     let cStr = 'Total:' + sRecs.length;
-                    if (f) cStr += ', F-' + f;
-                    if (p) cStr += ', P-' + p;
-                    if (mu) cStr += ', M-' + mu;
-
-                    const ids = sRecs.map(r => {
-                        const suf = r.menuOption === 'Poached Egg' ? '(P)' : (r.menuOption === 'Fried Egg' ? '(F)' : (r.menuOption === 'Mutton' ? '(M)' : ''));
-                        return r.id + suf;
-                    }).join(', ');
-                    
-                    body += `<div class="shift-blk"><div style="font-weight:700; color:#1e293b;">${sh} Shift (${cStr})</div><div style="margin-top:2px; color:#475569;">ID: ${ids}</div></div>`;
+                    if(f) cStr += ', F-' + f;
+                    if(p) cStr += ', P-' + p;
+                    if(mu) cStr += ', M-' + mu;
+                    const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
+                    body += `<div class="sblk"><div style="font-weight:bold; color:#1e293b;">${sh} Shift (${cStr})</div><div style="color:#475569;">ID: ${ids}</div></div>`;
                 });
 
-                const timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let wa = `${fmtDMY(dt)}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে。\nID: `;
-                
+                const tw = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
+                let wa = `${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে。\nID: `;
                 const reg = mRecs.filter(r => r.menuOption === 'Regular');
-                if (reg.length) wa += reg.map(r => r.id).join(', ');
-                
+                if(reg.length) wa += reg.map(r => r.id).join(', ');
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) wa += `\nডিম ভাজি: ${benNum(fr.length)} টা (` + fr.map(r => r.id).join(', ') + ')';
-                
+                if(fr.length) wa += `\nডিম ভাজি: ${bn(fr.length)} টা (` + fr.map(r => r.id).join(', ') + ')';
                 const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) wa += `\nডিম পোচ: ${benNum(po.length)} টা (` + po.map(r => r.id).join(', ') + ')';
-                
+                if(po.length) wa += `\nডিম পোচ: ${bn(po.length)} টা (` + po.map(r => r.id).join(', ') + ')';
                 const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) wa += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (` + mt.map(r => r.id).join(', ') + ')';
+                if(mt.length) wa += `\nখাসি (নন-মুসলিম): ${bn(mt.length)} টা (` + mt.map(r => r.id).join(', ') + ')';
 
-                body += `<div class="txt-pre" id="wa-${m}">${wa}</div>` +
-                        `<button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
-
+                body += `<div class="tpre" id="wa-${m}">${wa}</div>` +
+                        `<button type="button" class="btn-g" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
                 panel.innerHTML = body;
             });
-        } catch (e) { console.error(e); }
+        } catch(e) { console.error(e); }
     }
 
-    window.switchT = function(m) {
-        activeMeal = m;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(m)));
-        document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === 'panel-' + m));
+    window.swT = function(m) {
+        actM = m;
+        document.querySelectorAll('.tbtn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(m)));
+        document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === 'p-' + m));
     };
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
         const start = document.getElementById('e-start').value;
         const end = document.getElementById('e-multi').checked ? document.getElementById('e-end').value : start;
-        if (!start || !end) return showMsg('e-msg', 'Error: Please select valid date range.', 'error');
+        if(!start || !end) return msg('e-msg', 'Error: Invalid date range.', 'e');
 
         const mealType = document.querySelector('input[name="meal"]:checked').value;
         const shift = document.querySelector('input[name="shift"]:checked').value;
         const menuOpt = document.querySelector('input[name="menuOption"]:checked').value;
         const ids = document.getElementById('e-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        if (!ids.length) return showMsg('e-msg', 'Error: Please enter at least one valid Employee ID.', 'error');
+        if(!ids.length) return msg('e-msg', 'Error: Enter at least one Employee ID.', 'e');
 
-        // BDT Time calculation for strict cutoff checks
         const dNow = new Date();
-        const utcNow = dNow.getTime() + (dNow.getTimezoneOffset() * 60000);
-        const bdtNow = new Date(utcNow + (3600000 * 6));
-        const todayIso = `${bdtNow.getFullYear()}-${String(bdtNow.getMonth() + 1).padStart(2, '0')}-${String(bdtNow.getDate()).padStart(2, '0')}`;
+        const bdtNow = new Date(dNow.getTime() + (dNow.getTimezoneOffset() * 60000) + 21600000);
+        const todayIso = `${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
         const timeMin = bdtNow.getHours() * 60 + bdtNow.getMinutes();
 
         let curr = new Date(start), last = new Date(end);
-        while (curr <= last) {
+        while(curr <= last) {
             const dtStr = curr.toISOString().split('T')[0];
-            
-            // 48 hours auto-expiry check from meal date
-            const mealDateObj = new Date(dtStr);
-            const diffHours = (bdtNow - mealDateObj) / (1000 * 60 * 60);
-            if (diffHours > 48) {
-                return showMsg('e-msg', `Rejected: Cannot modify or enter records for ${dtStr} as 48 hours have passed since the meal date!`, 'error');
-            }
-
-            if (dtStr === todayIso) {
-                if (mealType === 'Breakfast' && timeMin > 435) return showMsg('e-msg', 'Cutoff Reached: Breakfast entry is closed after 7:15 AM today!', 'error');
-                if (mealType === 'Lunch' && timeMin > 660) return showMsg('e-msg', 'Cutoff Reached: Lunch entry is closed after 11:00 AM today!', 'error');
-                if (mealType === 'Dinner' && timeMin > 1140) return showMsg('e-msg', 'Cutoff Reached: Dinner entry is closed after 7:00 PM today!', 'error');
+            const diffH = (bdtNow - new Date(dtStr)) / 3600000;
+            if(diffH > 48) return msg('e-msg', `Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`, 'e');
+            if(dtStr === todayIso) {
+                if(mealType === 'Breakfast' && timeMin > 435) return msg('e-msg', 'Cutoff: Breakfast entry closed after 7:15 AM today!', 'e');
+                if(mealType === 'Lunch' && timeMin > 660) return msg('e-msg', 'Cutoff: Lunch entry closed after 11:00 AM today!', 'e');
+                if(mealType === 'Dinner' && timeMin > 1140) return msg('e-msg', 'Cutoff: Dinner entry closed after 7:00 PM today!', 'e');
             }
             curr.setDate(curr.getDate() + 1);
         }
 
-        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
-
+        if(ids[0]) localStorage.setItem('ccr_id', ids[0]);
         let mod = 0, exist = 0, added = 0;
         curr = new Date(start);
-        while (curr <= last) {
+        while(curr <= last) {
             const dtStr = curr.toISOString().split('T')[0];
             delete cache[dtStr];
-
             const res = await fetch('/api/summary?dateStr=' + dtStr);
             const data = await res.json();
             const dayRecs = data.records || [];
 
-            for (let i = 0; i < ids.length; i++) {
+            for(let i = 0; i < ids.length; i++) {
                 const id = ids[i];
                 const ex = dayRecs.find(r => r.id === id && r.meal === mealType);
-                if (ex) {
-                    if (ex.shift === shift && ex.menuOption === menuOpt) exist++;
+                if(ex) {
+                    if(ex.shift === shift && ex.menuOption === menuOpt) exist++;
                     else mod++;
                 } else added++;
 
@@ -350,12 +305,54 @@
 
         document.getElementById('s-date').value = start;
         let parts = [];
-        if (added) parts.push(added + ' new entry/entries added');
-        if (mod) parts.push(mod + ' entry/entries modified');
-        if (exist) parts.push(exist + ' identical record(s) already existed');
-        
-        showMsg('e-msg', 'Success: ' + parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
+        if(added) parts.push(added + ' added');
+        if(mod) parts.push(mod + ' modified');
+        if(exist) parts.push(exist + ' already existed');
+        msg('e-msg', 'Success: ' + parts.join(' | ') + '.', (mod || added) ? 's' : 'e');
         loadSum(mealType);
     });
 
-    document.getElementById('f-del')
+    document.getElementById('f-del').addEventListener('submit', async e => {
+        e.preventDefault();
+        const start = document.getElementById('d-start').value;
+        const end = document.getElementById('d-multi').checked ? document.getElementById('d-end').value : start;
+        if(!start || !end) return msg('d-msg', 'Error: Invalid date range.', 'e');
+
+        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
+        const mealVal = document.getElementById('d-meal').value;
+        if(!ids.length) return msg('d-msg', 'Error: Enter at least one ID.', 'e');
+
+        const dNow = new Date();
+        const bdtNow = new Date(dNow.getTime() + (dNow.getTimezoneOffset() * 60000) + 21600000);
+
+        let curr = new Date(start), last = new Date(end);
+        while(curr <= last) {
+            const dtStr = curr.toISOString().split('T')[0];
+            if((bdtNow - new Date(dtStr)) / 3600000 > 48) return msg('d-msg', `Rejected: Cannot delete records for ${dtStr} past 48 hours!`, 'e');
+            curr.setDate(curr.getDate() + 1);
+        }
+
+        if(ids[0]) localStorage.setItem('ccr_id', ids[0]);
+        curr = new Date(start);
+        while(curr <= last) {
+            const dtStr = curr.toISOString().split('T')[0];
+            delete cache[dtStr];
+            for(let i = 0; i < ids.length; i++) {
+                await fetch('/api/delete', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id: ids[i], dateStr: dtStr, meal: mealVal })
+                });
+            }
+            curr.setDate(curr.getDate() + 1);
+        }
+        document.getElementById('s-date').value = start;
+        msg('d-msg', 'Success: Record(s) deleted successfully!', 's');
+        loadSum(mealVal);
+    });
+
+    document.getElementById('s-date').addEventListener('change', () => loadSum());
+    loadSum();
+</script>
+</body>
+</html>
