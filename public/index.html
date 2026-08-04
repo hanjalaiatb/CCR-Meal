@@ -237,7 +237,7 @@ async function loadSum(pref) {
             });
 
             const tw = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-            let wa = `${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে。\n`;
+            let wa = `${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
             
             const cleanIds = mRecs.map(r => r.id).join(', ');
             wa += `ID: ${cleanIds}\n`;
