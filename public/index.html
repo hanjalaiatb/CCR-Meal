@@ -298,7 +298,6 @@
         const data = await res.json();
         
         let records = data.records || [];
-        // Sort numerically from small to large (e.g., 39, 74, 95, 116...)
         records.sort(function(a, b) {
             return (Number(a.id) || 0) - (Number(b.id) || 0);
         });
@@ -310,6 +309,10 @@
         const box = document.getElementById('summary-box');
         if (!box) return;
         let html = '';
+
+        // Format date string from YYYY-MM-DD to D/M/YYYY
+        const dateParts = dateStr.split('-');
+        const formattedDate = dateParts.length === 3 ? Number(dateParts[2]) + '/' + Number(dateParts[1]) + '/' + dateParts[0] : dateStr;
 
         ['Breakfast', 'Lunch', 'Dinner'].forEach(function(meal) {
             const mRecs = records.filter(function(r) { return r.meal === meal; });
@@ -353,13 +356,27 @@
                     }
                 });
 
+                // Custom WhatsApp Format block
+                let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
                 let waIds = mRecs.map(function(r) { return r.id; }).join(', ');
-                let wa = meal + ' Meal from CCR on ' + dateStr + '\nID: ' + waIds + '\nTotal Meal Count: ' + mRecs.length;
                 
-                ['Poached Egg', 'Fried Egg', 'Mutton'].forEach(function(opt) {
-                    const sub = mRecs.filter(function(r) { return r.menuOption === opt; });
-                    if (sub.length > 0) wa += '\n' + opt + ': ' + sub.length + ' (' + sub.map(function(r) { return r.id; }).join(', ') + ')';
-                });
+                let wa = formattedDate + '\n' + timeWord + ' মোট ' + mRecs.length + ' জনের খাবার CCR এ আসবে।' + '\nID: ' + waIds;
+                
+                // Add specific options mapping
+                const friedRecs = mRecs.filter(function(r) { return r.menuOption === 'Fried Egg'; });
+                if (friedRecs.length > 0) {
+                    wa += '\nডিম ভাজি: ' + friedRecs.length + ' টা (' + friedRecs.map(function(r) { return r.id; }).join(',') + ')';
+                }
+
+                const poachedRecs = mRecs.filter(function(r) { return r.menuOption === 'Poached Egg'; });
+                if (poachedRecs.length > 0) {
+                    wa += '\nডিম পোচ: ' + poachedRecs.length + ' টা (' + poachedRecs.map(function(r) { return r.id; }).join(',') + ')';
+                }
+
+                const muttonRecs = mRecs.filter(function(r) { return r.menuOption === 'Mutton'; });
+                if (muttonRecs.length > 0) {
+                    wa += '\nখাসি (নন-মুসলিম): ' + muttonRecs.length + ' টা (' + muttonRecs.map(function(r) { return r.id; }).join(',') + ')';
+                }
 
                 html += '<div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;">' +
                         '<div style="font-size:0.65rem; font-weight:700; color:#64748b;">WHATSAPP FORMAT:</div>' +
@@ -388,13 +405,4 @@
 
         if (!show) {
             el.classList.add('show');
-            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + meal + '\')"] span:last-child');
-            if (activeSpan) {
-                const totalText = activeSpan.innerText.replace(/[▲▼]/g, '').trim();
-                activeSpan.innerText = totalText + ' ▲';
-            }
-        }
-    }
-</script>
-</body>
-</html>
+            const activeSpan =
