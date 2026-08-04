@@ -5,35 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; font-size: 1rem; }
         .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
         .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; }
+        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { width: 100%; height: 36px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; background: #f8fafc; box-sizing: border-box; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; height: 38px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; background: #f8fafc; box-sizing: border-box; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 36px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: #475569; }
+        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 38px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: #475569; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
         .radio-lbl.disabled { opacity: 0.3; background: #f1f5f9; pointer-events: none; }
-        button { width: 100%; height: 38px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        button { width: 100%; height: 40px; border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 38px; padding: 0 10px; font-size: 0.9rem; width: auto; margin-top: 8px; display: inline-block; }
+        .btn-green { background: #059669; color: #fff; height: 40px; padding: 0 12px; font-size: 1rem; width: auto; margin-top: 8px; display: inline-block; }
         
         .tab-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px; }
-        .tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.85rem; padding: 8px 2px; text-align: center; border-radius: 4px; cursor: pointer; }
+        .tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.95rem; padding: 10px 2px; text-align: center; border-radius: 4px; cursor: pointer; }
         .tab-btn.active { background: #dbeafe; border-color: #2563eb; }
         
-        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; background: #fff; padding: 10px; font-size: 0.9rem; display: none; }
+        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; background: #fff; padding: 10px; font-size: 1rem; display: none; }
         .panel.show { display: block; }
 
-        .shift-blk { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
+        .shift-blk { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; white-space: pre-wrap; word-break: break-all; margin-top: 8px; line-height: 1.4; }
         .field-group { margin-bottom: 6px; }
-        .msg-box { padding: 8px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 6px; display: none; }
+        .msg-box { padding: 8px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
         .suc-msg { background: #d1fae5; color: #065f46; }
     </style>
@@ -110,7 +110,7 @@
         return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : '';
     }
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯')[w] || ('০১২৩৪৫৬৭৮৯')[w]);
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w]);
     }
 
     const todayStr = fmt(new Date());
@@ -181,7 +181,7 @@
 
                 const mRecs = records.filter(r => r.meal === m);
                 if (mRecs.length === 0) {
-                    panel.innerHTML = `<div style="color:#64748b; text-align:center;">No entries found.</div>`;
+                    panel.innerHTML = `<div style="color:#64748b; text-align:center; padding: 10px;">No entries found.</div>`;
                     return;
                 }
 
@@ -199,18 +199,18 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700">${shift} Shift (${cStr})</div><div style="margin-top:2px;">ID: ${ids}</div></div>`;
+                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700; font-size:1.05rem;">${shift} Shift (${cStr})</div><div style="margin-top:4px; font-size:0.95rem;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waText = `${dateDMY}\n${timeWord} মোট ${String(mRecs.length).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w])} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
                 
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) waText += `\nডিম ভাজি: ${String(fr.length).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w])} টা (${fr.map(r => r.id).join(', ')})`;
+                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা (${fr.map(r => r.id).join(', ')})`;
                 const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) waText += `\nডিম পোচ: ${String(po.length).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w])} টা (${po.map(r => r.id).join(', ')})`;
+                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা (${po.map(r => r.id).join(', ')})`;
                 const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${String(mt.length).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w])} টা (${mt.map(r => r.id).join(', ')})`;
+                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
 
                 bodyHtml += `<div class="txt-pre" id="wa-${m}">${waText}</div>
                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">Copy WhatsApp Format</button>`;
