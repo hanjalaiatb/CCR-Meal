@@ -5,54 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal</title>
     <style>
-        :root {
-            --bg: #fdfdfd;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --border: #edf2f7;
-            --primary: #2563eb;
-            --radius: 10px;
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 8px; font-size: 13px; -webkit-tap-highlight-color: transparent; }
-        .box { max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        h2 { font-size: 15px; margin: 0 0 10px 0; font-weight: 700; color: var(--text); display: flex; align-items: center; justify-content: space-between; }
-        label { display: block; font-size: 11px; font-weight: 600; color: var(--text-light); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.02em; }
-        input, select { width: 100%; height: 38px; padding: 0 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #fff; color: var(--text); outline: none; }
-        input:focus, select:focus { border-color: var(--primary); }
-        .field-group { margin-bottom: 10px; }
-        .row { display: flex; gap: 8px; margin-bottom: 10px; }
+        body { font-family: sans-serif; background: #fff; color: #000; margin: 0; padding: 6px; font-size: 13px; }
+        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+        .card { background: #fff; border: 2px solid #000; border-radius: 4px; padding: 10px; }
+        h2 { font-size: 14px; margin: 0 0 8px 0; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; display: flex; justify-content: space-between; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; height: 36px; padding: 0 6px; border: 2px solid #000; border-radius: 3px; font-size: 13px; box-sizing: border-box; background: #fff; color: #000; font-weight: bold; outline: none; }
+        .field-group { margin-bottom: 8px; }
+        .row { display: flex; gap: 6px; margin-bottom: 8px; }
         .row > div { flex: 1; }
         
-        /* Clean Light Segmented Control */
-        .segmented { display: flex; background: #f8fafc; padding: 2px; border-radius: 8px; gap: 2px; border: 1px solid var(--border); }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 32px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-light); user-select: none; }
+        /* Extreme low-ram simple UI (no heavy shadows, gradients, or complex animations) */
+        .segmented { display: flex; border: 2px solid #000; border-radius: 3px; overflow: hidden; }
+        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 32px; font-size: 11px; font-weight: bold; cursor: pointer; background: #fff; color: #000; border-right: 1px solid #000; text-align: center; }
+        .radio-lbl:last-child { border-right: none; }
         .radio-lbl input { display: none; }
-        .radio-lbl.active { background: #fff; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .radio-lbl.disabled { opacity: 0.25; pointer-events: none; }
+        .radio-lbl.active { background: #000; color: #fff; }
+        .radio-lbl.disabled { opacity: 0.2; pointer-events: none; background: #eee; }
 
-        .btn-main { width: 100%; height: 42px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 2px; background: var(--primary); color: #fff; }
-        .btn-del { background: #ef4444; }
-        .btn-green { background: #10b981; color: #fff; border: none; border-radius: 6px; height: 30px; padding: 0 10px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+        .btn-main { width: 100%; height: 40px; border: 2px solid #000; border-radius: 3px; font-size: 13px; font-weight: bold; cursor: pointer; background: #000; color: #fff; text-transform: uppercase; margin-top: 2px; }
+        .btn-del { background: #fff; color: #000; }
+        .btn-green { background: #000; color: #fff; border: 2px solid #000; border-radius: 3px; height: 28px; padding: 0 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 6px; }
         
-        .tab-row { display: flex; gap: 3px; margin-top: 8px; background: #f8fafc; padding: 2px; border-radius: 8px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; background: transparent; border: none; font-weight: 600; font-size: 11px; padding: 6px 2px; text-align: center; border-radius: 6px; cursor: pointer; color: var(--text-light); }
-        .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .tab-row { display: flex; gap: 2px; margin-top: 6px; }
+        .tab-btn { flex: 1; background: #fff; border: 2px solid #000; font-weight: bold; font-size: 11px; padding: 6px 2px; text-align: center; border-radius: 3px; cursor: pointer; color: #000; }
+        .tab-btn.active { background: #000; color: #fff; }
         
-        .panel { border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 10px; display: none; background: #fff; margin-top: -3px; }
+        .panel { border: 2px solid #000; border-top: none; border-radius: 0 0 3px 3px; padding: 8px; display: none; background: #fff; }
         .panel.show { display: block; }
         
-        .shift-blk { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 12px; }
+        .shift-blk { margin-top: 6px; padding-top: 4px; border-top: 1px dotted #000; font-size: 12px; }
         .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; white-space: pre-wrap; margin-top: 6px; color: #334155; line-height: 1.35; }
+        .txt-pre { font-family: monospace; background: #f4f4f4; padding: 6px; border: 1px solid #000; border-radius: 3px; font-size: 11px; white-space: pre-wrap; margin-top: 4px; color: #000; line-height: 1.3; font-weight: bold; }
         
-        .msg-box { padding: 8px 10px; font-size: 12px; margin-bottom: 10px; border-radius: 6px; display: none; font-weight: 500; }
-        .err-msg { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-        .suc-msg { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .msg-box { padding: 6px; font-size: 11px; margin-bottom: 8px; border: 2px solid #000; display: none; font-weight: bold; }
+        .err-msg { background: #000; color: #fff; }
+        .suc-msg { background: #fff; color: #000; }
         
-        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 12px; font-weight: 600; color: var(--text); cursor: pointer; user-select: none; }
-        .chk-row input { width: 15px; height: 15px; accent-color: var(--primary); border-radius: 4px; }
+        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .chk-row input { width: 14px; height: 14px; accent-color: #000; border: 2px solid #000; }
     </style>
 </head>
 <body>
@@ -65,7 +56,7 @@
         <form id="f-meal">
             <div class="field-group">
                 <label>Employee ID(s)</label>
-                <input type="text" id="e-id" placeholder="e.g. 116, 117" required>
+                <input type="text" id="e-id" placeholder="116, 117" required>
             </div>
             
             <label class="chk-row">
@@ -110,7 +101,7 @@
 
     <!-- Summary Output Card -->
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px; color:var(--primary); font-weight:600;"></span></h2>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px;"></span></h2>
         <div class="field-group">
             <label>Select Date</label>
             <input type="date" id="s-date" required>
@@ -128,7 +119,7 @@
         <form id="f-del">
             <div class="field-group">
                 <label>ID(s)</label>
-                <input type="text" id="d-id" placeholder="e.g. 116, 117" required>
+                <input type="text" id="d-id" placeholder="116, 117" required>
             </div>
             
             <label class="chk-row">
@@ -217,7 +208,7 @@
         el.className = `msg-box ${type === 'success' ? 'suc-msg' : 'err-msg'}`;
         el.innerText = txt;
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 4000);
+        setTimeout(() => el.style.display = 'none', 3000);
     }
 
     ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
@@ -252,7 +243,7 @@
         const dt = document.getElementById('s-date').value;
         if (!dt) return;
 
-        document.getElementById('s-lbl').innerText = (dt === today) ? '(Today)' : '';
+        document.getElementById('s-lbl').innerText = (dt === today) ? '[TODAY]' : '';
 
         try {
             let recs = cache[dt];
@@ -277,7 +268,7 @@
 
                 const mRecs = recs.filter(r => r.meal === m);
                 if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; color:#64748b; padding:10px; font-size:12px;">No entries found</div>`;
+                    panel.innerHTML = `<div style="text-align:center; padding:8px; font-size:11px; font-weight:bold;">No entries found</div>`;
                     return;
                 }
 
@@ -295,7 +286,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:600; color:var(--text);">${sh} Shift (${cStr})</div><div style="color:var(--text-light); margin-top:2px;">ID: ${ids}</div></div>`;
+                    body += `<div class="shift-blk"><div style="font-weight:bold;">${sh} Shift (${cStr})</div><div style="margin-top:2px;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -312,7 +303,7 @@
                 if (mt.length) wa += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা (${mt.map(r => r.id).join(', ')})`;
 
                 body += `<div class="txt-pre" id="wa-${m}">${wa}</div>
-                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 Copy WhatsApp</button>`;
+                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">📋 COPY WHATSAPP</button>`;
 
                 panel.innerHTML = body;
             });
@@ -391,8 +382,25 @@
         let parts = [];
         if (added) parts.push(`${added} new`);
         if (mod) parts.push(`${mod} modified`);
-        if (exist) parts.push(`${exist} already exists`);
+        if (exist) parts.push(`${exist} exists`);
         
         showMsg('e-msg', parts.join(' | ') + '.', (mod || added) ? 'success' : 'error');
         loadSum(mealType);
-        
+    });
+
+    document.getElementById('f-del').addEventListener('submit', async e => {
+        e.preventDefault();
+        const start = document.getElementById('d-start').value;
+        const isMulti = document.getElementById('d-multi').checked;
+        const end = isMulti ? document.getElementById('d-end').value : start;
+
+        if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
+
+        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
+        const mealVal = document.getElementById('d-meal').value;
+
+        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
+
+        let curr = new Date(start), last = new Date(end);
+        while (curr <= last) {
+            const dtStr = curr.toISOString().split(
