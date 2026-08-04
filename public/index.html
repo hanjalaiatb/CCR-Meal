@@ -45,10 +45,10 @@
 <body>
 
 <div class="box">
-    <!-- Meal Entry Card (Collapsed by default if ID exists) -->
-    <div class="card" id="card-entry">
-        <h2 onclick="toggleCard('card-entry')"><span>Meal Entry</span><span class="toggle-icon" id="icon-entry">▼</span></h2>
-        <div class="card-body">
+    <!-- Meal Entry Card (Always Expanded for quick one-tap entry) -->
+    <div class="card expanded" id="card-entry">
+        <h2 onclick="toggleCard('card-entry')"><span>Meal Entry</span><span class="toggle-icon" id="icon-entry">▲</span></h2>
+        <div class="card-body" style="display: block;">
             <div id="e-msg" class="msg-box"></div>
             <form id="f-meal">
                 <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
@@ -60,7 +60,7 @@
                     <div class="grid-3" id="g-shift">
                         <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
                         <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                        <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
+                        <label class="radio-lbl"><input type="radio" name="radio-lbl" value="Night">Night</label> <!-- fixed structure optimization -->
                     </div>
                 </div>
                 <div class="field-group"><label>Meal Type</label>
@@ -87,9 +87,8 @@
     <div class="card expanded" id="card-summary">
         <h2 onclick="toggleCard('card-summary')"><span>Summary Output</span><span class="toggle-icon" id="icon-summary">▲</span></h2>
         <div class="card-body" style="display: block;">
-            <div style="max-width:160px; margin-bottom:6px;"><label>Select Date</label><input type="text" id="s-date"></div>
             <div class="tab-row" id="tab-row"></div>
-            <div class="panel show" id="panel-Breakfast"></div>
+            <div class="panel" id="panel-Breakfast"></div>
             <div class="panel" id="panel-Lunch"></div>
             <div class="panel" id="panel-Dinner"></div>
         </div>
@@ -111,6 +110,13 @@
             </form>
         </div>
     </div>
+
+    <!-- Date Selection Card placed cleanly at the bottom for minimal effort and low RAM profile -->
+    <div class="card" id="card-date-picker" style="background:#f1f5f9;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div style="flex-grow:1; margin-bottom:0;"><label style="margin-bottom:0;">Select Summary Date</label><input type="text" id="s-date" style="background:#fff; margin-top:2px;"></div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -123,7 +129,7 @@
         return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : '';
     }
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w]);
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯'[w] || w));
     }
 
     const todayStr = fmt(new Date());
@@ -136,15 +142,6 @@
     ['e-id', 'd-id'].forEach(id => {
         document.getElementById(id).value = savedId;
     });
-
-    // If ID already exists on device, keep Meal Entry collapsed, otherwise expand it
-    if (savedId) {
-        document.getElementById('card-entry').classList.remove('expanded');
-        document.getElementById('icon-entry').innerText = '▼';
-    } else {
-        document.getElementById('card-entry').classList.add('expanded');
-        document.getElementById('icon-entry').innerText = '▲';
-    }
 
     function toggleCard(cardId) {
         const card = document.getElementById(cardId);
