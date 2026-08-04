@@ -23,14 +23,13 @@
         .btn-red { background: #ef4444; color: #fff; }
         .btn-green { background: #059669; color: #fff; height: 32px; padding: 0 10px; font-size: 0.8rem; width: auto; margin-top: 6px; display: inline-block; }
         
-        /* Summary Grid Layout */
         .summary-wrapper { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
         .summary-header-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .meal-tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.8rem; padding: 8px 2px; text-align: center; border-radius: 6px; cursor: pointer; }
         .meal-tab-btn.active { background: #dbeafe; border-color: #2563eb; }
         
         .meal-details-panel { border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; padding: 10px; font-size: 0.8rem; display: none; }
-        .meal-details-panel.show { display: block; }
+        .meal-details-panel.show { display: block; width: 100%; box-sizing: border-box; }
 
         .shift-blk { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
         .txt-pre { font-family: monospace; background: #f8fafc; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; white-space: pre-wrap; word-break: break-all; margin-top: 6px; }
@@ -130,7 +129,6 @@
     });
 
     let currentActiveMeal = 'Breakfast';
-    let cachedRecords = {};
 
     let msgTimeouts = {};
     function showMessage(elementId, text, type) {
@@ -361,7 +359,7 @@
         const startDMY = document.getElementById('d-start-date').value;
         const endDMY = document.getElementById('d-end-date').value;
         const startISO = parseDMYToISO(startDMY);
-        const endISO = parseDMYToISO(endISO);
+        const endISO = parseDMYToISO(endDMY);
 
         if (!startISO || !endISO) {
             showMessage('d-msg', 'Invalid date format. Use DD/MM/YYYY.', 'error');
@@ -376,8 +374,8 @@
             return;
         }
 
-        const rawIds = document.getElementById('d-id').value.split(',');
-        const ids = rawIds.map(i => i.trim()).filter(i => i.length > 0);
+        const rawIds = document.getElementById('d-id').value.split('-')[0] ? document.getElementById('d-id').value.split(',') : [];
+        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(i => i.length > 0);
         if (ids.length === 0) return;
 
         const mealVal = document.getElementById('d-meal').value;
@@ -403,5 +401,4 @@
         loadSummary(mealVal);
     });
 
-    document.getElementById('e-start-date').addEventListener('input', e => {
-        document.getEleme
+    document.getElementByI
