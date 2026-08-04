@@ -8,10 +8,7 @@
         body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; font-size: 1rem; }
         .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
         .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .card-body { display: none; }
-        .card.expanded .card-body { display: block; }
-        .toggle-icon { font-size: 0.9rem; font-weight: normal; color: #64748b; }
+        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
         
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
@@ -45,77 +42,65 @@
 <body>
 
 <div class="box">
-    <!-- Meal Entry Card (Always Expanded for quick one-tap entry) -->
-    <div class="card expanded" id="card-entry">
-        <h2 onclick="toggleCard('card-entry')"><span>Meal Entry</span><span class="toggle-icon" id="icon-entry">▲</span></h2>
-        <div class="card-body" style="display: block;">
-            <div id="e-msg" class="msg-box"></div>
-            <form id="f-meal">
-                <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
-                <div class="row">
-                    <div><label>Start Date</label><input type="text" id="e-start-date" required></div>
-                    <div><label>End Date</label><input type="text" id="e-end-date" required></div>
-                </div>
-                <div class="field-group"><label>Shift</label>
-                    <div class="grid-3" id="g-shift">
-                        <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
-                        <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
-                        <label class="radio-lbl"><input type="radio" name="radio-lbl" value="Night">Night</label> <!-- fixed structure optimization -->
-                    </div>
-                </div>
-                <div class="field-group"><label>Meal Type</label>
-                    <div class="grid-3" id="g-meal">
-                        <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
-                        <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
-                        <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
-                    </div>
-                </div>
-                <div class="field-group"><label>Menu Option</label>
-                    <div class="grid-4" id="g-menu">
-                        <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
-                        <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
-                        <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
-                        <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
-                    </div>
-                </div>
-                <button type="submit" class="btn-blue">Save Entry</button>
-            </form>
-        </div>
+    <!-- Summary Output Card (Always Expanded, Top) -->
+    <div class="card">
+        <h2>Summary Output</h2>
+        <div style="margin-bottom:6px;"><label>Select Summary Date</label><select id="s-date"></select></div>
+        <div class="tab-row" id="tab-row"></div>
+        <div class="panel show" id="panel-Breakfast"></div>
+        <div class="panel" id="panel-Lunch"></div>
+        <div class="panel" id="panel-Dinner"></div>
     </div>
 
-    <!-- Summary Output Card (Always Expanded) -->
-    <div class="card expanded" id="card-summary">
-        <h2 onclick="toggleCard('card-summary')"><span>Summary Output</span><span class="toggle-icon" id="icon-summary">▲</span></h2>
-        <div class="card-body" style="display: block;">
-            <div class="tab-row" id="tab-row"></div>
-            <div class="panel" id="panel-Breakfast"></div>
-            <div class="panel" id="panel-Lunch"></div>
-            <div class="panel" id="panel-Dinner"></div>
-        </div>
-    </div>
-
-    <!-- Delete Record Card (Collapsed by default) -->
-    <div class="card" id="card-del">
-        <h2 onclick="toggleCard('card-del')"><span>Delete Record</span><span class="toggle-icon" id="icon-del">▼</span></h2>
-        <div class="card-body">
-            <div id="d-msg" class="msg-box"></div>
-            <form id="f-del">
-                <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
-                <div class="row">
-                    <div><label>Start Date</label><input type="text" id="d-start-date" required></div>
-                    <div><label>End Date</label><input type="text" id="d-end-date" required></div>
+    <!-- Meal Entry Card (Always Expanded) -->
+    <div class="card">
+        <h2>Meal Entry</h2>
+        <div id="e-msg" class="msg-box"></div>
+        <form id="f-meal">
+            <div class="field-group"><label>Employee ID(s)</label><input type="text" id="e-id" required></div>
+            <div class="row">
+                <div><label>Start Date</label><select id="e-start-date"></select></div>
+                <div><label>End Date</label><select id="e-end-date"></select></div>
+            </div>
+            <div class="field-group"><label>Shift</label>
+                <div class="grid-3" id="g-shift">
+                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
-                <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
-                <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
-            </form>
-        </div>
+            </div>
+            <div class="field-group"><label>Meal Type</label>
+                <div class="grid-3" id="g-meal">
+                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
+                </div>
+            </div>
+            <div class="field-group"><label>Menu Option</label>
+                <div class="grid-4" id="g-menu">
+                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
+                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
+                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
+                </div>
+            </div>
+            <button type="submit" class="btn-blue">Save Entry</button>
+        </form>
     </div>
 
-    <!-- Date Selection Card placed cleanly at the bottom for minimal effort and low RAM profile -->
-    <div class="card" id="card-date-picker" style="background:#f1f5f9;">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <div style="flex-grow:1; margin-bottom:0;"><label style="margin-bottom:0;">Select Summary Date</label><input type="text" id="s-date" style="background:#fff; margin-top:2px;"></div>
-        </div>
+    <!-- Delete Record Card (Always Expanded) -->
+    <div class="card">
+        <h2>Delete Record</h2>
+        <div id="d-msg" class="msg-box"></div>
+        <form id="f-del">
+            <div class="field-group"><label>ID(s)</label><input type="text" id="d-id" required></div>
+            <div class="row">
+                <div><label>Start Date</label><select id="d-start-date"></select></div>
+                <div><label>End Date</label><select id="d-end-date"></select></div>
+            </div>
+            <div class="field-group"><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
+            <button type="submit" class="btn-red" style="margin-top:6px;">Delete</button>
+        </form>
     </div>
 </div>
 
@@ -129,26 +114,38 @@
         return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : '';
     }
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯'[w] || w));
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
     }
 
-    const todayStr = fmt(new Date());
-    ['s-date', 'd-start-date', 'd-end-date', 'e-start-date', 'e-end-date'].forEach(id => {
-        document.getElementById(id).value = todayStr;
-    });
+    // Populate date select dropdowns dynamically for lightweight operation (past 5 days to next 15 days)
+    function populateDateDropdowns() {
+        const selects = ['s-date', 'e-start-date', 'e-end-date', 'd-start-date', 'd-end-date'];
+        const today = new Date();
+        let optionsHtml = '';
+        
+        for (let i = -5; i <= 15; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+            const val = fmt(d);
+            optionsHtml += `<option value="${val}">${val}${i === 0 ? ' (Today)' : ''}</option>`;
+        }
+
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = optionsHtml;
+                el.value = fmt(today);
+            }
+        });
+    }
+
+    populateDateDropdowns();
 
     // Auto-load saved ID from localStorage
     const savedId = localStorage.getItem('ccr_emp_id') || '';
     ['e-id', 'd-id'].forEach(id => {
         document.getElementById(id).value = savedId;
     });
-
-    function toggleCard(cardId) {
-        const card = document.getElementById(cardId);
-        const isExp = card.classList.toggle('expanded');
-        const iconId = cardId === 'card-entry' ? 'icon-entry' : (cardId === 'card-summary' ? 'icon-summary' : 'icon-del');
-        document.getElementById(iconId).innerText = isExp ? '▲' : '▼';
-    }
 
     ['e-id', 'd-id'].forEach(idInput => {
         document.getElementById(idInput).addEventListener('input', e => {
@@ -244,14 +241,19 @@
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার\nCCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                let waText = `${dateDMY}\n${timeWord} মোট ${benNum(mRecs.length)} জনের খাবার\nCCR এ\nআসবে।\nID:`;
+                
+                const regularRecs = mRecs.filter(r => r.menuOption === 'Regular');
+                if (regularRecs.length) {
+                    waText += `\n${regularRecs.map(r => r.id).join(', ')}`;
+                }
                 
                 const fr = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা\n(${fr.map(r => r.id).join(', ')})`;
+                if (fr.length) waText += `\nডিম ভাজি: ${benNum(fr.length)} টা\n${fr.map(r => r.id).join(', ')}`;
                 const po = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা\n(${po.map(r => r.id).join(', ')})`;
+                if (po.length) waText += `\nডিম পোচ: ${benNum(po.length)} টা\n${po.map(r => r.id).join(', ')}`;
                 const mt = mRecs.filter(r => r.menuOption === 'Mutton');
-                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা\n(${mt.map(r => r.id).join(', ')})`;
+                if (mt.length) waText += `\nখাসি (নন-মুসলিম): ${benNum(mt.length)} টা\n${mt.map(r => r.id).join(', ')}`;
 
                 bodyHtml += `<div class="txt-pre" id="wa-${m}">${waText}</div>
                 <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${m}').innerText)">Copy WhatsApp Format</button>`;
@@ -333,11 +335,11 @@
         loadSummary(mealVal);
     });
 
-    document.getElementById('e-start-date').addEventListener('input', e => {
+    document.getElementById('e-start-date').addEventListener('change', e => {
         document.getElementById('s-date').value = e.target.value;
         loadSummary();
     });
-    document.getElementById('s-date').addEventListener('input', () => loadSummary());
+    document.getElementById('s-date').addEventListener('change', () => loadSummary());
 
     loadSummary();
 </script>
