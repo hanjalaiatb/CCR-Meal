@@ -5,40 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; font-size: 1rem; }
-        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; }
-        h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 4px; display: flex; justify-content: center; font-size: 0.95rem; }
+        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 6px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; }
+        h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
         
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { width: 100%; height: 38px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; background: #f8fafc; box-sizing: border-box; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; height: 36px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; background: #f8fafc; box-sizing: border-box; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 38px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: #475569; }
+        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 36px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #475569; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
         .radio-lbl.disabled { opacity: 0.3; background: #f1f5f9; pointer-events: none; }
-        button { width: 100%; height: 40px; border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
+        button { width: 100%; height: 38px; border: none; border-radius: 4px; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 4px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 40px; padding: 0 12px; font-size: 1rem; width: auto; margin-top: 8px; display: inline-block; }
+        .btn-green { background: #059669; color: #fff; height: 38px; padding: 0 12px; font-size: 0.95rem; width: auto; margin-top: 8px; display: inline-block; }
         
         .tab-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px; }
-        .tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.95rem; padding: 10px 2px; text-align: center; border-radius: 4px; cursor: pointer; }
+        .tab-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e40af; font-weight: 700; font-size: 0.9rem; padding: 8px 2px; text-align: center; border-radius: 4px; cursor: pointer; }
         .tab-btn.active { background: #dbeafe; border-color: #2563eb; }
         
-        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; background: #fff; padding: 10px; font-size: 1rem; display: none; }
+        .panel { border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 6px 6px; background: #fff; padding: 8px; font-size: 0.95rem; display: none; }
         .panel.show { display: block; }
 
-        .shift-blk { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; margin-top: 8px; line-height: 1.5; }
+        .shift-blk { margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; margin-top: 6px; line-height: 1.4; }
         .field-group { margin-bottom: 6px; }
-        .msg-box { padding: 8px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 6px; display: none; }
+        .msg-box { padding: 8px; border-radius: 4px; font-size: 0.9rem; margin-bottom: 6px; display: none; }
         .err-msg { background: #fee2e2; color: #991b1b; }
         .suc-msg { background: #d1fae5; color: #065f46; }
-        .checkbox-container { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: #475569; cursor: pointer; }
-        .checkbox-container input { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; }
+        .checkbox-container { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; }
+        .checkbox-container input { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -122,6 +122,9 @@
 </div>
 
 <script>
+    // Lightweight cache to reduce network/RAM load on low-spec devices
+    const summaryCache = {};
+
     function getTodayIso() {
         const d = new Date();
         return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -176,7 +179,6 @@
         }
     });
 
-    // Keep end date in sync if multi-day is unchecked
     document.getElementById('e-start-date').addEventListener('change', e => {
         if (!document.getElementById('e-multi-toggle').checked) {
             document.getElementById('e-end-date').value = e.target.value;
@@ -198,7 +200,7 @@
         el.className = `msg-box ${type === 'success' ? 'suc-msg' : 'err-msg'}`;
         el.innerText = txt;
         el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 8000);
+        setTimeout(() => el.style.display = 'none', 6000);
     }
 
     ['g-shift', 'g-meal', 'g-menu'].forEach(gid => {
@@ -234,18 +236,21 @@
         if (!dateIso) return;
 
         const labelEl = document.getElementById('s-date-label');
-        if (dateIso === todayIso) {
-            labelEl.innerText = '(Today)';
-        } else {
-            labelEl.innerText = '';
-        }
+        labelEl.innerText = (dateIso === todayIso) ? '(Today)' : '';
 
         try {
-            const res = await fetch(`/api/summary?dateStr=${dateIso}`);
-            const data = await res.json();
-            const records = data.records || [];
+            // Use local cache if available to prevent lag/memory spikes on weak hardware
+            let records = [];
+            if (summaryCache[dateIso]) {
+                records = summaryCache[dateIso];
+            } else {
+                const res = await fetch(`/api/summary?dateStr=${dateIso}`);
+                const data = await res.json();
+                records = data.records || [];
+                summaryCache[dateIso] = records;
+            }
+            
             const dateDMY = formatDMY(dateIso);
-
             const meals = ['Breakfast', 'Lunch', 'Dinner'];
             
             let tabHtml = '';
@@ -261,7 +266,7 @@
 
                 const mRecs = records.filter(r => r.meal === m);
                 if (mRecs.length === 0) {
-                    panel.innerHTML = `<div style="color:#64748b; text-align:center; padding: 10px;">No entries found.</div>`;
+                    panel.innerHTML = `<div style="color:#64748b; text-align:center; padding: 8px;">No entries found.</div>`;
                     return;
                 }
 
@@ -279,7 +284,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700; font-size:1.05rem;">${shift} Shift (${cStr})</div><div style="margin-top:4px; font-size:0.95rem;">ID: ${ids}</div></div>`;
+                    bodyHtml += `<div class="shift-blk"><div style="font-weight:700; font-size:1rem;">${shift} Shift (${cStr})</div><div style="margin-top:2px; font-size:0.9rem;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -360,6 +365,9 @@
         while (currLoop <= endLoop) {
             const dateStr = currLoop.toISOString().split('T')[0];
             
+            // Invalidate cache for modified dates
+            delete summaryCache[dateStr];
+
             const checkRes = await fetch(`/api/summary?dateStr=${dateStr}`);
             const checkData = await checkRes.json();
             const dayRecords = checkData.records || [];
@@ -375,16 +383,4 @@
                         modifiedCount++;
                     }
                 } else {
-                    addedCount++;
-                }
-
-                await fetch('/api/submit', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        dateStr, id, 
-                        shift: shiftVal,
-                        meal: mealType,
-                        menuOption: menuOptVal
-                    })
-                });
-           
+   
