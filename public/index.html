@@ -5,31 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal System</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 6px; display: flex; justify-content: center; }
-        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 6px; }
-        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; }
-        h2 { font-size: 0.9rem; font-weight: 700; margin: 0 0 2px 0; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 4px; }
-        label { display: block; font-size: 0.6rem; font-weight: 600; color: #64748b; margin-bottom: 1px; text-transform: uppercase; }
-        input, select { width: 100%; height: 28px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; background: #f8fafc; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 4px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 4px; }
+        .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; }
+        h2 { font-size: 0.8rem; font-weight: 700; margin: 0 0 2px 0; color: #1e293b; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 3px; }
+        label { display: block; font-size: 0.55rem; font-weight: 600; color: #64748b; margin-bottom: 1px; text-transform: uppercase; }
+        input, select { width: 100%; height: 26px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.7rem; background: #f8fafc; box-sizing: border-box; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
-        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 28px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.65rem; font-weight: 600; cursor: pointer; color: #64748b; }
+        .radio-lbl { display: flex; align-items: center; justify-content: center; height: 26px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; font-weight: 600; cursor: pointer; color: #64748b; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
         .radio-lbl.disabled { opacity: 0.3; background: #f1f5f9; pointer-events: none; }
-        button { width: 100%; height: 28px; border: none; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; margin-top: 2px; }
+        button { width: 100%; height: 26px; border: none; border-radius: 4px; font-size: 0.7rem; font-weight: 600; cursor: pointer; margin-top: 2px; }
         .btn-blue { background: #2563eb; color: #fff; }
         .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #059669; color: #fff; height: 24px; padding: 0 6px; font-size: 0.65rem; width: auto; margin-top: 3px; display: inline-block; }
-        .msg { padding: 4px; border-radius: 4px; margin-bottom: 4px; display: none; font-size: 0.7rem; }
-        .msg-ok { background: #dcfce7; color: #15803d; }
-        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 4px; overflow: hidden; }
-        .acc-btn { width: 100%; padding: 6px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.75rem; cursor: pointer; }
-        .acc-body { display: none; padding: 6px; border-top: 1px solid #cbd5e1; font-size: 0.7rem; }
+        .btn-green { background: #059669; color: #fff; height: 22px; padding: 0 6px; font-size: 0.6rem; width: auto; margin-top: 2px; display: inline-block; }
+        .acc { border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 3px; overflow: hidden; }
+        .acc-btn { width: 100%; padding: 4px 6px; background: #f8fafc; border: none; display: flex; justify-content: space-between; font-weight: 700; color: #2563eb; font-size: 0.7rem; cursor: pointer; }
+        .acc-body { display: none; padding: 4px; border-top: 1px solid #cbd5e1; font-size: 0.65rem; }
         .acc-body.show { display: block; }
-        .shift-blk { margin-top: 3px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
-        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.65rem; white-space: pre-wrap; margin-top: 2px; }
+        .shift-blk { margin-top: 2px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
+        .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; margin-top: 2px; }
+        .field-group { margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -37,32 +36,31 @@
 <div class="box">
     <div class="card">
         <h2>Meal Entry</h2>
-        <div id="s-msg" class="msg"></div>
         <form id="f-meal">
             <div class="row">
-                <div><label>EMPLOYEE ID</label><input type="text" id="e-id" required></div>
-                <div><label>DATE</label><input type="date" id="e-date" required></div>
+                <div><label>Employee ID</label><input type="text" id="e-id" required></div>
+                <div><label>Date</label><input type="date" id="e-date" required></div>
             </div>
-            <div><label>SHIFT</label>
+            <div class="field-group"><label>Shift</label>
                 <div class="grid-3" id="g-shift">
-                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>MORNING</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">AFTERNOON</label>
-                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">NIGHT</label>
+                    <label class="radio-lbl active"><input type="radio" name="shift" value="Morning" checked>Morning</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Afternoon">Afternoon</label>
+                    <label class="radio-lbl"><input type="radio" name="shift" value="Night">Night</label>
                 </div>
             </div>
-            <div><label>MEAL TYPE</label>
+            <div class="field-group"><label>Meal Type</label>
                 <div class="grid-3" id="g-meal">
-                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>BREAKFAST</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">LUNCH</label>
-                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">DINNER</label>
+                    <label class="radio-lbl active"><input type="radio" name="meal" value="Breakfast" checked>Breakfast</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Lunch">Lunch</label>
+                    <label class="radio-lbl"><input type="radio" name="meal" value="Dinner">Dinner</label>
                 </div>
             </div>
-            <div><label>MENU OPTION</label>
+            <div class="field-group"><label>Menu Option</label>
                 <div class="grid-4" id="g-menu">
-                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>REG</label>
-                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>FRIED</label>
-                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>POACHED</label>
-                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>MUTTON</label>
+                    <label class="radio-lbl active" id="lbl-reg"><input type="radio" name="menuOption" value="Regular" checked>Reg</label>
+                    <label class="radio-lbl disabled" id="lbl-fried"><input type="radio" name="menuOption" value="Fried Egg" disabled>Fried</label>
+                    <label class="radio-lbl disabled" id="lbl-poached"><input type="radio" name="menuOption" value="Poached Egg" disabled>Poached</label>
+                    <label class="radio-lbl disabled" id="lbl-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
             <button type="submit" class="btn-blue">Save Entry</button>
@@ -71,27 +69,29 @@
 
     <div class="card">
         <h2>Summary Output</h2>
-        <div style="max-width:120px; margin-bottom:4px;"><label>SELECT DATE</label><input type="date" id="s-date"></div>
+        <div style="max-width:110px; margin-bottom:3px;"><label>Select Date</label><input type="date" id="s-date"></div>
         <div id="summary-box"></div>
     </div>
 
     <div class="card">
-        <h2>Delete Specific Record</h2>
-        <div id="d-msg" class="msg"></div>
+        <h2>Delete Record</h2>
         <form id="f-del">
-            <div style="display:grid; grid-template-columns: 70px 1fr 1fr; gap:4px; align-items:end;">
-                <div><label>EMPLOYEE ID</label><input type="text" id="d-id" required></div>
-                <div><label>DATE</label><input type="date" id="d-date" required></div>
-                <div><label>MEAL TYPE</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
+            <div style="display:grid; grid-template-columns: 60px 1fr 1fr; gap:3px; align-items:end;">
+                <div><label>ID</label><input type="text" id="d-id" required></div>
+                <div><label>Date</label><input type="date" id="d-date" required></div>
+                <div><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             </div>
-            <button type="submit" class="btn-red" style="margin-top:4px;">Delete Record</button>
+            <button type="submit" class="btn-red" style="margin-top:3px;">Delete</button>
         </form>
     </div>
 </div>
 
 <script>
     const today = new Date().toISOString().split('T')[0];
-    ['e-date', 's-date', 'd-date'].forEach(id => document.getElementById(id).value = today);
+    ['e-date', 's-date', 'd-date'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = today;
+    });
 
     function setupRadios(id) {
         const container = document.getElementById(id);
@@ -122,53 +122,62 @@
     });
 
     async function loadSummary(openMeal = 'Breakfast') {
-        const dateStr = document.getElementById('s-date').value;
+        const dateInput = document.getElementById('s-date');
+        const dateStr = dateInput ? dateInput.value : today;
         if (!dateStr) return;
-        const res = await fetch(`/api/summary?dateStr=${dateStr}`);
-        const data = await res.json();
-        const records = (data.records || []).sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
         
-        const box = document.getElementById('summary-box');
-        box.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(meal => {
-            const mRecs = records.filter(r => r.meal === meal);
-            const isOpen = meal === openMeal;
-            return `<div class="acc">
-                <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')"><span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span></button>
-                <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
-                    ${mRecs.length === 0 ? '<div>No entries found.</div>` : 
-                        ['Morning', 'Afternoon', 'Night'].map(shift => {
-                            const sRecs = mRecs.filter(r => r.shift === shift);
-                            if (!sRecs.length) return '';
-                            const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                            return `<div class="shift-blk"><div style="font-weight:700">${shift} shift</div><div>Meal ID: ${ids}</div></div>`;
-                        }).join('') +
-                        (() => {
-                            let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                            let waText = `${dateStr}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(',')}`;
-                            
-                            const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
-                            if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(',')})`;
-                            
-                            const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
-                            if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(',')})`;
-                            
-                            const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
-                            if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(',')})`;
+        try {
+            const res = await fetch(`/api/summary?dateStr=${dateStr}`);
+            const data = await res.json();
+            const records = (data.records || []).sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+            
+            const box = document.getElementById('summary-box');
+            if(!box) return;
 
-                            return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
-                            <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
-                        })()
-                    }
-                </div></div>`;
-        }).join('');
+            box.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(meal => {
+                const mRecs = records.filter(r => r.meal === meal);
+                const isOpen = meal === openMeal;
+                return `<div class="acc">
+                    <button type="button" class="acc-btn" onclick="toggleAcc('${meal}')"><span>${meal}</span><span>Total: ${mRecs.length} ${isOpen ? '▲' : '▼'}</span></button>
+                    <div class="acc-body ${isOpen ? 'show' : ''}" id="acc-${meal}">
+                        ${mRecs.length === 0 ? '<div>No entries found.</div>' : 
+                            ['Morning', 'Afternoon', 'Night'].map(shift => {
+                                const sRecs = mRecs.filter(r => r.shift === shift);
+                                if (!sRecs.length) return '';
+                                const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
+                                return `<div class="shift-blk"><div style="font-weight:700">${shift} shift</div><div>Meal ID: ${ids}</div></div>`;
+                            }).join('') +
+                            (() => {
+                                let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
+                                let waText = `${dateStr}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(',')}`;
+                                
+                                const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
+                                if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(',')})`;
+                                
+                                const poached = mRecs.filter(r => r.menuOption === 'Poached Egg');
+                                if (poached.length > 0) waText += `\nডিম পোচ: ${poached.length} টা (${poached.map(r => r.id).join(',')})`;
+                                
+                                const mutton = mRecs.filter(r => r.menuOption === 'Mutton');
+                                if (mutton.length > 0) waText += `\nখাসি (নন-মুসলিম): ${mutton.length} টা (${mutton.map(r => r.id).join(',')})`;
+
+                                return `<div class="txt-pre" id="wa-${meal}">${waText}</div>
+                                <button type="button" class="btn-green" onclick="navigator.clipboard.writeText(document.getElementById('wa-${meal}').innerText)">Copy WhatsApp Format</button>`;
+                            })()
+                        }
+                    </div></div>`;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    function toggleAcc(meal) {
+    window.toggleAcc = function(meal) {
         const el = document.getElementById(`acc-${meal}`);
+        if(!el) return;
         const wasOpen = el.classList.contains('show');
         document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('show'));
         if (!wasOpen) el.classList.add('show');
-    }
+    };
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
