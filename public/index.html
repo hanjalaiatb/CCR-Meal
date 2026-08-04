@@ -5,45 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCR Meal</title>
     <style>
-        body { font-family: sans-serif; background: #fff; color: #000; margin: 0; padding: 6px; font-size: 13px; }
-        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: #fff; border: 2px solid #000; border-radius: 4px; padding: 10px; }
-        h2 { font-size: 14px; margin: 0 0 8px 0; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; display: flex; justify-content: space-between; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { width: 100%; height: 36px; padding: 0 6px; border: 2px solid #000; border-radius: 3px; font-size: 13px; box-sizing: border-box; background: #fff; color: #000; font-weight: bold; outline: none; }
-        .field-group { margin-bottom: 8px; }
-        .row { display: flex; gap: 6px; margin-bottom: 8px; }
+        body { font-family: sans-serif; background: #fff; color: #000; margin: 0; padding: 4px; font-size: 13px; }
+        .box { max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
+        .card { border: 2px solid #000; border-radius: 4px; padding: 8px; background: #fff; }
+        h2 { font-size: 13px; margin: 0 0 6px 0; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 3px; display: flex; justify-content: space-between; }
+        label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { width: 100%; height: 32px; padding: 0 4px; border: 2px solid #000; border-radius: 3px; font-size: 13px; box-sizing: border-box; background: #fff; color: #000; font-weight: bold; outline: none; }
+        .field-group { margin-bottom: 6px; }
+        .row { display: flex; gap: 4px; margin-bottom: 6px; }
         .row > div { flex: 1; }
         
-        /* Extreme low-ram simple UI (no heavy shadows, gradients, or complex animations) */
+        /* Low-RAM optimized high-visibility segmented toggles */
         .segmented { display: flex; border: 2px solid #000; border-radius: 3px; overflow: hidden; }
-        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 32px; font-size: 11px; font-weight: bold; cursor: pointer; background: #fff; color: #000; border-right: 1px solid #000; text-align: center; }
+        .radio-lbl { flex: 1; display: flex; align-items: center; justify-content: center; height: 28px; font-size: 10px; font-weight: bold; cursor: pointer; background: #fff; color: #000; border-right: 1px solid #000; text-align: center; }
         .radio-lbl:last-child { border-right: none; }
         .radio-lbl input { display: none; }
         .radio-lbl.active { background: #000; color: #fff; }
-        .radio-lbl.disabled { opacity: 0.2; pointer-events: none; background: #eee; }
+        .radio-lbl.disabled { opacity: 0.15; pointer-events: none; background: #f0f0f0; }
 
-        .btn-main { width: 100%; height: 40px; border: 2px solid #000; border-radius: 3px; font-size: 13px; font-weight: bold; cursor: pointer; background: #000; color: #fff; text-transform: uppercase; margin-top: 2px; }
-        .btn-del { background: #fff; color: #000; }
-        .btn-green { background: #000; color: #fff; border: 2px solid #000; border-radius: 3px; height: 28px; padding: 0 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+        /* Distinct button looks for entry vs others */
+        .btn-entry { width: 100%; height: 38px; border: 2px solid #000; border-radius: 3px; font-size: 12px; font-weight: bold; cursor: pointer; background: #fff; color: #000; text-transform: uppercase; margin-top: 2px; box-shadow: 3px 3px 0px #000; }
+        .btn-entry:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
+
+        .btn-main { width: 100%; height: 34px; border: 2px solid #000; border-radius: 3px; font-size: 12px; font-weight: bold; cursor: pointer; background: #000; color: #fff; text-transform: uppercase; margin-top: 2px; }
+        .btn-del { background: #fff; color: #000; border: 2px solid #000; }
+        .btn-green { background: #000; color: #fff; border: 2px solid #000; border-radius: 3px; height: 26px; padding: 0 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; }
         
-        .tab-row { display: flex; gap: 2px; margin-top: 6px; }
-        .tab-btn { flex: 1; background: #fff; border: 2px solid #000; font-weight: bold; font-size: 11px; padding: 6px 2px; text-align: center; border-radius: 3px; cursor: pointer; color: #000; }
+        .tab-row { display: flex; gap: 2px; margin-top: 4px; }
+        .tab-btn { flex: 1; background: #fff; border: 2px solid #000; font-weight: bold; font-size: 10px; padding: 4px 2px; text-align: center; border-radius: 3px; cursor: pointer; color: #000; }
         .tab-btn.active { background: #000; color: #fff; }
         
-        .panel { border: 2px solid #000; border-top: none; border-radius: 0 0 3px 3px; padding: 8px; display: none; background: #fff; }
+        .panel { border: 2px solid #000; border-top: none; border-radius: 0 0 3px 3px; padding: 6px; display: none; background: #fff; }
         .panel.show { display: block; }
         
-        .shift-blk { margin-top: 6px; padding-top: 4px; border-top: 1px dotted #000; font-size: 12px; }
+        .shift-blk { margin-top: 4px; padding-top: 3px; border-top: 1px dotted #000; font-size: 11px; }
         .shift-blk:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-        .txt-pre { font-family: monospace; background: #f4f4f4; padding: 6px; border: 1px solid #000; border-radius: 3px; font-size: 11px; white-space: pre-wrap; margin-top: 4px; color: #000; line-height: 1.3; font-weight: bold; }
+        .txt-pre { font-family: monospace; background: #f8f8f8; padding: 4px; border: 1px solid #000; border-radius: 3px; font-size: 10px; white-space: pre-wrap; margin-top: 3px; color: #000; font-weight: bold; line-height: 1.2; }
         
-        .msg-box { padding: 6px; font-size: 11px; margin-bottom: 8px; border: 2px solid #000; display: none; font-weight: bold; }
+        .msg-box { padding: 4px; font-size: 10px; margin-bottom: 6px; border: 2px solid #000; display: none; font-weight: bold; }
         .err-msg { background: #000; color: #fff; }
         .suc-msg { background: #fff; color: #000; }
         
-        .chk-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .chk-row input { width: 14px; height: 14px; accent-color: #000; border: 2px solid #000; }
+        .chk-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .chk-row input { width: 13px; height: 13px; accent-color: #000; border: 2px solid #000; }
     </style>
 </head>
 <body>
@@ -95,13 +99,13 @@
                     <label class="radio-lbl disabled" id="l-mutton"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label>
                 </div>
             </div>
-            <button type="submit" class="btn-main">Save Entry</button>
+            <button type="submit" class="btn-entry">Save Entry</button>
         </form>
     </div>
 
     <!-- Summary Output Card -->
     <div class="card">
-        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:11px;"></span></h2>
+        <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:10px;"></span></h2>
         <div class="field-group">
             <label>Select Date</label>
             <input type="date" id="s-date" required>
@@ -159,7 +163,7 @@
     }
 
     function benNum(n) {
-        return String(n).replace(/[0-9]/g, w => ('০১২৩৪৫৬৭৮৯')[w] || w);
+        return String(n).replace(/[0-9]/g, w => ('০১২৩৪emplace৫৬৭৮৯')[w] || w);
     }
 
     const today = getToday();
@@ -268,7 +272,7 @@
 
                 const mRecs = recs.filter(r => r.meal === m);
                 if (!mRecs.length) {
-                    panel.innerHTML = `<div style="text-align:center; padding:8px; font-size:11px; font-weight:bold;">No entries found</div>`;
+                    panel.innerHTML = `<div style="text-align:center; padding:6px; font-size:10px; font-weight:bold;">No entries found</div>`;
                     return;
                 }
 
@@ -286,7 +290,7 @@
                     if (mu) cStr += `, M-${mu}`;
 
                     const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                    body += `<div class="shift-blk"><div style="font-weight:bold;">${sh} Shift (${cStr})</div><div style="margin-top:2px;">ID: ${ids}</div></div>`;
+                    body += `<div class="shift-blk"><div style="font-weight:bold;">${sh} Shift (${cStr})</div><div style="margin-top:1px;">ID: ${ids}</div></div>`;
                 });
 
                 let timeWord = m === 'Breakfast' ? 'সকালে' : (m === 'Lunch' ? 'দুপুরে' : 'রাতে');
@@ -394,13 +398,4 @@
         const isMulti = document.getElementById('d-multi').checked;
         const end = isMulti ? document.getElementById('d-end').value : start;
 
-        if (!start || !end) return showMsg('d-msg', 'Invalid dates', 'error');
-
-        const ids = document.getElementById('d-id').value.split(',').map(i => i.trim()).filter(Boolean);
-        const mealVal = document.getElementById('d-meal').value;
-
-        if (ids[0]) localStorage.setItem('ccr_id', ids[0]);
-
-        let curr = new Date(start), last = new Date(end);
-        while (curr <= last) {
-            const dtStr = curr.toISOString().split(
+        if (!start || !end) return showMsg(
