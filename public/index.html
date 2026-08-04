@@ -29,7 +29,9 @@
         .shift-blk { margin-top: 2px; padding-top: 2px; border-top: 1px dashed #cbd5e1; }
         .txt-pre { font-family: monospace; background: #f8fafc; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.6rem; white-space: pre-wrap; word-break: break-all; margin-top: 2px; }
         .field-group { margin-bottom: 3px; }
-        .err-msg { background: #fee2e2; color: #991b1b; padding: 4px; border-radius: 4px; font-size: 0.65rem; margin-bottom: 3px; display: none; }
+        .msg-box { padding: 4px; border-radius: 4px; font-size: 0.65rem; margin-bottom: 3px; display: none; }
+        .err-msg { background: #fee2e2; color: #991b1b; }
+        .suc-msg { background: #d1fae5; color: #065f46; }
     </style>
 </head>
 <body>
@@ -37,11 +39,11 @@
 <div class="box">
     <div class="card">
         <h2>Meal Entry</h2>
-        <div id="e-err" class="err-msg"></div>
+        <div id="e-msg" class="msg-box"></div>
         <form id="f-meal">
             <div class="row">
                 <div><label>Employee ID(s) [e.g. 235,236]</label><input type="text" id="e-id" required></div>
-                <div><label>Start Date</label><input type="date" id="e-date" required></div>
+                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="e-date" placeholder="DD/MM/YYYY" required></div>
             </div>
             <div class="row">
                 <div><label>Number of Days</label><input type="number" id="e-days" value="1" min="1" max="30" required></div>
@@ -75,16 +77,20 @@
 
     <div class="card">
         <h2>Summary Output</h2>
-        <div style="max-width:110px; margin-bottom:3px;"><label>Select Date</label><input type="date" id="s-date"></div>
+        <div style="max-width:130px; margin-bottom:3px;"><label>Select Date (DD/MM/YYYY)</label><input type="text" id="s-date" placeholder="DD/MM/YYYY"></div>
         <div id="summary-box"></div>
     </div>
 
     <div class="card">
         <h2>Delete Record</h2>
+        <div id="d-msg" class="msg-box"></div>
         <form id="f-del">
-            <div style="display:grid; grid-template-columns: 60px 1fr 1fr; gap:3px; align-items:end;">
-                <div><label>ID</label><input type="text" id="d-id" required></div>
-                <div><label>Date</label><input type="date" id="d-date" required></div>
+            <div class="row">
+                <div><label>ID(s) [e.g. 235,236]</label><input type="text" id="d-id" required></div>
+                <div><label>Start Date (DD/MM/YYYY)</label><input type="text" id="d-date" placeholder="DD/MM/YYYY" required></div>
+            </div>
+            <div class="row">
+                <div><label>Number of Days</label><input type="number" id="d-days" value="1" min="1" max="30" required></div>
                 <div><label>Meal</label><select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select></div>
             </div>
             <button type="submit" class="btn-red" style="margin-top:3px;">Delete</button>
@@ -93,10 +99,30 @@
 </div>
 
 <script>
-    const today = new Date().toISOString().split('T')[0];
+    // Helper to format Date object to DD/MM/YYYY
+    function formatDateToDMY(dateObj) {
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const y = dateObj.getFullYear();
+        return `${d}/${m}/${y}`;
+    }
+
+    // Helper to parse DD/MM/YYYY to ISO format YYYY-MM-DD for backend
+    function parseDMYToISO(str) {
+        if (!str) return '';
+        const parts = str.trim().split('/');
+        if (parts.length !== 3) return '';
+        const [d, m, y] = parts;
+        if (d.length !== 2 || m.length !== 2 || y.length !== 4) return '';
+        return `${y}-${m}-${d}`;
+    }
+
+    const todayObj = new Date();
+    const todayDMY = formatDateToDMY(todayObj);
+
     ['e-date', 's-date', 'd-date'].forEach(id => {
         const el = document.getElementById(id);
-        if(el) el.value = today;
+        if(el) el.value = todayDMY;
     });
 
     function setupRadios(id) {
@@ -127,7 +153,7 @@
         });
     });
 
-    function checkDeadline(meal, targetDateStr) {
+    function checkDeadline(meal, targetISOStr) {
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
         const dhakaTime = new Date(utc + (3600000 * 6));
@@ -137,7 +163,7 @@
         const currentD = String(dhakaTime.getDate()).padStart(2, '0');
         const todayDhakaStr = `${currentY}-${currentM}-${currentD}`;
 
-        if (targetDateStr !== todayDhakaStr) return null;
+        if (targetISOStr !== todayDhakaStr) return null;
 
         const currentHours = dhakaTime.getHours();
         const currentMinutes = dhakaTime.getMinutes();
@@ -155,11 +181,9 @@
 
     async function loadSummary(openMeal = null) {
         const dateInput = document.getElementById('s-date');
-        const dateStr = dateInput ? dateInput.value : today;
+        const dateDMY = dateInput ? dateInput.value : todayDMY;
+        const dateStr = parseDMYToISO(dateDMY);
         if (!dateStr) return;
-        
-        const [pYear, pMonth, pDay] = dateStr.split('-');
-        const formattedWaDate = `${parseInt(pMonth)}/${parseInt(pDay)}/${pYear}`;
         
         try {
             const res = await fetch(`/api/summary?dateStr=${dateStr}`);
@@ -180,11 +204,11 @@
                                 const sRecs = mRecs.filter(r => r.shift === shift);
                                 if (!sRecs.length) return '';
                                 const ids = sRecs.map(r => r.id + (r.menuOption === 'Poached Egg' ? '(P)' : r.menuOption === 'Fried Egg' ? '(F)' : r.menuOption === 'Mutton' ? '(M)' : '')).join(', ');
-                                return `<div class="shift-blk"><div style="font-weight:700">${shift} shift</div><div>Meal ID: ${ids}</div></div>`;
+                                return `<div class="shift-blk"><div style="font-weight:700">${shift} shift (Total: ${sRecs.length})</div><div>Meal ID: ${ids}</div></div>`;
                             }).join('') +
                             (() => {
                                 let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                                let waText = `${formattedWaDate}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
+                                let waText = `${dateDMY}\n${timeWord} মোট ${mRecs.length} জনের খাবার CCR এ আসবে।\nID: ${mRecs.map(r => r.id).join(', ')}`;
                                 
                                 const fried = mRecs.filter(r => r.menuOption === 'Fried Egg');
                                 if (fried.length > 0) waText += `\nডিম ভাজি: ${fried.length} টা (${fried.map(r => r.id).join(', ')})`;
@@ -216,17 +240,27 @@
 
     document.getElementById('f-meal').addEventListener('submit', async e => {
         e.preventDefault();
-        const errDiv = document.getElementById('e-err');
-        errDiv.style.display = 'none';
+        const msgDiv = document.getElementById('e-msg');
+        msgDiv.style.display = 'none';
+        msgDiv.className = 'msg-box';
 
-        const startDateStr = document.getElementById('e-date').value;
+        const startDateDMY = document.getElementById('e-date').value;
+        const startDateStr = parseDMYToISO(startDateDMY);
+        if (!startDateStr) {
+            msgDiv.className = 'msg-box err-msg';
+            msgDiv.innerText = 'Invalid start date format. Use DD/MM/YYYY.';
+            msgDiv.style.display = 'block';
+            return;
+        }
+
         const mealType = document.querySelector('input[name="meal"]:checked').value;
         const daysCount = parseInt(document.getElementById('e-days').value) || 1;
 
         const deadlineError = checkDeadline(mealType, startDateStr);
         if (deadlineError) {
-            errDiv.innerText = deadlineError;
-            errDiv.style.display = 'block';
+            msgDiv.className = 'msg-box err-msg';
+            msgDiv.innerText = deadlineError;
+            msgDiv.style.display = 'block';
             return;
         }
 
@@ -260,21 +294,59 @@
         }
 
         document.getElementById('e-id').value = '';
-        document.getElementById('s-date').value = startDateStr;
+        document.getElementById('s-date').value = startDateDMY;
+        
+        msgDiv.className = 'msg-box suc-msg';
+        msgDiv.innerText = 'Entries successfully registered!';
+        msgDiv.style.display = 'block';
+
         loadSummary(mealType);
     });
 
     document.getElementById('f-del').addEventListener('submit', async e => {
         e.preventDefault();
-        const res = await fetch('/api/delete', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ id: document.getElementById('d-id').value.trim(), dateStr: document.getElementById('d-date').value, meal: document.getElementById('d-meal').value })
-        });
-        if ((await res.json()).success) {
-            document.getElementById('d-id').value = '';
-            document.getElementById('s-date').value = document.getElementById('d-date').value;
-            loadSummary(document.getElementById('d-meal').value);
+        const msgDiv = document.getElementById('d-msg');
+        msgDiv.style.display = 'none';
+        msgDiv.className = 'msg-box';
+
+        const startDateDMY = document.getElementById('d-date').value;
+        const startDateStr = parseDMYToISO(startDateDMY);
+        if (!startDateStr) {
+            msgDiv.className = 'msg-box err-msg';
+            msgDiv.innerText = 'Invalid date format. Use DD/MM/YYYY.';
+            msgDiv.style.display = 'block';
+            return;
         }
+
+        const rawIds = document.getElementById('d-id').value.split(',');
+        const ids = rawIds.map(i => i.trim()).filter(i => i.length > 0);
+        if (ids.length === 0) return;
+
+        const daysCount = parseInt(document.getElementById('d-days').value) || 1;
+        const mealVal = document.getElementById('d-meal').value;
+        const baseDate = new Date(startDateStr);
+
+        for (let d = 0; d < daysCount; d++) {
+            const currDate = new Date(baseDate);
+            currDate.setDate(baseDate.getDate() + d);
+            const dateStr = currDate.toISOString().split('T')[0];
+
+            for (let id of ids) {
+                await fetch('/api/delete', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id: id, dateStr: dateStr, meal: mealVal })
+                });
+            }
+        }
+
+        document.getElementById('d-id').value = '';
+        document.getElementById('s-date').value = startDateDMY;
+
+        msgDiv.className = 'msg-box suc-msg';
+        msgDiv.innerText = 'Records successfully deleted!';
+        msgDiv.style.display = 'block';
+
+        loadSummary(mealVal);
     });
 
     document.getElementById('e-date').addEventListener('input', e => {
