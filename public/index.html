@@ -33,7 +33,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .panel.show{display:block}
 .sblk{margin-top:6px;padding-top:6px;border-top:1px dashed #cbd5e1;font-size:15px}
 .sblk:first-child{margin-top:0;padding-top:0;border-top:none}
-.tpre{font-family:monospace;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;white-space:pre-wrap;margin-top:4px;line-height:1.4}
+.tpre{font-family:monospace;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px;font-weight:bold;white-space:pre-wrap;margin-top:4px;line-height:1.4}
 .msg{padding:6px;font-size:14px;margin-bottom:4px;font-weight:bold;display:none;border-radius:10px}
 .err{background:#ffe4e6;color:#9f1239;border:1px solid #fecdd3}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
@@ -110,7 +110,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 
 <script>
 const cache={},gB=()=>{const d=new Date(),b=new Date(d.getTime()+(d.getTimezoneOffset()*60000)+21600000);return`${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;},today=gB();
-const fmt=s=>s?s.split('-').reverse().join('/'):'',bn=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
+const fmt=s=>{if(!s)return'';const p=s.split('-');return `${p[2]} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(p[1],10)-1]} ${p[0]}`;},bn=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
 
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>document.getElementById(id).value=today);
 const sid=localStorage.getItem('ccr_id')||'';
@@ -211,14 +211,14 @@ async function loadSum(pref){
             });
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
-            let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
+            let wa=`*${fmt(dt)}*\n${tw} মোট *${bn(mRecs.length)}* জনের খাবার CCR এ আসবে।\n`;
             wa+=`ID: ${mRecs.map(r=>r.id).join(', ')}\n`;
             
             ['Fried Egg','Poached Egg','Mutton'].forEach(opt=>{
                 const sub=mRecs.filter(r=>r.menuOption===opt);
                 if(sub.length){
                     const lbl=opt==='Fried Egg'?'ডিম ভাজি':(opt==='Poached Egg'?'ডিম পোচ':'খাসি (নন-মুসলিম)');
-                    wa+=`${lbl}: ${bn(sub.length)} টা (${sub.map(r=>r.id).join(', ')})\n`;
+                    wa+=`${lbl}: *${bn(sub.length)}* টা (${sub.map(r=>r.id).join(', ')})\n`;
                 }
             });
 
