@@ -310,7 +310,6 @@
         if (!box) return;
         let html = '';
 
-        // Format date string from YYYY-MM-DD to D/M/YYYY
         const dateParts = dateStr.split('-');
         const formattedDate = dateParts.length === 3 ? Number(dateParts[2]) + '/' + Number(dateParts[1]) + '/' + dateParts[0] : dateStr;
 
@@ -356,13 +355,11 @@
                     }
                 });
 
-                // Custom WhatsApp Format block
                 let timeWord = (meal === 'Breakfast') ? 'সকালে' : (meal === 'Lunch' ? 'দুপুরে' : 'রাতে');
-                let waIds = mRecs.map(function(r) { return r.id; }).join(', ');
+                let waIds = mRecs.map(function(r) { return r.id; }).join(',');
                 
                 let wa = formattedDate + '\n' + timeWord + ' মোট ' + mRecs.length + ' জনের খাবার CCR এ আসবে।' + '\nID: ' + waIds;
                 
-                // Add specific options mapping
                 const friedRecs = mRecs.filter(function(r) { return r.menuOption === 'Fried Egg'; });
                 if (friedRecs.length > 0) {
                     wa += '\nডিম ভাজি: ' + friedRecs.length + ' টা (' + friedRecs.map(function(r) { return r.id; }).join(',') + ')';
@@ -393,6 +390,7 @@
         const el = document.getElementById('acc-' + meal);
         if (!el) return;
         const show = el.classList.contains('show');
+        
         document.querySelectorAll('.acc-body').forEach(function(b) { b.classList.remove('show'); });
         
         ['Breakfast', 'Lunch', 'Dinner'].forEach(function(m) {
@@ -405,4 +403,6 @@
 
         if (!show) {
             el.classList.add('show');
-            const activeSpan =
+            const activeSpan = document.querySelector('button[onclick="toggleAcc(\'' + meal + '\')"] span:last-child');
+            if (activeSpan) {
+                const tota
