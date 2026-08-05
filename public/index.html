@@ -6,12 +6,13 @@
 <style>
 *,*:before,*:after{box-sizing:border-box}
 body{font-family:sans-serif;margin:0;padding:4px;font-size:16px;background:#f8fafc;color:#0f172a}
-.card{border:1px solid #cbd5e1;border-radius:14px;padding:8px;margin-bottom:6px;background:#fff;overflow:hidden}
+.card{border:1px solid #cbd5e1;border-radius:14px;padding:8px;margin-bottom:6px;background:#fff;width:100%;overflow:hidden}
 h2{font-size:17px;margin:0 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;display:flex;justify-content:space-between;color:#1e293b}
 label{display:block;font-size:14px;font-weight:bold;margin:4px 0 2px;color:#334155}
-input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a;text-align:left}
+input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a}
+input[type="date"]{font-size:16px;padding:0 8px;text-align:left;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center}
 input:focus,select:focus{outline:none;border-color:#d97706}
-.row{display:flex;gap:4px}
+.row{display:flex;gap:4px;width:100%}
 .row>div{flex:1;min-width:0}
 .grid3,.grid4{display:flex;gap:4px}
 .grid4{gap:3px}
@@ -99,7 +100,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <label class="chk"><input type="checkbox" id="d-multi"> Multiple Days</label>
 <div class="row">
 <div><label id="d-ldt">Start Date</label><input type="date" id="d-start" required></div>
-<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="e-end"></div>
+<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="d-end"></div>
 </div>
 <label>Meal</label>
 <select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select>
@@ -142,14 +143,9 @@ function msg(id,txt,t){
     setTimeout(()=>el.style.display='none',4000);
 }
 
-document.addEventListener('change',e=>{
-    const g=e.target.closest('.grid3,.grid4');
-    if(g&&!e.target.disabled){
-        g.querySelectorAll('.rl').forEach(l=>l.classList.remove('active-shift','active-meal','active-menu'));
-        const cls=g.id==='g-shift'?'active-shift':(g.id==='g-meal'?'active-meal':'active-menu');
-        e.target.closest('.rl').classList.add(cls);
-    }
-});
+document.getElementById('g-shift').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-shift .rl').forEach(l=>l.classList.remove('active-shift'));e.target.closest('.rl').classList.add('active-shift');}});
+document.getElementById('g-meal').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-meal .rl').forEach(l=>l.classList.remove('active-meal'));e.target.closest('.rl').classList.add('active-meal');}});
+document.getElementById('g-menu').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-menu .rl').forEach(l=>l.classList.remove('active-menu'));e.target.closest('.rl').classList.add('active-menu');}});
 
 document.querySelectorAll('input[name="meal"]').forEach(inp=>{
     inp.addEventListener('change',e=>{
@@ -215,7 +211,7 @@ async function loadSum(pref){
             });
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
-            let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
+            let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবেমূলক.\n`;
             wa+=`ID: ${mRecs.map(r=>r.id).join(', ')}\n`;
             
             ['Fried Egg','Poached Egg','Mutton'].forEach(opt=>{
@@ -241,15 +237,16 @@ window.swT=function(m){
     document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('show',p.id==='p-'+m));
 };
 
-async function processForm(e, isDel){
+document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
-    const p=isDel?'d':'e';
-    const start=document.getElementById(p+'-start').value,end=document.getElementById(p+'-multi').checked?document.getElementById(p+'-end').value:start;
-    if(!start||!end)return msg(p+'-msg','Error: Invalid date range.','e');
+    const start=document.getElementById('e-start').value,end=document.getElementById('e-multi').checked?document.getElementById('e-end').value:start;
+    if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
-    const ids=document.getElementById(p+'-id').value.split(',').map(i=>i.trim()).filter(Boolean);
-    const mealVal=isDel?document.getElementById('d-meal').value:document.querySelector('input[name="meal"]:checked').value;
-    if(!ids.length)return msg(p+'-msg','Error: Enter at least one ID.','e');
+    const mealType=document.querySelector('input[name="meal"]:checked').value;
+    const shift=document.querySelector('input[name="shift"]:checked').value;
+    const menuOpt=document.querySelector('input[name="menuOption"]:checked').value;
+    const ids=document.getElementById('e-id').value.split(',').map(i=>i.trim()).filter(Boolean);
+    if(!ids.length)return msg('e-msg','Error: Enter at least one Employee ID.','e');
 
     const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
     const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
@@ -258,12 +255,12 @@ async function processForm(e, isDel){
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso)return msg(p+'-msg',`Rejected: Cannot ${isDel?'delete':'add'} records for past date ${dtStr}!`,'e');
-        if((bdtNow-new Date(dtStr))/3600000>48)return msg(p+'-msg',`Rejected: 48-hour limit exceeded for ${dtStr}!`,'e');
-        if(!isDel&&dtStr===todayIso){
-            if(mealVal==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast closed after 7:15 AM!','e');
-            if(mealVal==='Lunch'&&timeMin>660)return msg('e-msg','Cutoff: Lunch closed after 11:00 AM!','e');
-            if(mealVal==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner closed after 7:00 PM!','e');
+        if(dtStr<todayIso)return msg('e-msg',`Rejected: Cannot add records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('e-msg',`Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`,'e');
+        if(dtStr===todayIso){
+            if(mealType==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast entry closed after 7:15 AM today!','e');
+            if(mealType==='Lunch'&&timeMin>660)return msg('e-msg','Cutoff: Lunch entry closed after 11:00 AM today!','e');
+            if(mealType==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner entry closed after 7:00 PM today!','e');
         }
         curr.setDate(curr.getDate()+1);
     }
@@ -274,42 +271,71 @@ async function processForm(e, isDel){
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
         delete cache[dtStr];
-        if(!isDel){
-            const res=await fetch('/api/summary?dateStr='+dtStr);
-            const data=await res.json();
-            const dayRecs=data.records||[];
-            const shift=document.querySelector('input[name="shift"]:checked').value;
-            const menuOpt=document.querySelector('input[name="menuOption"]:checked').value;
+        const res=await fetch('/api/summary?dateStr='+dtStr);
+        const data=await res.json();
+        const dayRecs=data.records||[];
 
-            for(let id of ids){
-                const ex=dayRecs.find(r=>r.id===id&&r.meal===mealVal);
-                if(ex){if(ex.shift===shift&&ex.menuOption===menuOpt)exist++;else mod++;}else added++;
-                await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dateStr:dtStr,id,shift,meal:mealVal,menuOption:menuOpt})});
-            }
-        }else{
-            for(let id of ids){
-                await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,dateStr:dtStr,meal:mealVal})});
-            }
+        for(let i=0;i<ids.length;i++){
+            const id=ids[i],ex=dayRecs.find(r=>r.id===id&&r.meal===mealType);
+            if(ex){if(ex.shift===shift&&ex.menuOption===menuOpt)exist++;else mod++;}else added++;
+
+            await fetch('/api/submit',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({dateStr:dtStr,id,shift,meal:mealType,menuOption:menuOpt})
+            });
         }
         curr.setDate(curr.getDate()+1);
     }
 
     document.getElementById('s-date').value=start;
-    if(!isDel){
-        let parts=[];
-        if(added)parts.push(added+' added');
-        if(mod)parts.push(mod+' modified');
-        if(exist)parts.push(exist+' already existed');
-        msg('e-msg','Success: '+parts.join(' | ')+'.',(mod||added)?'s':'e');
-        loadSum(mealVal);
-    }else{
-        msg('d-msg','Success: Record(s) deleted successfully!','s');
-        loadSum(mealVal);
-    }
-}
+    let parts=[];
+    if(added)parts.push(added+' added');
+    if(mod)parts.push(mod+' modified');
+    if(exist)parts.push(exist+' already existed');
+    msg('e-msg','Success: '+parts.join(' | ')+'.',(mod||added)?'s':'e');
+    loadSum(mealType);
+});
 
-document.getElementById('f-meal').addEventListener('submit',e=>processForm(e,false));
-document.getElementById('f-del').addEventListener('submit',e=>processForm(e,true));
+document.getElementById('f-del').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const start=document.getElementById('d-start').value,end=document.getElementById('d-multi').checked?document.getElementById('d-end').value:start;
+    if(!start||!end)return msg('d-msg','Error: Invalid date range.','e');
+
+    const ids=document.getElementById('d-id').value.split(',').map(i=>i.trim()).filter(Boolean);
+    const mealVal=document.getElementById('d-meal').value;
+    if(!ids.length)return msg('d-msg','Error: Enter at least one ID.','e');
+
+    const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
+    const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
+
+    let curr=new Date(start),last=new Date(end);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
+        if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('d-msg',`Rejected: Cannot delete records for ${dtStr} past 48 hours!`,'e');
+        curr.setDate(curr.getDate()+1);
+    }
+
+    if(ids[0])localStorage.setItem('ccr_id',ids[0]);
+    curr=new Date(start);
+    while(curr<=last){
+        const dtStr=curr.toISOString().split('T')[0];
+        delete cache[dtStr];
+        for(let i=0;i<ids.length;i++){
+            await fetch('/api/delete',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
+            });
+        }
+        curr.setDate(curr.getDate()+1);
+    }
+    document.getElementById('s-date').value=start;
+    msg('d-msg','Success: Record(s) deleted successfully!','s');
+    loadSum(mealVal);
+});
+
 document.getElementById('s-date').addEventListener('change',()=>loadSum());
 loadSum();
 </script>
