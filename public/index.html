@@ -27,7 +27,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .rl.active-meal{background:#0284c7;color:#fff}
 .rl.active-menu{background:#38bdf8;color:#0f172a}
 .rl.dis{opacity:0.3;pointer-events:none;background:#e2e8f0}
-.btn{width:100%;height:42px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;background:#ED9121;color:#fff;margin-top:8px}
+.btn{width:100%;height:42px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;background:#d97706;color:#fff;margin-top:8px}
 .btn-del{background:#e11d48}
 .btn-g{background:#059669;color:#fff;border:none;border-radius:8px;height:36px;padding:0 8px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:4px}
 .tabs{display:flex;gap:3px;margin-top:6px}
@@ -154,7 +154,6 @@ function updateDisp(id){
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
     document.getElementById(id).value=today;
     updateDisp(id);
-    document.getElementById(id).addEventListener('input',()=>updateDisp(id));
 });
 
 const sid=localStorage.getItem('ccr_id')||'';
@@ -383,7 +382,10 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
 });
 
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
-    document.getElementById(id).addEventListener('change',()=>updateDisp(id));
+    document.getElementById(id).addEventListener('change',()=>{
+        updateDisp(id);
+        if(id==='s-date') loadSum();
+    });
 });
 loadSum();
 </script>
