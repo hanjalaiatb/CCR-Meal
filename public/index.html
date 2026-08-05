@@ -163,7 +163,6 @@ function updateDisp(inpId){
 
 const sid=localStorage.getItem('ccr_id')||'';
 ['e-id','d-id'].forEach(id=>document.getElementById(id).value=sid);
-
 ['e-id','d-id'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const f=e.target.value.split(',')[0].trim();if(f)localStorage.setItem('ccr_id',f);}));
 
 [['e-multiple','e-ew','e-ldt','e-start','e-end'],['d-multiple','e-ew2','d-ldt','d-start','d-end']].forEach(x=>{
@@ -259,6 +258,9 @@ async function loadSum(pref){
             ['Morning','Afternoon','Night'].forEach(sh=>{
                 const sRecs=mRecs.filter(r=>r.shift===sh);
                 if(!sRecs.length)return;
+                
+                sRecs.sort((a, b) => Number(a.id) - Number(b.id));
+
                 const f=sRecs.filter(r=>r.menuOption==='Fried Egg').length;
                 const p=sRecs.filter(r=>r.menuOption==='Poached Egg').length;
                 const mu=sRecs.filter(r=>r.menuOption==='Mutton').length;
@@ -269,6 +271,8 @@ async function loadSum(pref){
                 const ids=sRecs.map(r=>r.id+(r.menuOption==='Poached Egg'?'(P)':r.menuOption==='Fried Egg'?'(F)':r.menuOption==='Mutton'?'(M)':'')).join(', ');
                 body+=`<div class="sblk"><div style="font-weight:bold;font-size:15px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:15px;color:#475569">ID: ${ids}</div></div>`;
             });
+
+            mRecs.sort((a, b) => Number(a.id) - Number(b.id));
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
             let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
@@ -370,7 +374,7 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
     const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
 
-    let curr=new Date(start),last=new Date(end);
+    let curr=new Date(start),last=end?new Date(end):new Date(start);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
         if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
@@ -398,9 +402,4 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     loadSum(mealVal);
 });
 
-['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
-    document.getElementById(id).addEventListener('change',()=>updateDisp(id));
-});
-loadSum();
-</script>
-</bod
+['
