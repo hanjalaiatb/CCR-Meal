@@ -304,7 +304,7 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
         if((bdtNow-new Date(dtStr))/3600000>48)return msg('e-msg',`Rejected: Past 48 hours for ${dtStr}!`,'e');
         if(dtStr===todayIso){
             if(mealType==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast closed at 7:15 AM!','e');
-            if(mealType==='Lunch'&&timeMin>690)return msg('e-msg','Cutoff: Lunch closed at 11:00 AM!','e');
+            if(mealType==='Lunch'&&timeMin>720)return msg('e-msg','Cutoff: Lunch closed at 11:00 AM!','e');
             if(mealType==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner closed at 7:00 PM!','e');
         }
         curr.setDate(curr.getDate()+1);
