@@ -10,7 +10,7 @@ body{font-family:sans-serif;margin:0;padding:4px;font-size:16px;background:#f8fa
 h2{font-size:17px;margin:0 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;display:flex;justify-content:space-between;color:#1e293b}
 label{display:block;font-size:14px;font-weight:bold;margin:4px 0 2px;color:#334155}
 input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a}
-input[type="date"]{font-size:16px;padding:0 8px;appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center}
+input[type="date"]{font-size:16px;padding:0 8px;text-align:left;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center}
 input:focus,select:focus{outline:none;border-color:#d97706}
 .row{display:flex;gap:4px;width:100%}
 .row>div{flex:1;min-width:0}
@@ -100,7 +100,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <label class="chk"><input type="checkbox" id="d-multi"> Multiple Days</label>
 <div class="row">
 <div><label id="d-ldt">Start Date</label><input type="date" id="d-start" required></div>
-<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="e-end"></div>
+<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="d-end"></div>
 </div>
 <label>Meal</label>
 <select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select>
@@ -110,33 +110,11 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 
 <script>
 const cache={},gB=()=>{const d=new Date(),b=new Date(d.getTime()+(d.getTimezoneOffset()*60000)+21600000);return`${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;},today=gB();
-const fmt=s=>s?s.split('-').reverse().join('/ 다르다 /'.replace(/.*/,'')):'',bn=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
-const fmtInputDate = s => s; // Keep standard ISO for HTML date value
+const fmt=s=>s?s.split('-').reverse().join('/'):'',bn=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][d]);
 
-// Use text inputs styled as date pickers or localized display handling if browser forces locale format, 
-// but since standard HTML date inputs rely on device/browser locale settings for layout, 
-// let's wrap them or use text replacement if needed, or fix the CSS layout back to left alignment.
-
-const fmtDateStr = s => s ? s.split('-').reverse().join('/') : '';
-
-// Let's implement a clean text-based overlay or ensure standard left alignment since mobile browsers 
-// strictly enforce locale-based date formats for native date inputs. 
-// Wait, to force DD/MM/YYYY visually in mobile Chrome while keeping native picker capability, 
-// standard inputs always respect system language. But we can ensure it's left-aligned properly.
-</script>
-<script>
-// Reverting any RTL/right-side tricks and keeping it cleanly on the left as requested:
-document.querySelectorAll('input[type="date"]').forEach(el => {
-    el.style.textAlign = 'left';
-});
-</script>
-<script>
-const cache2={},gB2=()=>{const d=new Date(),b=new Date(d.getTime()+(d.getTimezoneOffset()*60000)+21600000);return`${b.getFullYear()}-${String(b.getMonth()+1).padStart(2,'0')}-${String(b.getDate()).padStart(2,'0')}`;},today2=gB2();
-const fmt2=s=>s?s.split('-').reverse().join('/'):'',bn2=n=>String(n).replace(/\d/g,d=>['০','১','২','৩','৪','৫','⑥','৭','৮','৯'][d]);
-
-['s-date','e-start','e-end','d-start','d-end'].forEach(id=>document.getElementById(id).value=today2);
-const sid2=localStorage.getItem('ccr_id')||'';
-['e-id','d-id'].forEach(id=>document.getElementById(id).value=sid2);
+['s-date','e-start','e-end','d-start','d-end'].forEach(id=>document.getElementById(id).value=today);
+const sid=localStorage.getItem('ccr_id')||'';
+['e-id','d-id'].forEach(id=>document.getElementById(id).value=sid);
 
 ['e-id','d-id'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const f=e.target.value.split(',')[0].trim();if(f)localStorage.setItem('ccr_id',f);}));
 
@@ -152,12 +130,12 @@ const sid2=localStorage.getItem('ccr_id')||'';
 document.getElementById('e-start').addEventListener('change',e=>{
     if(!document.getElementById('e-multi').checked)document.getElementById('e-end').value=e.target.value;
     document.getElementById('s-date').value=e.target.value;
-    loadSum2();
+    loadSum();
 });
 document.getElementById('d-start').addEventListener('change',e=>{if(!document.getElementById('d-multi').checked)document.getElementById('d-end').value=e.target.value;});
 
-let actM2='Breakfast';
-function msg2(id,txt,t){
+let actM='Breakfast';
+function msg(id,txt,t){
     const el=document.getElementById(id);
     el.className='msg '+(t==='s'?'suc':'err');
     el.innerText=txt;
@@ -184,32 +162,32 @@ document.querySelectorAll('input[name="meal"]').forEach(inp=>{
     });
 });
 
-async function loadSum2(pref){
-    if(pref)actM2=pref;
+async function loadSum(pref){
+    if(pref)actM=pref;
     const dt=document.getElementById('s-date').value;
     if(!dt)return;
-    document.getElementById('s-lbl').innerText=(dt===today2)?'(Today)':"";
+    document.getElementById('s-lbl').innerText=(dt===today)?'(Today)':"";
 
     try{
-        let recs=cache2[dt];
+        let recs=cache[dt];
         if(!recs){
             const res=await fetch('/api/summary?dateStr='+dt);
             const data=await res.json();
             recs=data.records||[];
-            cache2[dt]=recs;
+            cache[dt]=recs;
         }
 
         const meals=['Breakfast','Lunch','Dinner'];
         let tHtml='';
         meals.forEach(m=>{
             const cnt=recs.filter(r=>r.meal===m).length;
-            tHtml+=`<button type="button" class="tbtn ${m===actM2?'active':''}" onclick="swT2('${m}')">${m} (${cnt})</button>`;
+            tHtml+=`<button type="button" class="tbtn ${m===actM?'active':''}" onclick="swT('${m}')">${m} (${cnt})</button>`;
         });
         document.getElementById('tab-row').innerHTML=tHtml;
 
         meals.forEach(m=>{
             const panel=document.getElementById('p-'+m);
-            panel.classList.toggle('show',m===actM2);
+            panel.classList.toggle('show',m===actM);
             const mRecs=recs.filter(r=>r.meal===m);
 
             if(!mRecs.length){
@@ -233,14 +211,14 @@ async function loadSum2(pref){
             });
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
-            let wa=`${fmt2(dt)}\n${tw} মোট ${bn2(mRecs.length)} জনের খাবার CCR এ আসবে।\n`;
+            let wa=`${fmt(dt)}\n${tw} মোট ${bn(mRecs.length)} জনের খাবার CCR এ আসবেমূলক.\n`;
             wa+=`ID: ${mRecs.map(r=>r.id).join(', ')}\n`;
             
             ['Fried Egg','Poached Egg','Mutton'].forEach(opt=>{
                 const sub=mRecs.filter(r=>r.menuOption===opt);
                 if(sub.length){
                     const lbl=opt==='Fried Egg'?'ডিম ভাজি':(opt==='Poached Egg'?'ডিম পোচ':'খাসি (নন-মুসলিম)');
-                    wa+=`${lbl}: ${bn2(sub.length)} টা (${sub.map(r=>r.id).join(', ')})\n`;
+                    wa+=`${lbl}: ${bn(sub.length)} টা (${sub.map(r=>r.id).join(', ')})\n`;
                 }
             });
 
@@ -253,8 +231,8 @@ async function loadSum2(pref){
     }catch(e){console.error(e);}
 }
 
-window.swT2=function(m){
-    actM2=m;
+window.swT=function(m){
+    actM=m;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active',b.textContent.startsWith(m)));
     document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('show',p.id==='p-'+m));
 };
@@ -262,13 +240,13 @@ window.swT2=function(m){
 document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
     const start=document.getElementById('e-start').value,end=document.getElementById('e-multi').checked?document.getElementById('e-end').value:start;
-    if(!start||!end)return msg2('e-msg','Error: Invalid date range.','e');
+    if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
     const mealType=document.querySelector('input[name="meal"]:checked').value;
     const shift=document.querySelector('input[name="shift"]:checked').value;
     const menuOpt=document.querySelector('input[name="menuOption"]:checked').value;
     const ids=document.getElementById('e-id').value.split(',').map(i=>i.trim()).filter(Boolean);
-    if(!ids.length)return msg2('e-msg','Error: Enter at least one Employee ID.','e');
+    if(!ids.length)return msg('e-msg','Error: Enter at least one Employee ID.','e');
 
     const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
     const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
@@ -277,12 +255,12 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso)return msg2('e-msg',`Rejected: Cannot add records for past date ${dtStr}!`,'e');
-        if((bdtNow-new Date(dtStr))/3600000>48)return msg2('e-msg',`Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`,'e');
+        if(dtStr<todayIso)return msg('e-msg',`Rejected: Cannot add records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('e-msg',`Rejected: Cannot modify/enter records for ${dtStr} as 48 hours have passed!`,'e');
         if(dtStr===todayIso){
-            if(mealType==='Breakfast'&&timeMin>435)return msg2('e-msg','Cutoff: Breakfast entry closed after 7:15 AM today!','e');
-            if(mealType==='Lunch'&&timeMin>660)return msg2('e-msg','Cutoff: Lunch entry closed after 11:00 AM today!','e');
-            if(mealType==='Dinner'&&timeMin>1140)return msg2('e-msg','Cutoff: Dinner entry closed after 7:00 PM today!','e');
+            if(mealType==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast entry closed after 7:15 AM today!','e');
+            if(mealType==='Lunch'&&timeMin>660)return msg('e-msg','Cutoff: Lunch entry closed after 11:00 AM today!','e');
+            if(mealType==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner entry closed after 7:00 PM today!','e');
         }
         curr.setDate(curr.getDate()+1);
     }
@@ -292,7 +270,7 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
     curr=new Date(start);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        delete cache2[dtStr];
+        delete cache[dtStr];
         const res=await fetch('/api/summary?dateStr='+dtStr);
         const data=await res.json();
         const dayRecs=data.records||[];
@@ -315,18 +293,18 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
     if(added)parts.push(added+' added');
     if(mod)parts.push(mod+' modified');
     if(exist)parts.push(exist+' already existed');
-    msg2('e-msg','Success: '+parts.join(' | ')+'.',(mod||added)?'s':'e');
-    loadSum2(mealType);
+    msg('e-msg','Success: '+parts.join(' | ')+'.',(mod||added)?'s':'e');
+    loadSum(mealType);
 });
 
 document.getElementById('f-del').addEventListener('submit',async e=>{
     e.preventDefault();
     const start=document.getElementById('d-start').value,end=document.getElementById('d-multi').checked?document.getElementById('d-end').value:start;
-    if(!start||!end)return msg2('d-msg','Error: Invalid date range.','e');
+    if(!start||!end)return msg('d-msg','Error: Invalid date range.','e');
 
     const ids=document.getElementById('d-id').value.split(',').map(i=>i.trim()).filter(Boolean);
     const mealVal=document.getElementById('d-meal').value;
-    if(!ids.length)return msg2('d-msg','Error: Enter at least one ID.','e');
+    if(!ids.length)return msg('d-msg','Error: Enter at least one ID.','e');
 
     const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
     const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
@@ -334,8 +312,8 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso)return msg2('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
-        if((bdtNow-new Date(dtStr))/3600000>48)return msg2('d-msg',`Rejected: Cannot delete records for ${dtStr} past 48 hours!`,'e');
+        if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
+        if((bdtNow-new Date(dtStr))/3600000>48)return msg('d-msg',`Rejected: Cannot delete records for ${dtStr} past 48 hours!`,'e');
         curr.setDate(curr.getDate()+1);
     }
 
@@ -343,7 +321,7 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     curr=new Date(start);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        delete cache2[dtStr];
+        delete cache[dtStr];
         for(let i=0;i<ids.length;i++){
             await fetch('/api/delete',{
                 method:'POST',
@@ -354,12 +332,12 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
         curr.setDate(curr.getDate()+1);
     }
     document.getElementById('s-date').value=start;
-    msg2('d-msg','Success: Record(s) deleted successfully!','s');
-    loadSum2(mealVal);
+    msg('d-msg','Success: Record(s) deleted successfully!','s');
+    loadSum(mealVal);
 });
 
-document.getElementById('s-date').addEventListener('change',()=>loadSum2());
-loadSum2();
+document.getElementById('s-date').addEventListener('change',()=>loadSum());
+loadSum();
 </script>
 </body>
 </html>
