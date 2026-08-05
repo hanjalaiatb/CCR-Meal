@@ -9,8 +9,10 @@ body{font-family:sans-serif;margin:0;padding:4px;font-size:16px;background:#f8fa
 .card{border:1px solid #cbd5e1;border-radius:14px;padding:8px;margin-bottom:6px;background:#fff;width:100%;overflow:hidden}
 h2{font-size:17px;margin:0 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px;display:flex;justify-content:space-between;color:#1e293b}
 label{display:block;font-size:14px;font-weight:bold;margin:4px 0 2px;color:#334155}
-input,select{width:100%;height:38px;padding:0 8px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a}
-input[type="date"]{font-size:13px;padding:0 2px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 8px center}
+input,select{width:100%;height:38px;padding:0 10px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a}
+.date-wrap{position:relative;width:100%}
+.date-wrap input[type="date"]{width:100%;height:38px;padding:0 36px 0 10px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff;color:#0f172a;-webkit-appearance:none;appearance:none}
+.date-wrap::after{content:"";position:absolute;right:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat center;pointer-events:none}
 input:focus,select:focus{outline:none;border-color:#d97706}
 .row{display:flex;gap:4px;width:100%}
 .row>div{flex:1;min-width:0}
@@ -49,10 +51,10 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <form id="f-meal">
 <label>Employee ID(s)</label>
 <input type="text" id="e-id" required>
-<label class="chk"><input type="checkbox" id="e-multi"> Multiple Days</label>
+<label class="chk"><input type="checkbox" id="e-multiple"> Multiple Days</label>
 <div class="row">
-<div><label id="e-ldt">Start Date</label><input type="date" id="e-start" required></div>
-<div id="e-ew" style="display:none"><label>End Date</label><input type="date" id="e-end"></div>
+<div><label id="e-ldt">Start Date</label><div class="date-wrap"><input type="date" id="e-start" required></div></div>
+<div id="e-ew" style="display:none"><label>End Date</label><div class="date-wrap"><input type="date" id="e-end"></div></div>
 </div>
 
 <label>Shift</label>
@@ -84,7 +86,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <div class="card">
 <h2><span>Summary Output</span> <span id="s-lbl" style="font-size:14px;color:#0284c7"></span></h2>
 <label>Select Date</label>
-<input type="date" id="s-date" required>
+<div class="date-wrap"><input type="date" id="s-date" required></div>
 <div class="tabs" id="tab-row"></div>
 <div class="panel show" id="p-Breakfast"></div>
 <div class="panel" id="p-Lunch"></div>
@@ -97,10 +99,10 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <form id="f-del">
 <label>ID(s)</label>
 <input type="text" id="d-id" required>
-<label class="chk"><input type="checkbox" id="d-multi"> Multiple Days</label>
+<label class="chk"><input type="checkbox" id="d-multiple"> Multiple Days</label>
 <div class="row">
-<div><label id="d-ldt">Start Date</label><input type="date" id="d-start" required></div>
-<div id="e-ew2" style="display:none"><label>End Date</label><input type="date" id="d-end"></div>
+<div><label id="d-ldt">Start Date</label><div class="date-wrap"><input type="date" id="d-start" required></div></div>
+<div id="e-ew2" style="display:none"><label>End Date</label><div class="date-wrap"><input type="date" id="d-end"></div></div>
 </div>
 <label>Meal</label>
 <select id="d-meal"><option value="Breakfast">Breakfast</option><option value="Lunch">Lunch</option><option value="Dinner">Dinner</option></select>
@@ -118,7 +120,7 @@ const sid=localStorage.getItem('ccr_id')||'';
 
 ['e-id','d-id'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const f=e.target.value.split(',')[0].trim();if(f)localStorage.setItem('ccr_id',f);}));
 
-[['e-multi','e-ew','e-ldt','e-start','e-end'],['d-multi','e-ew2','d-ldt','d-start','d-end']].forEach(x=>{
+[['e-multiple','e-ew','e-ldt','e-start','e-end'],['d-multiple','e-ew2','d-ldt','d-start','d-end']].forEach(x=>{
     document.getElementById(x[0]).addEventListener('change',e=>{
         const m=e.target.checked;
         document.getElementById(x[1]).style.display=m?'block':'none';
@@ -128,11 +130,11 @@ const sid=localStorage.getItem('ccr_id')||'';
 });
 
 document.getElementById('e-start').addEventListener('change',e=>{
-    if(!document.getElementById('e-multi').checked)document.getElementById('e-end').value=e.target.value;
+    if(!document.getElementById('e-multiple').checked)document.getElementById('e-end').value=e.target.value;
     document.getElementById('s-date').value=e.target.value;
     loadSum();
 });
-document.getElementById('d-start').addEventListener('change',e=>{if(!document.getElementById('d-multi').checked)document.getElementById('d-end').value=e.target.value;});
+document.getElementById('d-start').addEventListener('change',e=>{if(!document.getElementById('d-multiple').checked)document.getElementById('d-end').value=e.target.value;});
 
 let actM='Breakfast';
 function msg(id,txt,t){
@@ -239,7 +241,7 @@ window.swT=function(m){
 
 document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
-    const start=document.getElementById('e-start').value,end=document.getElementById('e-multi').checked?document.getElementById('e-end').value:start;
+    const start=document.getElementById('e-start').value,end=document.getElementById('e-multiple').checked?document.getElementById('e-end').value:start;
     if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
     const mealType=document.querySelector('input[name="meal"]:checked').value;
@@ -299,7 +301,7 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
 
 document.getElementById('f-del').addEventListener('submit',async e=>{
     e.preventDefault();
-    const start=document.getElementById('d-start').value,end=document.getElementById('d-multi').checked?document.getElementById('d-end').value:start;
+    const start=document.getElementById('d-start').value,end=document.getElementById('d-multiple').checked?document.getElementById('d-end').value:start;
     if(!start||!end)return msg('d-msg','Error: Invalid date range.','e');
 
     const ids=document.getElementById('d-id').value.split(',').map(i=>i.trim()).filter(Boolean);
@@ -312,7 +314,7 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`,'e');
+        if(dtStr<todayIso)return msg('d-msg',`Rejected: Cannot delete records for past date ${dtStr}!`, 'e');
         if((bdtNow-new Date(dtStr))/3600000>48)return msg('d-msg',`Rejected: Cannot delete records for ${dtStr} past 48 hours!`,'e');
         curr.setDate(curr.getDate()+1);
     }
