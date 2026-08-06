@@ -36,10 +36,10 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .tabs{display:flex;gap:3px;margin-top:6px}
 .tbtn{flex:1;background:#f1f5f9;border:1px solid #cbd5e1;font-weight:bold;font-size:16px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;color:#475569}
 .tbtn.active{background:#0284c7;color:#fff;border-color:#0284c7}
-.panel{border:1px solid #cbd5e1;border-top:none;border-radius:0 0 10px 10px;padding:8px;display:none;background:#fff}
+.panel{border:1px solid #cbd5e1;border-top:none;border-radius:0 0 10px 10px;padding:12px 8px 8px 8px;display:none;background:#fff}
 .panel.show{display:block}
-.sblk{margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1;font-size:18px}
-.sblk:first-child{margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1}
+.sblk{margin-top:10px;padding-top:10px;border-top:1px dashed #cbd5e1;font-size:18px}
+.sblk:first-child{margin-top:0;padding-top:0;border-top:none}
 .tpre{font-family:monospace;background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:8px;font-size:18px;white-space:pre-wrap;margin-top:4px;line-height:1.4}
 .msg{padding:6px;font-size:16px;margin-bottom:4px;font-weight:bold;display:none;border-radius:10px}
 .err{background:#ffe4e6;color:#9f1239;border:1px solid #fecdd3}
@@ -258,7 +258,7 @@ async function loadSum(pref){
                 if(p)cStr+=', P-'+p;
                 if(mu)cStr+=', M-'+mu;
                 const ids=sRecs.map(r=>r.id+(r.menuOption==='Poached Egg'?'(P)':r.menuOption==='Fried Egg'?'(F)':r.menuOption==='Mutton'?'(M)':'')).join(', ');
-                body+=`<div class="sblk"><div style="font-weight:bold;font-size:18px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:18px;color:#475569">ID: ${ids}</div></div>`;
+                body+=`<div class="sblk"><div style="font-weight:bold;font-size:18px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:18px;color:#475569;margin-top:4px">ID: ${ids}</div></div>`;
             });
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
