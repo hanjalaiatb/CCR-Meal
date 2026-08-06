@@ -255,7 +255,7 @@ async function loadSum(pref){
                 if(p)cStr+=', P-'+p;
                 if(mu)cStr+=', M-'+mu;
                 const ids=sRecs.map(r=>r.id+(r.menuOption==='Poached Egg'?'(P)':r.menuOption==='Fried Egg'?'(F)':r.menuOption==='Mutton'?'(M)':'')).join(', ');
-                body+=`<div class="sblk"><div style="font-weight:bold;font-size:15px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:15px;color:#475569">ID: ${ids}</div></div>`;
+                body+=`<div class="sblk"><div style="font-weight:bold;font-size:18px;color:#1e293b">${sh} Shift (${cStr})</div><div style="font-size:18px;color:#475569">ID: ${ids}</div></div>`;
             });
 
             const tw=m==='Breakfast'?'সকালে':(m==='Lunch'?'দুপুরে':'রাতে');
