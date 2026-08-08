@@ -98,7 +98,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 </div>
 
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder" id="reminder-text">👺Did you order on official portal? ⁉️ 🙆🤦</div>
+<div class="portal-reminder" id="reminder-text">👺 Ordered on official portal? ⁉️ 🙆🤦</div>
 </form>
 </div>
 
@@ -406,4 +406,5 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
                 body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
             });
         }
-        curr.setDate(curr.getDate()
+        curr.setDate(curr.getDate()+1);
+      
