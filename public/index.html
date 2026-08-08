@@ -46,7 +46,14 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 .chk{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:bold;height:30px;color:#334155}
 .chk input{width:16px;height:16px}
-.portal-reminder{font-size:15px;color:#475569;text-align:center;margin-top:6px;font-weight:500}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:6px 10px;margin-top:8px}
+.toggle-label{font-size:15px;font-weight:bold;color:#334155}
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#cbd5e1;transition:.3s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%}
+input:checked + .slider{background-color:#059669}
+input:checked + .slider:before{transform:translateX(20px)}
 </style>
 </head>
 <body>
@@ -97,8 +104,15 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <div class="seg"><label class="rl dis" id="l-mut"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label></div>
 </div>
 
+<div class="toggle-row">
+  <span class="toggle-label">Ordered on official portal?</span>
+  <label class="switch">
+    <input type="checkbox" id="e-portal-toggle">
+    <span class="slider"></span>
+  </label>
+</div>
+
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder">Make sure you have ordered on the official portal.</div>
 </form>
 </div>
 
@@ -313,6 +327,10 @@ window.swT=function(m){
 
 document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
+    if(!document.getElementById('e-portal-toggle').checked){
+        return msg('e-msg','Error: Please confirm by turning on the official portal toggle.','e');
+    }
+
     const start=document.getElementById('e-start').value,end=document.getElementById('e-multiple').checked?document.getElementById('e-end').value:start;
     if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
@@ -380,33 +398,4 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
         curr.setDate(curr.getDate()+1);
     }
 
-    if(ids[0])localStorage.setItem('ccr_id',ids[0]);
-    curr=new Date(start);
-    while(curr<=last){
-        const dtStr=curr.toISOString().split('T')[0];
-        delete cache[dtStr];
-        for(let i=0;i<ids.length;i++){
-            await fetch('/api/delete',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
-            });
-        }
-        curr.setDate(curr.getDate()+1);
-    }
-    document.getElementById('s-date').value=start;
-    updateDisp('s-date');
-    msg('d-msg','Success: Record(s) deleted!','s');
-    loadSum(mealVal);
-});
-
-['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
-    document.getElementById(id).addEventListener('change',()=>{
-        updateDisp(id);
-        if(id==='s-date') loadSum();
-    });
-});
-loadSum();
-</script>
-</body>
-</html>
+ 
