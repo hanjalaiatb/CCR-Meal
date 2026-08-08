@@ -46,8 +46,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 .chk{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:bold;height:30px;color:#334155}
 .chk input{width:16px;height:16px}
-.portal-reminder-wrap{text-align:center;margin-top:6px}
-.portal-reminder{font-size:13px;color:#000000;font-weight:bold;line-height:1.2}
+.portal-reminder{font-size:15px;color:#475569;text-align:center;margin-top:6px;font-weight:500}
 </style>
 </head>
 <body>
@@ -99,9 +98,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 </div>
 
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder-wrap">
-  <div class="portal-reminder">Did you order on official portal...not ordered</div>
-</div>
+<div class="portal-reminder">Make sure you have ordered on the official portal.</div>
 </form>
 </div>
 
@@ -409,4 +406,7 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
         if(id==='s-date') loadSum();
     });
 });
-loadS
+loadSum();
+</script>
+</body>
+</html>
