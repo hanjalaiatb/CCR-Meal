@@ -48,7 +48,6 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .chk input{width:16px;height:16px}
 .portal-reminder-wrap{text-align:center;margin-top:6px}
 .portal-reminder{font-size:13px;color:#000000;font-weight:bold;line-height:1.2}
-.portal-emojis{font-size:16px;margin-top:1px}
 </style>
 </head>
 <body>
@@ -102,7 +101,6 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <button type="submit" class="btn">Save</button>
 <div class="portal-reminder-wrap">
   <div class="portal-reminder">Did you order on official portal...not ordered</div>
-  <div class="portal-emojis">👺🙆‍♂️🤦‍♂️</div>
 </div>
 </form>
 </div>
@@ -406,4 +404,9 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
 });
 
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
-    document.getElementById(id).addEventListener
+    document.getElementById(id).addEventListener('change',()=>{
+        updateDisp(id);
+        if(id==='s-date') loadSum();
+    });
+});
+loadS
