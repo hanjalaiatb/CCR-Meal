@@ -46,7 +46,9 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 .chk{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:bold;height:30px;color:#334155}
 .chk input{width:16px;height:16px}
-.portal-reminder{font-size:18px;color:#000000;text-align:center;margin-top:6px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.portal-reminder-wrap{text-align:center;margin-top:6px}
+.portal-reminder{font-size:24px;color:#000000;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.portal-emojis{font-size:22px;margin-top:2px}
 </style>
 </head>
 <body>
@@ -98,7 +100,10 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 </div>
 
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder" id="reminder-text">👺 Ordered on official portal? ⁉️ 🙆🤦</div>
+<div class="portal-reminder-wrap">
+  <div class="portal-reminder" id="reminder-text">Did you order on official portal...not ordered</div>
+  <div class="portal-emojis">🙆🤦</div>
+</div>
 </form>
 </div>
 
@@ -159,7 +164,7 @@ function updateDisp(id){
 function fitText() {
     const el = document.getElementById('reminder-text');
     if (!el) return;
-    let size = 18;
+    let size = 24;
     el.style.fontSize = size + 'px';
     while (el.scrollWidth > el.clientWidth && size > 10) {
         size--;
@@ -402,9 +407,4 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
         for(let i=0;i<ids.length;i++){
             await fetch('/api/delete',{
                 method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
-            });
-        }
-        curr.setDate(curr.getDate()+1);
-      
+                headers:{'Conte
