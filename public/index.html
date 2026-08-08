@@ -46,7 +46,6 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 .chk{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:bold;height:30px;color:#334155}
 .chk input{width:16px;height:16px}
-.portal-reminder{font-size:15px;color:#475569;text-align:center;margin-top:6px;font-weight:500}
 </style>
 </head>
 <body>
@@ -97,8 +96,8 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 <div class="seg"><label class="rl dis" id="l-mut"><input type="radio" name="menuOption" value="Mutton" disabled>Mutton</label></div>
 </div>
 
+<label class="chk" style="margin-top:8px"><input type="checkbox" id="e-portal-chk"> Have you ordered meal on official portal?</label>
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder">Make sure you have ordered on the official portal.</div>
 </form>
 </div>
 
@@ -313,6 +312,10 @@ window.swT=function(m){
 
 document.getElementById('f-meal').addEventListener('submit',async e=>{
     e.preventDefault();
+    if(!document.getElementById('e-portal-chk').checked){
+        return msg('e-msg','Error: Please confirm that you have ordered on the official portal by checking the box.','e');
+    }
+
     const start=document.getElementById('e-start').value,end=document.getElementById('e-multiple').checked?document.getElementById('e-end').value:start;
     if(!start||!end)return msg('e-msg','Error: Invalid date range.','e');
 
@@ -402,11 +405,4 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
 
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
     document.getElementById(id).addEventListener('change',()=>{
-        updateDisp(id);
-        if(id==='s-date') loadSum();
-    });
-});
-loadSum();
-</script>
-</body>
-</html>
+        updateDisp
