@@ -46,7 +46,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 .suc{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 .chk{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:bold;height:30px;color:#334155}
 .chk input{width:16px;height:16px}
-.portal-reminder{font-size:15px;color:#000000;text-align:center;margin-top:6px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.portal-reminder{font-size:18px;color:#000000;text-align:center;margin-top:6px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -98,7 +98,7 @@ input:focus,select:focus{outline:none;border-color:#d97706}
 </div>
 
 <button type="submit" class="btn">Save</button>
-<div class="portal-reminder">💡 Have you ordered on the official portal? 🙆‍♂️⁉️</div>
+<div class="portal-reminder" id="reminder-text">👺Did you order on official portal? ⁉️ 🙆🤦</div>
 </form>
 </div>
 
@@ -155,6 +155,20 @@ function updateDisp(id){
         if(p.length===3)disp.innerText=`${parseInt(p[2],10)} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(p[1],10)-1]} ${p[0]}`;
     }
 }
+
+function fitText() {
+    const el = document.getElementById('reminder-text');
+    if (!el) return;
+    let size = 18;
+    el.style.fontSize = size + 'px';
+    while (el.scrollWidth > el.clientWidth && size > 10) {
+        size--;
+        el.style.fontSize = size + 'px';
+    }
+}
+
+window.addEventListener('resize', fitText);
+window.addEventListener('DOMContentLoaded', fitText);
 
 ['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
     document.getElementById(id).value=today;
@@ -392,20 +406,4 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
                 body:JSON.stringify({id:ids[i],dateStr:dtStr,meal:mealVal})
             });
         }
-        curr.setDate(curr.getDate()+1);
-    }
-    document.getElementById('s-date').value=start;
-    updateDisp('s-date');
-    msg('d-msg','Success: Record(s) deleted!','s');
-    loadSum(mealVal);
-});
-
-['s-date','e-start','e-end','d-start','d-end'].forEach(id=>{
-    document.getElementById(id).addEventListener('change',()=>{
-        updateDisp(id);
-        if(id==='s-date') loadSum();
-    });
-});
-loadSum();
-</script>
-</bo
+        curr.setDate(curr.getDate()
