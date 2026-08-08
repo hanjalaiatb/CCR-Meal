@@ -189,8 +189,23 @@ function msg(id,txt,t){
     el.className='msg '+(t==='s'?'suc':'err');
     el.innerText=txt;
     el.style.display='block';
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Auto adjusts to view popup
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(()=>el.style.display='none',4000);
+}
+
+function checkCutoff(dtStr, mealType) {
+    const dNow = new Date(), bdtNow = new Date(dNow.getTime() + (dNow.getTimezoneOffset() * 60000) + 21600000);
+    const todayIso = `${bdtNow.getFullYear()}-${String(bdtNow.getMonth() + 1).padStart(2, '0')}-${String(bdtNow.getDate()).padStart(2, '0')}`;
+    const timeMin = bdtNow.getHours() * 60 + bdtNow.getMinutes();
+
+    if (dtStr < todayIso) return 'Rejected: Past date ' + dtStr + '!';
+    if ((bdtNow - new Date(dtStr)) / 3600000 > 48) return 'Rejected: Past 48 hours for ' + dtStr + '!';
+    if (dtStr === todayIso) {
+        if (mealType === 'Breakfast' && timeMin > 435) return 'Cutoff: Breakfast closed at 7:15 AM!';
+        if (mealType === 'Lunch' && timeMin > 720) return 'Cutoff: Lunch closed at 12:00 PM!';
+        if (mealType === 'Dinner' && timeMin > 1140) return 'Cutoff: Dinner closed at 7:00 PM!';
+    }
+    return null;
 }
 
 document.getElementById('g-shift').addEventListener('change',e=>{if(!e.target.disabled){document.querySelectorAll('#g-shift .rl').forEach(l=>l.classList.remove('active-shift'));e.target.closest('.rl').classList.add('active-shift');}});
@@ -305,20 +320,11 @@ document.getElementById('f-meal').addEventListener('submit',async e=>{
     const ids=document.getElementById('e-id').value.split(',').map(i=>i.trim()).filter(Boolean);
     if(!ids.length)return msg('e-msg','Error: Enter at least one Employee ID.','e');
 
-    const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
-    const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
-    const timeMin=bdtNow.getHours()*60+bdtNow.getMinutes();
-
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso)return msg('e-msg',`Rejected: Past date ${dtStr}!`,'e');
-        if((bdtNow-new Date(dtStr))/3600000>48)return msg('e-msg',`Rejected: Past 48 hours for ${dtStr}!`,'e');
-        if(dtStr===todayIso){
-            if(mealType==='Breakfast'&&timeMin>435)return msg('e-msg','Cutoff: Breakfast closed at 7:15 AM!','e');
-            if(mealType==='Lunch'&&timeMin>720)return msg('e-msg','Cutoff: Lunch closed at 12:00 AM!','e');
-            if(mealType==='Dinner'&&timeMin>1140)return msg('e-msg','Cutoff: Dinner closed at 7:00 PM!','e');
-        }
+        const err=checkCutoff(dtStr, mealType);
+        if(err)return msg('e-msg',err,'e');
         curr.setDate(curr.getDate()+1);
     }
 
@@ -364,13 +370,11 @@ document.getElementById('f-del').addEventListener('submit',async e=>{
     const mealVal=document.getElementById('d-meal').value;
     if(!ids.length)return msg('d-msg','Error: Enter at least one ID.','e');
 
-    const dNow=new Date(),bdtNow=new Date(dNow.getTime()+(dNow.getTimezoneOffset()*60000)+21600000);
-    const todayIso=`${bdtNow.getFullYear()}-${String(bdtNow.getMonth()+1).padStart(2,'0')}-${String(bdtNow.getDate()).padStart(2,'0')}`;
-
     let curr=new Date(start),last=new Date(end);
     while(curr<=last){
         const dtStr=curr.toISOString().split('T')[0];
-        if(dtStr<todayIso||(bdtNow-new Date(dtStr))/3600000>48)return msg('d-msg',`Rejected: Cannot delete past records (${dtStr})!`,'e');
+        const err=checkCutoff(dtStr, mealVal);
+        if(err)return msg('d-msg',err,'e');
         curr.setDate(curr.getDate()+1);
     }
 
