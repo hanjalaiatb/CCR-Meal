@@ -187,7 +187,9 @@ let actM='Breakfast';
 function msg(id,txt,t){
     const el=document.getElementById(id);
     el.className='msg '+(t==='s'?'suc':'err');
-    el.innerText=txt;el.style.display='block';
+    el.innerText=txt;
+    el.style.display='block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Auto adjusts to view popup
     setTimeout(()=>el.style.display='none',4000);
 }
 
